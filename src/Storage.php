@@ -42,9 +42,25 @@ class Storage extends Nette\ComponentModel\Component {
             }
         }
         
-        $this->namespace = NULL;
-        
         return $count;
+    }
+    
+    /**
+     * @param string $filename
+     * @return boolean
+     */
+    public function exists($filename) {
+        if (!is_string($filename)) {
+            return FALSE;
+        }
+        
+        list($namespace, $name) = $this->parent->helper->name($filename);
+        
+        if (!file_exists($this->parent->wwwDir . $this->parent->directory->getFull($namespace) . '/' . $name)) {
+            return FALSE;
+        }
+        
+        return TRUE;
     }
     
     /**
@@ -82,7 +98,7 @@ class Storage extends Nette\ComponentModel\Component {
     /**
      * @param string $content
      * @param string $filename
-     * @return type
+     * @return Image
      */
     public function saveContent($content, $filename) {
         return $this->saveImage(NImage::fromString($content), $filename);
