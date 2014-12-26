@@ -18,6 +18,11 @@ class Extension extends Nette\DI\CompilerExtension {
                 '1200' => '(min-width:992px)',
                 NULL => '(min-wudth:1200)' // Original file
             ]
+        ],
+        'addons' => [
+            'upload' => [
+                'label' => 'Delete image ?'
+            ]
         ]
     ];
     
@@ -27,7 +32,7 @@ class Extension extends Nette\DI\CompilerExtension {
         $config = $this->getConfig($this->config);
         
         $builder->addDefinition($this->prefix('root'))
-                    ->setClass('WebChemistry\Images\Root', array($config['wwwDir']))
+                    ->setClass('WebChemistry\Images\Root', array($config['wwwDir'], $config['addons']))
                     ->addSetup('setImageDir', array($config['imageDir']))
                     ->addSetup('setOriginal', array($config['original']))
                     ->addSetup('setNoImage', array($config['noimage']))

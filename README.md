@@ -34,3 +34,4 @@ class GeneratePresenter extends BasePresenter {
 - [Normal macros](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/NORMAL.md)
 - [Responsive macros](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/RESPONSIVE.md)
 - [Manipulation in presenter](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/MANIPULATION.md)
+- [Addons](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/ADDONS.md)
