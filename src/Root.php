@@ -28,8 +28,12 @@ class Root extends Nette\ComponentModel\Container {
     /** @var array */
     protected $models;
     
-    public function __construct($wwwDir) {
+    /** @var array */
+    protected $settings;
+    
+    public function __construct($wwwDir, array $settings = []) {
         $this->wwwDir = $wwwDir;
+        $this->settings = $settings;
         
         $this->addComponent(new Storage, 'storage');
         $this->addComponent(new Helpers\Helper, 'helper');
@@ -42,6 +46,13 @@ class Root extends Nette\ComponentModel\Container {
      */
     public function getHelper() {
         return $this->getComponent('helper');
+    }
+    
+    /**
+     * @return array
+     */
+    public function getSettings() {
+        return $this->settings;
     }
     
     /**
