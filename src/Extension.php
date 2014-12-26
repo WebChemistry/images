@@ -37,6 +37,9 @@ class Extension extends Nette\DI\CompilerExtension {
                     ->addSetup('setOriginal', array($config['original']))
                     ->addSetup('setNoImage', array($config['noimage']))
                     ->addSetup('setModels', array($config['models']));
+        
+        $builder->addDefinition($this->prefix('storage'))
+                    ->setClass('WebChemistry\Images\Storage', array('@WebChemistry\Images\Root', 'storageService'));
     }
     
     public function beforeCompile() {
