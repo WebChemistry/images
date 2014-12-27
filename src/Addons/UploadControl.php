@@ -28,6 +28,7 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
         
         $this->namespace = $namespace;
         
+        $this->addCondition(Nette\Application\UI\Form::FILLED)->addRule(Nette\Application\UI\Form::Image)->endCondition();
         $this->monitor('Nette\Application\IPresenter');
     }
     
