@@ -24,10 +24,7 @@ protected function createComponentForm() {
 
 public function afterForm($form, $values) {
     $row = $this->getFromDatabase();
-
-    if ($values->upload !== FALSE) {
-        $row->upload = $values->upload;
-    }
+    $row->upload = $values->upload;
 
     $row->update();
 }

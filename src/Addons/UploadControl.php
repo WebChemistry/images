@@ -96,9 +96,19 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
     }
     
     /**
+     * @param string $value
+     * @return self
+     */
+    public function setValue($value) {
+        $this->default = $value;
+        
+        return $this;
+    }
+    
+    /**
      * False = Upload failing. NULL = Successfull delete. String = Name of image 
      * 
-     * @return false|null|string
+     * @return null|string
      */
     public function getValue() {
         $value = parent::getValue();
@@ -117,7 +127,7 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
             return (string) $image;
         }
         
-        return FALSE;
+        return $this->default ? $this->default : NULL;
     }
     
     public function getLabel($caption = NULL) {
