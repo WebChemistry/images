@@ -28,8 +28,18 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
         
         $this->namespace = $namespace;
         
-        $this->addCondition(Nette\Application\UI\Form::FILLED)->addRule(Nette\Application\UI\Form::Image)->endCondition();
+        $this->addCondition(Nette\Application\UI\Form::FILLED)->addRule(Nette\Application\UI\Form::IMAGE)->endCondition();
         $this->monitor('Nette\Application\IPresenter');
+    }
+    
+    public static function validateImage(Nette\Forms\Controls\UploadControl $control) {
+        return is_string($control->getValue()) || $control->default;
+        
+        if (is_string($control->getValue())) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
     }
     
     /**
@@ -119,7 +129,7 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
             $storage->delete($this->default);
             
             return NULL;
-        } else if ($value->isOk()) {
+        } else if ($value->isOk() && $value->isImage()) {
             $storage->setNamespace($this->namespace);
             
             $image = $storage->saveUpload($value);
