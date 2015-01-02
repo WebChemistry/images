@@ -1,5 +1,10 @@
 ##Installation
 
+With composer:
+```php
+composer require webchemistry\images:@dev
+```
+
 Config.neon:
 ```yaml
 extensions:
