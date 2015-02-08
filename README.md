@@ -2,13 +2,13 @@
 
 With composer:
 ```php
-composer require webchemistry\images:@dev
+composer require webchemistry\images:1.0
 ```
 
 Config.neon:
 ```yaml
 extensions:
-    images: WebChemistry\Images\Extension
+    images: WebChemistry\Images\DI\Extension
 ```
 
 Image storage in Presenter (as Trait):
@@ -17,7 +17,7 @@ Image storage in Presenter (as Trait):
 <?php
 
 class BasePresenter extends Nette\Application\UI\Presenter {
-    use \Webchemistry\Images\TPresneter;
+    use \WebChemistry\Images\Traits\TPresenter;
 }
 ?>
 ```
@@ -28,7 +28,7 @@ Generate image´s address via Presenter:
 <?php
 
 class GeneratePresenter extends BasePresenter {
-    use \WebChemistry\Images\TPresenterGenerator;
+    use \WebChemistry\Images\Traits\TGenerator;
 }
 ?>
 ```
@@ -36,7 +36,7 @@ class GeneratePresenter extends BasePresenter {
 ##Usage
 
 - [Configuring](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/CONFIGURING.md)
-- [Normal macros](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/NORMAL.md)
-- [Responsive macros](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/RESPONSIVE.md)
+- [Macros](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/NORMAL.md)
+- [Responsive images](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/RESPONSIVE.md)
 - [Manipulation in presenter](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/MANIPULATION.md)
-- [Addons](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/ADDONS.md)
+- [Image upload](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/ADDONS.md)

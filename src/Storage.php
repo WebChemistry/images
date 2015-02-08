@@ -2,190 +2,105 @@
 
 namespace WebChemistry\Images;
 
-use Nette,
-    Nette\Utils\Strings,
-    Nette\Utils\Random,
-    Nette\Utils\Image as NImage,
-    Nette\Utils\Finder;
+use Nette;
 
-/**
- * @property-read Root $parent
- */
-class Storage extends Nette\ComponentModel\Component {
+class Storage extends Nette\Object {
     
-    /** @var string */
+    protected $assetsDir;
+    
+    protected $basePath;
+    
+    protected $noImage;
+    
+    protected $settings;
+    
     protected $namespace;
     
-    /**
-     * @param string $namespace
-     * @return self
-     */
-    public function setNamespace($namespace) {
-        $this->namespace = $this->parent->helper->checkName($namespace);
-        
-        return $this;
+    public function __construct($assetsDir, $basePath, $noImage, $settings) {
+        $this->assetsDir = $assetsDir;
+        $this->noImage = $noImage;
+        $this->basePath = $basePath;
+        $this->settings = $settings;
     }
     
-    /**
-     * @param string $filename
-     * @return int
-     */
-    public function delete($filename) {
-        list($namespace, $filename) = $this->parent->helper->name($filename);
-        
-        $files = Finder::find($filename)->from($this->parent->wwwDir . $this->parent->directory->getBase($namespace));
-        $count = 0;
-        
-        foreach ($files as $path) {
-            if (@unlink($path)) {
-                $count++;
-            }
-        }
-        
-        return $count;
+    public function createNamespace($namespace) {
+        return new NamespaceStorage($this->assetsDir, $this->basePath, $this->noImage, $this->settings, $namespace);
     }
     
-    /**
-     * @param string $filename
-     * @return boolean
-     */
-    public function exists($filename) {
-        if (!is_string($filename)) {
-            return FALSE;
-        }
-        
-        list($namespace, $name) = $this->parent->helper->name($filename);
-        
-        if (!file_exists($this->parent->wwwDir . $this->parent->directory->getFull($namespace) . '/' . $name)) {
-            return FALSE;
-        }
-        
-        return TRUE;
+    public function getSettings() {
+        return $this->settings;
     }
     
-    /**
-     * @param Nette\Http\FileUpload $upload
-     * @return boolean|Image
-     */
-    public function saveUpload(Nette\Http\FileUpload $upload) {
+    public function fromUpload(Nette\Http\FileUpload $upload, $namespace = NULL) {
         if (!$upload->isOk()) {
             return FALSE;
         }
         
-        $this->createDirectories();
+        $image = new Image\Upload($this->assetsDir, $upload);
         
-        $path = $this->parent->wwwDir . $this->parent->directory->getOriginal($this->namespace) . '/';
-        $sanitizedName = $name = $upload->getSanitizedName();
-        
-        if (file_exists($fullPath = $path . $name)) {
-            while (file_exists($fullPath = $path . $name)) {
-                $name = Random::generate() . '.' . $sanitizedName;
-            }
+        if ($namespace) {
+            $image->setNamespace($namespace);
+        } else if ($this->namespace) {
+            $image->setNamespace($this->namespace);
         }
-        
-        $upload->move($fullPath);
-        $image = new Image($this->namespace, $name, $fullPath);
-        $this->namespace = NULL;
         
         return $image;
     }
     
-    public function createDirectories() {
-        @mkdir($this->parent->wwwDir . $this->parent->directory->getBase($this->namespace));
-        @mkdir($this->parent->wwwDir . $this->parent->directory->getOriginal($this->namespace));
+    public function saveUpload(Nette\Http\FileUpload $upload, $namespace = NULL) {
+        return $this->fromUpload($upload, $namespace)->save();
     }
     
-    /**
-     * @param string $content
-     * @param string $filename
-     * @return Image
-     */
-    public function saveContent($content, $filename) {
-        return $this->saveImage(NImage::fromString($content), $filename);
-    }
-    
-    /**
-     * @param NImage $image
-     * @param string $filename
-     * @return Image
-     */
-    public function saveImage(NImage $image, $filename) {
-        $this->createDirectories();
+    public function fromContent($content, $name, $namespace = NULL) {
+        $image = new Image\Content($this->assetsDir, $content);
         
-        $path = $this->parent->wwwDir . $this->parent->directory->getOriginal($this->namespace) . '/';
+        $image->setName($name);
         
-        $name = $filename;
-        
-        if (file_exists($fullPath = $path . $filename)) {
-            while (file_exists($fullPath = $path . $name )) {
-                $name = Random::generate() . '.' . $name;
-            }
+        if ($namespace) {
+            $image->setNamespace($namespace);
+        } else if ($this->namespace) {
+            $image->setNamespace($this->namespace);
         }
         
-        $image->save($fullPath);
-        $return = new Image($this->namespace, $name, $fullPath);
-        $this->namespace = NULL;
+        return $image;
+    }
+    
+    public function saveContent($content, $name, $namespace = NULL) {
+        return $this->fromContent($content, $name, $namespace)->save();
+    }
+    
+    public function create($absoluteName, $size = NULL, $flag = NULL, $noImage = NULL) {
+        $image = new Image\Image($this->assetsDir, $absoluteName, $noImage ? $noImage : $this->noImage, $this->basePath);
         
-        return $return;
+        $image->setSize($size);
+        $image->setFlag($flag);
+        
+        return $image;
     }
     
-    /**
-     * @param string $name
-     * @param string|array $size
-     * @param string|array $flags
-     * @return string
-     */
-    public function getAbsoluteImage($name, $size = NULL, $flags = NULL) {
-        return $this->parent->wwwDir . $this->getImage($name, $size, $flags);
-    }
-    
-    /**
-     * @param string $name
-     * @param string|array $size
-     * @param string|array $flags
-     * @return string
-     */
-    public function getImage($name, $size = NULL, $flags = NULL) {
-        if (!$name || !strpos($name, '.')) {
-            return $this->parent->directory->getNoImage();
+    public function delete($absoluteName) {
+        if (!is_string($absoluteName) || !$absoluteName) {
+            return;
         }
         
-        list($namespace, $filename) = $this->parent->helper->name($name);
-        $sizes = $this->parent->helper->size($size);
-        $flag = $this->parent->helper->flags($flags);
-        $wwwDir = $this->parent->wwwDir;
+        $image = new Image\Delete($this->assetsDir);
         
-        $current = $this->parent->directory->getFull($namespace, $sizes, $flag) . '/' . $filename;
-        
-        if (!file_exists($wwwDir . $current)) {
-            $original = $this->parent->directory->getOriginal($namespace) . '/' . $filename;
-            
-            if (!file_exists($wwwDir . $original)) {
-                return $this->parent->directory->getNoImage();
-            }
-            
-            $this->createResized($this->parent->directory->getFull($namespace, $sizes, $flag), $current, $original, $sizes, $flag);
+        if ($this->namespace && strpos('/', $absoluteName) === FALSE) {
+            $image->setName($absoluteName);
+        } else {
+            $image->setAbsoluteName($absoluteName);
         }
         
-        return $current;
-    }
-    
-    /**
-     * @param string $resizedDir
-     * @param string $resized
-     * @param string $original
-     * @param array $sizes
-     * @param int $flag
-     */
-    public function createResized($resizedDir, $resized, $original, $sizes, $flag) {
-        $wwwDir = $this->parent->wwwDir;
+        if (!file_exists($image->getNamespacePath())) {
+            return;
+        }
         
-        @mkdir($wwwDir . $resizedDir);
+        $finder = Nette\Utils\Finder::findFiles($image->getName())
+                        ->from($image->getNamespacePath())
+                        ->limitDepth(1);
         
-        $image = NImage::fromFile($wwwDir . $original);
-        
-        $image->resize($sizes[0], $sizes[1], $flag);
-        
-        $image->save($wwwDir . $resized);
+        foreach ($finder as $row) {
+            @unlink((string) $row);
+        }
     }
 }
