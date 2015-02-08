@@ -8,15 +8,8 @@
 class ImagePresenter extends BasePresenter {
 
     public function handleDeleteImage($imageName) {
-        $this->imageStorage->setNamespace('namespace'); // Optional
-
-        $count = $this->imageStorage->delete($imageName); // Delete images from %wwwDir%/%assetsDir%[/%namespace%]/*/%imageName%
-
-        if ($count === 0) {
-            $this->flashMessage('We are not deleting any image.', 'error');
-        } else {
-            $this->flashMessage(sprintf('We are deleting %d images.', $count));
-        }
+        $imageName = 'namespace/image.jpg';
+        $this->imageStorage->delete($imageName);
     }
 }
 ?>
@@ -30,14 +23,10 @@ class ImagePresenter extends BasePresenter {
 class ImagePresenter extends BasePresenter {
 
     public function afterUpload($form, $values) {
-        /** @var \WebChemistry\Images\Image|boolean */
-        $file = $this->imageStorage->upload($values->image);
+        /** @var \WebChemistry\Images\Image\Info */
+        $file = $this->imageStorage->saveUpload($values->upload, 'namespace');
 
-        if ($file === FALSE) {
-            $form->addError('Image did not upload');
-        }
-
-        $imageName = (string) $file; // or $file->shortName or $file->getShortName();
+        $imageName = (string) $file;
     }
 
 }
@@ -52,24 +41,29 @@ class ImagePresenter extends BasePresenter {
 class ImagePresenter extends BasePresenter {
 
     public function saveFromContent($url) {
-        /** @var \WebChemistry\Images\Image */
-        $file = $this->imageStorage->saveContent(file_get_contents($url));
+        /** @var \WebChemistry\Images\Image\Info */
+        $file = $this->imageStorage->saveContent(file_get_contents($url), 'filename.jpg', 'namespace');
     }
 
 }
 ?>
 ```
 
-## Save image from Image class
+## Get image storage with namespace
 
 ```php
 <?php
 
 class ImagePresenter extends BasePresenter {
 
-    public function saveFromClass(\Nette\Utils\Image $class) {
-        /** @var \WebChemistry\Images\Image */
-        $file = $this->imageStorage->saveContent($class);
+    public function manipulation($upload, $url) {
+        $storageNamespace = $this->imageStorage->createNamespace('images');
+        
+        $storageNamespace->saveUpload($upload); // Save image with namespace 'images'
+        $storageNamespace->delete('name.jpg'); // Delete image namespace/name.jpg
+        $storageNamespace->saveContent(file_get_contents($url), 'image.png'); // Save image as images/image.png
+        
+        $this->imageStorage->saveContent(file_get_contents($url), 'image.png'); // Save image as image.png
     }
 
 }

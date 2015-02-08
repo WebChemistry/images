@@ -1,23 +1,26 @@
 # Normal macros
 
 ```html
-    {img string namespaceAndFilename[, string size[, string|array|null flags = FIT]]}
+    {img string namespaceAndFilename[, string size[, string|array|null flags = FIT[, string noimage]]]]}
 ```
 
 ## Namespaces
 
+** Without namespace**
 ```html
     {img 'filename.jpg'} 
 ```
 
 Generate: %basePath%/%assetsDir%/original/filename.jpg
 
+** With namespace**
 ```html
     {img 'namespace/filename.jpg'}
 ```
 
 Generate: %basePath%/%assetsDir%/namespace/original/filename.jpg
 
+We can use img macro also in **a** tag.
 ```html
     <a n:img="'namespace/filename.jpg'">
         <img n:img="'namespace/filename.jpg'">
@@ -38,8 +41,23 @@ If script could not find image, it replaced with noimage.
     {img 'imageNotExist.jpg'} 
 ```
 
-Generate: %basePath%/%assetsDir%/%noimage%
+Generate: %basePath%/%assetsDir%/%namespace%/original/%noImage%
 
+If we have set size of image, so it will be also resized.
+
+```html
+    {img 'imageNotExist.jpg', '700x100'} 
+```
+
+Generate: %basePath%/%assetsDir%/%namespace%/700x100_0/%noImage%
+
+We can set other no image.
+
+```html
+    {img 'imageNotExist.jpg', NULL, NULL, 'noavatar/noavatar.png'}
+```
+
+Generate: %basePath%/%assetsDir%/noavatar/original/noavatar.png
 
 ## Resize image
 

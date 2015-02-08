@@ -1,6 +1,6 @@
 <?php
 
-namespace WebChemistry\Images\Helpers;
+namespace WebChemistry\Images\Macros;
 
 use Latte;
 
@@ -10,15 +10,10 @@ class Macros extends Latte\Macros\MacroSet {
         $me = new static($compiler);
         
         $me->addMacro('img', [$me, 'beginImg'], NULL, [$me, 'attrImg']);
-        $me->addMacro('imgRes', [$me, 'beginImgRes']);
-    }
-    
-    public function beginImgRes(Latte\MacroNode $node, Latte\PhpWriter $writer) {
-        return $writer->write('echo $_image->setBasePath($template->basePath)->createResponsiveLinks(%node.args)');
     }
     
     public function beginImg(Latte\MacroNode $node, Latte\PhpWriter $writer) {
-        return $writer->write('echo $template->basePath . $_image->createLink(%node.args)');
+        return $writer->write('$__image = $imageStorage->create(%node.args); echo ($__image->isBaseUri() ? $baseUri : $basePath) . "/" . $__image->createLink();');
     }
     
     public function attrImg(Latte\MacroNode $node, Latte\PhpWriter $writer) {
@@ -28,6 +23,6 @@ class Macros extends Latte\Macros\MacroSet {
             $attr = 'src=';
         }
         
-        return $writer->write('echo \' ' . $attr . '"\' . ($template->basePath) . $_image->createLink(%node.args) . \'"\'');
+        return $writer->write('$__image = $imageStorage->create(%node.args);echo \' ' . $attr . '"\' . ($__image->isBaseUri() ? $baseUri : $basePath) . "/" . $__image->createLink() . \'"\'');
     }
 }
