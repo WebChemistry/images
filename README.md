@@ -2,7 +2,7 @@
 
 With composer:
 ```php
-composer require webchemistry\images:1.2
+composer require webchemistry\images:1.2.1
 ```
 
 Config.neon:

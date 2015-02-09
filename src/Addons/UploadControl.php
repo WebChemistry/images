@@ -25,6 +25,8 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
     
     /** @var boolean */
     private $isDelete = FALSE;
+    
+    private $rawValue;
 
     /**
      * @param string|null $label
@@ -37,7 +39,7 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
         $this->namespace = $namespace;
         $this->defaultValue = $defaultValue;
         
-        $this->addCondition(Nette\Application\UI\Form::FILLED)->addRule(Nette\Application\UI\Form::IMAGE)->endCondition();
+        $this->addCondition(Nette\Forms\Form::FILLED)->addRule(Nette\Forms\Form::IMAGE)->endCondition();
         
         $this->monitor('Nette\Application\IPresenter');
     }
@@ -65,7 +67,7 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
     }
     
     public static function validateImage(Nette\Forms\Controls\UploadControl $control) {
-        return is_string($control->getValue()) || $control->default;
+        return $control->rawValue->isImage();
     }
     
     /**
@@ -95,10 +97,12 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
      */
     public function getHttpData($type, $htmlTail = NULL) {
         $checkbox = $this->getForm()->getHttpData(Nette\Application\UI\Form::DATA_LINE, self::CHECKBOX_NAME);
-
+        
         if ((bool) $checkbox === TRUE) {
             // If checkbox was send
             $this->isDelete = TRUE;
+            
+            $this->rawValue = TRUE;
             
             return NULL;
         } else if ($this->default) {
@@ -112,13 +116,18 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
         // Uploading
         $upload = $this->getForm()->getHttpData($type, $this->getHtmlName() . $htmlTail);
         
-        if ($upload && $upload->isOk() && $upload->isImage()) {
-            $image = $this->getStorage()->saveUpload($upload, $this->namespace);
+        if ($upload && $upload->isOk()) {
+            $this->rawValue = $upload;
             
-            return (string) $this->imageName = $image;
+            if ($upload->isImage()) {
+                $image = $this->getStorage()->saveUpload($upload, $this->namespace);
+
+                return (string) $this->imageName = $image;
+            }
         }
         
         // Not uploaded && image does not exist
+        
         return NULL;
     }
     
