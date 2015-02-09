@@ -34,6 +34,17 @@ Generate:
     </a>
 ```
 
+From version 1.2 we can use for namespace subfolders
+
+```html
+    <img n:img="'namespace/subfolder/filename.jpg'">
+```
+
+Generate:
+```html
+    <img src="{$basePath}/{$assetsDir}/namespace/subfolder/original/filename.jpg">
+```
+
 ## No image
 If script could not find image, it replaced with noimage.
 

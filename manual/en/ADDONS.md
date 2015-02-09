@@ -4,6 +4,12 @@
 
 For auto-uploading and auto-deleting images + preview image.
 
+**Installation:**
+
+```php
+WebChemistry\Images\Addons\UploadControl::register();
+```
+
 **Usage:**
 
 ```php
@@ -13,12 +19,12 @@ protected function createComponentForm() {
 
     $row = $this->getFromDatabase();
 
-    $form->addUploadImage('upload', 'Upload')
+    $form->addImageUpload('upload', 'Upload')
             ->setDefaultValue($row->upload)
             ->setNamespace('namespace');
 
     // or
-    $form->addUploadImage('upload2', 'Upload 2', $row->upload, 'namespace');
+    $form->addImageUpload('upload2', 'Upload 2', $row->upload, 'namespace');
 
     $form->onSuccess[] = $this->afterForm;
 

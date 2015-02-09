@@ -33,6 +33,24 @@ class ImagePresenter extends BasePresenter {
 ?>
 ```
 
+## Subfolders for namespace
+
+```php
+<?php
+
+class ImagePresenter extends BasePresenter {
+
+    public function afterUpload($form, $values) {
+        /** @var \WebChemistry\Images\Image\Info */
+        $file = $this->imageStorage->saveUpload($values->upload, 'namespace/subfolder');
+
+        $imageName = (string) $file;
+    }
+
+}
+?>
+```
+
 ## Save image from content
 
 ```php

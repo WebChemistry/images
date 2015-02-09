@@ -26,6 +26,9 @@ class Container extends PropertyAccess {
         return $this->getWidth() || $this->getHeight();
     }
     
+    /**
+     * @return Info
+     */
     public function createImageInfo(IImage $class = NULL) {
         if ($class === NULL) {
             return new Info($this, $this->assetsDir);

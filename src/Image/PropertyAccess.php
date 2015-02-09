@@ -63,11 +63,15 @@ class PropertyAccess extends Nette\Object implements IImage {
     public function setSize($size) {
         $explode = explode('x', $this->parseString($size));
         
+        if (count($explode) > 2) {
+            throw new WebChemistry\Images\ImageStorageException('Size have more than 2 sizes.');
+        }
+        
         if (count($explode) === 2) {
-            $this->width = $this->checkNum($explode[0]);
-            $this->height = $this->checkNum($explode[1]);
+            $this->width = strpos($explode[0], '%') === FALSE ? $this->checkNum($explode[0]) : $explode[0];
+            $this->height = strpos($explode[1], '%') === FALSE ? $this->checkNum($explode[1]) : $explode[1];
         } else {
-            $this->width = $this->checkNum($explode[0]);
+            $this->width = strpos($explode[0], '%') === FALSE ? $this->checkNum($explode[0]) : $explode[0];
         }
         
         return $this;
@@ -87,13 +91,18 @@ class PropertyAccess extends Nette\Object implements IImage {
         $explode = explode('/', $name);
         
         $this->name = end($explode);
-        $this->namespace = count($explode) === 2 ? $explode[0] : NULL;
+        array_pop($explode);
+        $this->namespace = $explode ? implode('/', $explode) : NULL;
         
         return $this;
     }
     
     public function setName($name) {
         $this->name = $this->parseString($name);
+        
+        if (strpos($this->name, '/') !== FALSE) {
+            throw new WebChemistry\Images\ImageStorageException('Name of image must not contain /');
+        }
         
         return $this;
     }
@@ -116,6 +125,10 @@ class PropertyAccess extends Nette\Object implements IImage {
     
     public function setNamespace($namespace) {
         $this->namespace = $this->parseString($namespace);
+        
+        if ($this->namespace === Info::ORIGINAL) {
+            throw new WebChemistry\Images\ImageStorageException('Namespace must not same name as original directory.');
+        }
         
         return $this;
     }
@@ -157,7 +170,7 @@ class PropertyAccess extends Nette\Object implements IImage {
             throw new WebChemistry\Images\ImageStorageException('Height and width must be integer or percent.');
         }
         
-        return $parse ? $parse : NULL;
+        return $parse ? (int) $parse : NULL;
     }
     
     private function parseString($str) {

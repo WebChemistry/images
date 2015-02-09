@@ -25,6 +25,7 @@ class Content extends Container {
         }
         
         $image = $this->getUniqueImage();
+        $image->createDirs();
         
         $open = fopen($image->getAbsolutePath(), 'w');
         fwrite($open, $this->content);

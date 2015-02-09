@@ -12,6 +12,7 @@ class Info extends Nette\Object {
     
     private $assetsDir;
     
+    /** @var Container */
     private $image;
     
     private $imageSize;
@@ -65,9 +66,20 @@ class Info extends Nette\Object {
     
     public function createDirs() {
         if ($this->namespaceFolder()) {
-            @mkdir($this->assetsDir . $this->namespaceFolder()); // Namespace dir
+            $this->createNamespaceFolders();
         }
+        
         @mkdir($this->assetsDir . $this->namespaceFolder() . $this->baseFolder()); // Original | resize dir
+    }
+    
+    private function createNamespaceFolders() {
+        $lastDir = $this->assetsDir;
+        
+        foreach (explode('/', $this->image->getNamespace()) as $namespace) {
+            $lastDir .= $namespace . '/';
+            
+            @mkdir($lastDir);
+        }
     }
     
     private function namespaceFolder() {

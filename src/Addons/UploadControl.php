@@ -95,7 +95,7 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
      */
     public function getHttpData($type, $htmlTail = NULL) {
         $checkbox = $this->getForm()->getHttpData(Nette\Application\UI\Form::DATA_LINE, self::CHECKBOX_NAME);
-        
+
         if ((bool) $checkbox === TRUE) {
             // If checkbox was send
             $this->isDelete = TRUE;
@@ -109,10 +109,9 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
                 return $this->default;
             }
         }
-        
         // Uploading
         $upload = $this->getForm()->getHttpData($type, $this->getHtmlName() . $htmlTail);
-
+        
         if ($upload && $upload->isOk() && $upload->isImage()) {
             $image = $this->getStorage()->saveUpload($upload, $this->namespace);
             
@@ -212,9 +211,13 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
     }
     
     
-    public static function register() {
-        Nette\Application\UI\Form::extensionMethod('addImageUpload', function ($form, $name, $label = NULL, $multiple = FALSE) {
-            return $form[$name] = new self($label, FALSE);
+    public static function register($controlName = 'addImageUpload') {
+        if (!is_string($controlName)) {
+            throw new WebChemistry\Images\ImageStorageException(sprintf('Control name must be string, %s given', gettype($controlName)));
+        }
+        
+        Nette\Object::extensionMethod('Nette\Forms\Container::addImageUpload', function ($form, $name, $label = NULL, $namespace = NULL, $defaultValue = NULL) {
+            return $form[$name] = new WebChemistry\Images\Addons\UploadControl($label, $namespace, $defaultValue);
         });
     }
 }

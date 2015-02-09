@@ -7,14 +7,12 @@ use Nette;
 trait TGenerator {
     
     public function actionGenerate($name, $size = NULL, $flag = NULL, $noimage = NULL) {
-        $link = $this->imageStorage->create($name, $size, $flag, $noimage)->createLink();
+        $info = $this->imageStorage->create($name, $size, $flag, $noimage)->createInfoLink(FALSE);
         
-        $absolute = $this->context->parameters['wwwDir'] . '/' . $link;
-        
-        if (file_exists($absolute)) {
-            $image = Nette\Utils\Image::fromFile($absolute);
+        if ($info->isImageExists()) {
+            $image = Nette\Utils\Image::fromFile($info->getAbsolutePath());
             
-            $info = getimagesize($absolute);
+            $info = getimagesize($info->getAbsolutePath());
             
             $image->send($info[2]);
         }

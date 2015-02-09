@@ -28,6 +28,8 @@ class Upload extends Container {
     public function save() {
         $image = $this->getUniqueImage();
         
+        $image->createDirs();
+        
         $this->fileUpload->move($image->getAbsolutePath());
         
         return $image;
