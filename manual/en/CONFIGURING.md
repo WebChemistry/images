@@ -10,4 +10,9 @@ image:
     settings:
         upload:
             label: 'Delete this image?'
+    router:
+        mask: 'show-image/<name>[/<size>[/<flag>[/<noimage>]]]'
+        resize: no # Disallow create resized image
+        flag: 0
+        disable: no
 ```

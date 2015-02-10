@@ -87,3 +87,44 @@ class ImagePresenter extends BasePresenter {
 }
 ?>
 ```
+
+## Editing image
+
+```php
+<?php
+
+class ImagePresenter extends BasePresenter {
+
+    public function after($form, $values) {
+        // From upload
+        $upload = $imageStorage->fromUpload($values->upload, 'namespace');
+
+        // From content
+        $upload = $imageStorage->fromContent($values->string, 'namespace');
+
+        // Namespace
+        $upload->setNamespace('namespace');
+        // Sizes
+        $upload->setSize('100x250');
+        $upload->setHeight(100);
+        $upload->setWidth(250);
+        // Change quality
+        $upload->setQuality(80);
+        // Flags
+        $upload->setFlag('exact');
+
+        $upload->setCallback(function (Nette\Utils\Image $image) {
+            // Proccess
+
+            return $image;
+        });
+
+        // Uložení
+        $info = $upload->save();
+        
+        (string) $info;
+    }
+
+}
+?>
+```

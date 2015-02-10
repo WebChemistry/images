@@ -51,7 +51,7 @@ class Image extends Container {
             return $this->createNoImage()->createInfoLink();
         }
         
-        if (!$info->isImageExists() && $this->isResize() && $createResized) {
+        if (!$info->isImageExists() && $this->isResize() && $createResized && $this->original->isImageExists()) {
             $image = $this->original->getImageClass();
             
             $info->createDirs();
