@@ -4,7 +4,7 @@ namespace WebChemistry\Images\Image;
 
 use Nette, WebChemistry;
 
-class Content extends Container {
+class Content extends Creator {
     
     /** @var string */
     protected $content;
@@ -19,18 +19,33 @@ class Content extends Container {
         $this->content = $content;
     }
     
+    protected function getImageType() {
+        $fileInfo = finfo_open();
+        
+        return $this->mimeToInteger(finfo_buffer($fileInfo, $this->content, FILEINFO_MIME_TYPE));
+    }
+    
     public function save() {
         if (!$this->getName()) {
             throw new WebChemistry\Images\ImageStorageException('Image name must be set.');
         }
         
-        $image = $this->getUniqueImage();
-        $image->createDirs();
+        $info = $this->getUniqueImage();
+        $info->createDirs();
         
-        $open = fopen($image->getAbsolutePath(), 'w');
-        fwrite($open, $this->content);
-        fclose($open);
+        $imageClass = Nette\Utils\Image::fromString($this->content);
+        $this->processImage($imageClass);
         
-        return $image;
+        if ($this->callback) {
+            $imageClass = call_user_func_array($this->callback, array($imageClass));
+            
+            if (!$imageClass instanceof Nette\Utils\Image) {
+                throw new WebChemistry\Images\ImageStorageException('Callback must return Nette\Utils\Image.');
+            }
+        }
+        
+        $imageClass->save($info->getAbsolutePath(), $this->quality, $this->getImageType());
+        
+        return $info;
     }
 }

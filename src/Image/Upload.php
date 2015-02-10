@@ -4,7 +4,7 @@ namespace WebChemistry\Images\Image;
 
 use Nette, WebChemistry;
 
-class Upload extends Container {
+class Upload extends Creator {
     
     /** @var Nette\Http\FileUpload */
     protected $fileUpload;
@@ -21,17 +21,23 @@ class Upload extends Container {
         $this->setName($fileUpload->getSanitizedName());
     }
     
-    public function getImageClass() {
-        return $this->fileUpload->toImage();
-    }
-    
     public function save() {
-        $image = $this->getUniqueImage();
+        $info = $this->getUniqueImage();
+        $info->createDirs();
         
-        $image->createDirs();
+        $imageClass = $this->fileUpload->toImage();
+        $this->processImage($imageClass);
         
-        $this->fileUpload->move($image->getAbsolutePath());
+        if ($this->callback) {
+            $imageClass = call_user_func_array($this->callback, array($imageClass));
+            
+            if (!$imageClass instanceof Nette\Utils\Image) {
+                throw new WebChemistry\Images\ImageStorageException('Callback must return Nette\Utils\Image.');
+            }
+        }
         
-        return $image;
+        $imageClass->save($info->getAbsolutePath(), $this->quality, $this->mimeToInteger($this->fileUpload->getContentType()));
+        
+        return $info;
     }
 }
