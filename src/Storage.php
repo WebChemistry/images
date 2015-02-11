@@ -48,7 +48,13 @@ class Storage extends Nette\Object {
     }
     
     public function saveUpload(Nette\Http\FileUpload $upload, $namespace = NULL) {
-        return $this->fromUpload($upload, $namespace)->save();
+        $upload = $this->fromUpload($upload, $namespace);
+        
+        if ($upload === FALSE) {
+            return FALSE;
+        }
+        
+        return $upload->save();
     }
     
     public function fromContent($content, $name, $namespace = NULL) {
