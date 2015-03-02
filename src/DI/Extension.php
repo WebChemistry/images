@@ -66,7 +66,7 @@ class Extension extends Nette\DI\CompilerExtension {
         if (method_exists($this, 'validateConfig')) {
             $config = $this->validateConfig($this->defaults, $this->config);
             
-            $config['wwwDir'] = Nette\DI\Helpers::expand($config['wwwDir'], $builder->parameters);
+            $config['wwwDir'] = Nette\DI\Helpers::expand($config['wwwDir'], $this->getContainerBuilder()->parameters);
         } else {
             $config = $this->getConfig($this->defaults); // deprecated
         }
