@@ -18,6 +18,8 @@ class PropertyAccess extends Nette\Object implements IImage {
     
     private $flag = 0;
     
+    private $crop = array();
+    
     protected $prefix;
     
     private $baseUri = FALSE;
@@ -60,7 +62,26 @@ class PropertyAccess extends Nette\Object implements IImage {
         return $this->baseUri;
     }
     
+    public function getCrop() {
+        return $this->crop;
+    }
+    
     public function setSize($size) {
+        if (preg_match('#crop\(([0-9%,\s]+)\)+#', $size, $matches)) {
+            $attrs = array();
+            $explode = explode(',', $matches[1]);
+            
+            foreach ($explode as $value) {
+                $trim = trim($value);
+                
+                $attrs[] = $trim;
+            }
+            
+            $this->crop = $attrs;
+            
+            return $this;
+        }
+        
         $explode = explode('x', $this->parseString($size));
         
         if (count($explode) > 2) {
@@ -72,6 +93,7 @@ class PropertyAccess extends Nette\Object implements IImage {
             $this->height = strpos($explode[1], '%') === FALSE ? $this->checkNum($explode[1]) : $explode[1];
         } else {
             $this->width = strpos($explode[0], '%') === FALSE ? $this->checkNum($explode[0]) : $explode[0];
+            $this->height = NULL;
         }
         
         return $this;

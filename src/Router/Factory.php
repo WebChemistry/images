@@ -21,6 +21,14 @@ class Factory {
             'module' => 'ImageStorage',
             'presenter' => 'Generate',
             'action' => 'default',
+            'size' => array(
+                Route::FILTER_IN => function ($size) {
+                    return str_replace('%25', '%', $size);
+                },
+                Route::FILTER_OUT => function ($size) {
+                    return str_replace('%', '%25', $size);
+                }
+            ),
             'name' => array(
                 Route::FILTER_IN => function ($name) {
                     return Helper::decodeName($name);

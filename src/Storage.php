@@ -32,6 +32,7 @@ class Storage extends Nette\Object {
     }
     
     public function fromUpload(Nette\Http\FileUpload $upload, $namespace = NULL) {
+        
         if (!$upload->isOk()) {
             return FALSE;
         }

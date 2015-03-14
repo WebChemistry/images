@@ -17,7 +17,9 @@ class GeneratePresenter extends Nette\Application\UI\Presenter {
     
     public function actionDefault($name, $size = NULL, $flag = NULL, $noimage = NULL) {
         try {
-            $info = $this->imageStorage->create($name, $size, $flag, $noimage)->createInfoLink($this->resize);
+            $file = $this->imageStorage->create($name, $size, $flag, $noimage);
+            $info = $file->createImageInfo();
+            $info = $file->createInfoLink(is_dir(dirname($info->getAbsolutePath())) && $file->isResize() ? TRUE : $this->resize);
         } catch (WebChemistry\Images\ImageStorageException $e) {
             if (Tracy\Debugger::isEnabled()) {
                 throw $e;
@@ -30,13 +32,13 @@ class GeneratePresenter extends Nette\Application\UI\Presenter {
         
         if ($info->isImageExists()) {
             $image = Nette\Utils\Image::fromFile($info->getAbsolutePath());
-            
+
             $info = getimagesize($info->getAbsolutePath());
-            
+
             $image->send($info[2]);
         } else {
             $this->getHttpResponse()->setCode(404);
-                
+
             $this->terminate();
         }
     }

@@ -99,6 +99,10 @@ class Info extends Nette\Object {
     } 
     
     private function sizeFolder() {
+        if ($this->image->getCrop()) {
+            return 'crop-' . implode('x', $this->image->getCrop());
+        }
+        
         $width = $this->image->getWidth();
         $height = $this->image->getHeight();
         

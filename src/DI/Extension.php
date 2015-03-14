@@ -8,6 +8,12 @@ class Extension extends Nette\DI\CompilerExtension {
     
     protected $defaults = array(
         'noimage' => 'noimage/noimage.png',
+        'registration' => array(
+            'texy' => FALSE,
+            'upload' => TRUE,
+            'multiUpload' => FALSE,
+            'presenter' => TRUE
+        ),
         'assetsDir' => 'assets',
         'wwwDir' => '%wwwDir%',
         'settings' => array(
@@ -38,8 +44,10 @@ class Extension extends Nette\DI\CompilerExtension {
                         ->setArguments(array($config['router'], '@WebChemistry\Images\Storage'))
                         ->setAutowired(FALSE);
 
-            $builder->addDefinition($this->prefix('presenter'))
-                        ->setClass('WebChemistry\Images\Addons\GeneratePresenter', array($config['router']['resize']));
+            if ($config['registration']['presenter']) {
+                $builder->addDefinition($this->prefix('presenter'))
+                            ->setClass('WebChemistry\Images\Addons\GeneratePresenter', array($config['router']['resize']));
+            }
         }
     }
     
@@ -66,11 +74,30 @@ class Extension extends Nette\DI\CompilerExtension {
         if (method_exists($this, 'validateConfig')) {
             $config = $this->validateConfig($this->defaults, $this->config);
             
-            $config['wwwDir'] = Nette\DI\Helpers::expand($config['wwwDir'], $builder->parameters);
+            $config['wwwDir'] = Nette\DI\Helpers::expand($config['wwwDir'], $this->getContainerBuilder()->parameters);
         } else {
             $config = $this->getConfig($this->defaults); // deprecated
         }
         
         return $config;
+    }
+    
+    public function afterCompile(Nette\PhpGenerator\ClassType $class) {
+        $methods = $class->getMethods();
+        $init = $methods['initialize'];
+        
+        $config = $this->getSettings();
+        
+        if ($config['registration']['texy']) {
+            $init->addBody('WebChemistry\Images\Texy::register($this->getByType(?), $this->getService(?), $this->getByType(?)->getUrl()->getBaseUrl());', array('Texy', $this->prefix('storage'), 'Nette\Http\IRequest'));
+        }
+        
+        if ($config['registration']['upload']) {
+            $init->addBody('WebChemistry\Images\Addons\UploadControl::register();');
+        }
+        
+        if ($config['registration']['multiUpload']) {
+            $init->addBody('WebChemistry\Images\Addons\MultiUploadControl::register();');
+        }
     }
 }
