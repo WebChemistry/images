@@ -6,6 +6,8 @@ use Nette, Nette\Utils\Strings, WebChemistry;
 
 class PropertyAccess extends Nette\Object implements IImage {
 
+    const QUALITY = 80;
+    
     protected $assetsDir;
     
     private $name;
@@ -24,8 +26,26 @@ class PropertyAccess extends Nette\Object implements IImage {
     
     private $baseUri = FALSE;
     
+    private $quality = self::QUALITY;
+    
     public function __construct($assetsDir) {
         $this->assetsDir = rtrim($assetsDir, '/\\') . '/';
+    }
+    
+    public function getQuality() {
+        return $this->quality;
+    }
+    
+    public function setQuality($quality) {
+        if (!is_numeric($quality) && $quality) {
+            throw new WebChemistry\Images\ImageStorageException('Quality must be numeric.');
+        } else if (!$quality) {
+            return $this;
+        }
+        
+        $this->quality = $quality;
+        
+        return $this;
     }
     
     public function getPrefix() {

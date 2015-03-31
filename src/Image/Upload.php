@@ -35,8 +35,10 @@ class Upload extends Creator {
                 throw new WebChemistry\Images\ImageStorageException('Callback must return Nette\Utils\Image.');
             }
         }
+        $quality = $this->getQuality();
+        $this->setQuality(self::QUALITY);
         
-        $imageClass->save($info->getAbsolutePath(), $this->quality, $this->mimeToInteger($this->fileUpload->getContentType()));
+        $imageClass->save($info->getAbsolutePath(), $quality, $this->mimeToInteger($this->fileUpload->getContentType()));
         
         return $info;
     }

@@ -76,9 +76,10 @@ class Storage extends Nette\Object {
         return $this->fromContent($content, $name, $namespace)->save();
     }
     
-    public function create($absoluteName, $size = NULL, $flag = NULL, $noImage = NULL) {
+    public function create($absoluteName, $size = NULL, $flag = NULL, $quality = NULL, $noImage = NULL) {
         $image = new Image\Image($this->assetsDir, $absoluteName, $noImage ? $noImage : $this->noImage, $this->basePath);
         
+        $image->setQuality($quality);
         $image->setSize($size);
         $image->setFlag($flag);
         

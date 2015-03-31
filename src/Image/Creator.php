@@ -10,22 +10,6 @@ class Creator extends Container {
     
     protected $callback;
     
-    protected $quality;
-    
-    public function setQuality($quality) {
-        if (!is_int($quality)) {
-            throw new WebChemistry\Images\ImageStorageException('Quality must be integer.');
-        }
-        
-        $this->quality = $quality;
-        
-        return $this;
-    }
-    
-    public function getQuality() {
-        return $this->quality;
-    }
-    
     protected function processImage(Nette\Utils\Image $image) {
         if ($this->getWidth() || $this->getHeight()) {
             $image->resize($this->getWidth(), $this->getHeight(), $this->getFlag());

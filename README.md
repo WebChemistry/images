@@ -22,17 +22,6 @@ class BasePresenter extends Nette\Application\UI\Presenter {
 ?>
 ```
 
-Generate image´s address via Presenter:
-
-```php
-<?php
-
-class GeneratePresenter extends BasePresenter {
-    use \WebChemistry\Images\Traits\TGenerator;
-}
-?>
-```
-
 ##Usage
 
 - [Configuring](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/CONFIGURING.md)

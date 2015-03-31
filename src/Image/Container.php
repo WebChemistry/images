@@ -23,7 +23,7 @@ class Container extends PropertyAccess {
     }
     
     public function isResize() {
-        return $this->getWidth() || $this->getHeight() || $this->getCrop();
+        return $this->getWidth() || $this->getHeight() || $this->getCrop() || $this->getQuality() !== self::QUALITY;
     }
     
     /**

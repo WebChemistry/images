@@ -32,7 +32,6 @@ class Image extends Container {
     
     private function creator($createResized = TRUE, $createInfo = FALSE) {
         $info = $this->createImageInfo($this);
-        
         if (!$info->isImageExists() && !$this->original->isImageExists() && $this->noImage) {
             return $this->createNoImage()->createLink();
         }
@@ -44,10 +43,10 @@ class Image extends Container {
             
             if ($this->getCrop()) {
                 call_user_func_array(array($image, 'crop'), $this->getCrop());
-            } else {
+            } else if ($this->getWidth() || $this->getHeight()) {
                 $image->resize($this->getWidth(), $this->getHeight(), $this->getFlag());
             }
-            $image->save($info->getAbsolutePath(), NULL, $this->original->getImageType());
+            $image->save($info->getAbsolutePath(), $this->getQuality(), $this->original->getImageType());
             
             return $createInfo ? $info : str_replace('%', '%25', $this->basePath . $info->getPath());
         } else if ($info->isImageExists()) {

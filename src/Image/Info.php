@@ -95,8 +95,16 @@ class Info extends Nette\Object {
     }
     
     private function baseFolder() {
-        return $this->sizeFolder() . $this->flagFolder() . '/';
+        return $this->sizeFolder() . $this->flagFolder() . $this->qualityFolder() . '/';
     } 
+    
+    private function qualityFolder() {
+        $image = $this->image;
+        
+        if ($image->getQuality() !== $image::QUALITY) {
+            return '_' . str_replace('.', '_', $image->getQuality()) . 'q';
+        }
+    }
     
     private function sizeFolder() {
         if ($this->image->getCrop()) {

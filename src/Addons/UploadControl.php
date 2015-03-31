@@ -84,7 +84,48 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
         return FALSE;
     }
     
-    public static function validateImage(Nette\Forms\Controls\UploadControl $control) {
+    public function validate() {
+        foreach ($this->rules as $rule) {
+            $this->adjustRule($rule);
+        }
+        parent::validate();
+    }
+    
+    /**
+     * Change callbacks from default validator to this class
+     * 
+     * @param Nette\Forms\Rule $rule
+     */
+    private function adjustRule(Nette\Forms\Rule $rule) {
+        switch ($rule->validator) {
+            case Nette\Forms\Form::IMAGE:
+                $rule->validator = get_class($this) . '::validateImage';
+                if (!$rule->message) {
+                    $rule->message = Nette\Forms\Validator::$messages[Nette\Forms\Form::IMAGE];
+                }
+                break;
+            case Nette\Forms\Form::MAX_FILE_SIZE:
+                $rule->validator = get_class($this) . '::validateFileSize';
+                if (!$rule->message) {
+                    $rule->message = Nette\Forms\Validator::$messages[Nette\Forms\Form::MAX_FILE_SIZE];
+                }
+                break;
+            case Nette\Forms\Form::MIME_TYPE:
+                $rule->validator = get_class($this) . '::validateMimeType';
+                if (!$rule->message) {
+                    $rule->message = Nette\Forms\Validator::$messages[Nette\Forms\Form::MIME_TYPE];
+                }
+                break;
+        }
+        
+        if ($rule->branch) {
+            foreach ($rule->branch as $branch) {
+                $this->adjustRule($branch); 
+            }
+        }
+    }
+    
+    public static function validateImage(Nette\Forms\Controls\UploadControl $control, $message = NULL) {
         if ($control->isUpload()) {
             foreach ($control->rawValue as $upload) {
                 if (!$upload->isImage()) {
