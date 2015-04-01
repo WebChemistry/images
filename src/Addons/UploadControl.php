@@ -225,11 +225,14 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
         $this->rawValue = array();
         
         foreach ($this->uploadArray($upload) as $file) {
-            if ($file && $file->isOk() && $file->isImage()) {
-                $this->rawValue[] = $file;
-                $image = $this->getStorage()->saveUpload($file, $this->namespace);
+            if ($file && $file->isOk()) {
+                if ($file->isImage()) {
+                    $image = $this->getStorage()->saveUpload($file, $this->namespace);
+
+                    $return[] = $this->imageNames[] = (string) $image;
+                }
                 
-                $return[] = $this->imageNames[] = (string) $image;
+                $this->rawValue[] = $file;
             }
         }
         
