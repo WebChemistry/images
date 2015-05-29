@@ -5,78 +5,129 @@ namespace WebChemistry\Images\Image;
 use Nette, WebChemistry;
 
 class Image extends Container {
-    
-    protected $noImage;
-    
-    protected $basePath;
-    
-    protected $original;
-    
-    protected $originalSelf;
-    
-    public function __construct($assetsDir, $absoluteName, $noImage, $basePath) {
-        parent::__construct($assetsDir);
-        
-        $this->setAbsoluteName($absoluteName);
-        $this->noImage = $noImage;
-        $this->basePath = trim($basePath, '/\\') . '/';
-        
-        $this->original = $this->createImageInfo(clone $this);
-    }
-    
-    public function setNoImage($noImage) {
-        $this->noImage = $noImage;
-        
-        return $this;
-    }
-    
-    private function creator($createResized = TRUE, $createInfo = FALSE) {
-        $info = $this->createImageInfo($this);
-        if (!$info->isImageExists() && !$this->original->isImageExists() && $this->noImage) {
-            return $this->createNoImage()->createLink();
-        }
-        
-        if (!$info->isImageExists() && $this->isResize() && $createResized) {
-            $image = $this->original->getImageClass();
-            
-            $info->createDirs();
-            
-            if ($this->getCrop()) {
-                call_user_func_array(array($image, 'crop'), $this->getCrop());
-            } else if ($this->getWidth() || $this->getHeight()) {
-                $image->resize($this->getWidth(), $this->getHeight(), $this->getFlag());
-            }
-            $image->save($info->getAbsolutePath(), $this->getQuality(), $this->original->getImageType());
-            
-            return $createInfo ? $info : str_replace('%', '%25', $this->basePath . $info->getPath());
-        } else if ($info->isImageExists()) {
-            return $createInfo ? $info : str_replace('%', '%25', $this->basePath . $info->getPath());
-        } else if ($this->original->isImageExists()) {
-            return $createInfo ? $this->original : $this->basePath . $this->original->getPath();
-        }
-        
-        return $createInfo ? $info : $this->basePath . $info->getPath(); // Disallow re-loading page as image
-    }
-    
-    private function createNoImage() {
-        $image = new self($this->assetsDir, $this->noImage, NULL, $this->basePath);
-        
-        $image->setWidth($this->getWidth());
-        $image->setHeight($this->getHeight());
-        $image->setIntegerFlag($this->getFlag());
-        
-        return $image;
-    }
-    
-    public function exists() {
-        return $this->createImageInfo($this)->isImageExists();
-    }
-    
-    public function createInfoLink($createResized = TRUE) {
-        return $this->creator($createResized, TRUE);
-    }
-    
-    public function createLink($createResized = TRUE) {
-        return $this->creator($createResized);
-    }
+
+	/** @var Image */
+	protected $noImage;
+
+	/** @var Info */
+	protected $original;
+
+	/**
+	 * @param WebChemistry\Images\Connectors\IConnector $connector
+	 * @param string                                    $absoluteName
+	 * @param string|null                               $noImage
+	 */
+	public function __construct(WebChemistry\Images\Connectors\IConnector $connector, $absoluteName, $noImage = NULL) {
+		parent::__construct($connector);
+
+		$this->setAbsoluteName($absoluteName);
+		$this->original = $this->getOriginal();
+
+		if ($noImage) {
+			$this->noImage = new self($connector, $noImage);
+		}
+	}
+
+	/**
+	 * @param string $noImage
+	 * @return $this
+	 */
+	public function setNoImage($noImage) {
+		$this->noImage = new self($this->connector, $noImage);
+
+		return $this;
+	}
+
+	/**
+	 * @param bool $original
+	 * @param bool $createInfo
+	 * @return string|Info
+	 */
+	private function creator($original = FALSE, $createInfo = FALSE) {
+		$info = $this->getInfo();
+
+		// Original and resized image does not exist.
+		if (!$info->isImageExists() && !$this->original->isImageExists()) {
+			if ($this->noImage) {
+				return $this->noImage->getLink();
+			} else {
+				return '#noimage';
+			}
+		}
+
+		// Original image
+		if ($this->original->isImageExists() && $original) {
+			return $createInfo ? $this->original : $this->connector->getLink($this->original);
+		}
+
+		// Resize image does not exist
+		if (!$info->isImageExists() && $this->isResize()) {
+			$image = $this->connector->getNetteImage($this->original);
+
+			$this->processHelpers($image);
+
+			if ($this->getWidth() || $this->getHeight()) {
+				$image->resize($this->getWidth(), $this->getHeight(), $this->getFlag());
+			}
+
+			$this->wakeUpCallbacks($image);
+
+			$this->connector->save($image, $info, $this->original->getImageType());
+
+			return $createInfo ? $info : str_replace('%', '%25', $this->connector->getLink($info));
+		}
+
+		// Resize image exists.
+		if ($info->isImageExists()) {
+			return $createInfo ? $info : str_replace('%', '%25', $this->connector->getLink($info));
+		}
+		//return $createInfo ? $info : $this->connector->getLink($info); // Disallow re-loading page as image
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isExists() {
+		return $this->getInfo($this)
+					->isImageExists();
+	}
+
+	/**
+	 * @param bool $original
+	 * @param bool $returnInfo
+	 * @return string|Info
+	 */
+	public function getLink($original = FALSE, $returnInfo = FALSE) {
+		return $this->creator($original, $returnInfo);
+	}
+
+	/************************* Deprecated **************************/
+
+	/**
+	 * @deprecated
+	 */
+	public function exists() {
+		trigger_error('exists is deprecated, please use isExists');
+
+		return $this->getInfo($this)
+					->isImageExists();
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public function createInfoLink($createResized = TRUE) {
+		trigger_error('createInfoLink is deprecated, please use getInfo');
+
+		return $this->creator(!$createResized, TRUE);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public function createLink($createResized = TRUE) {
+		trigger_error('createLink is deprecated, please use getLink');
+
+		return $this->creator(!$createResized);
+	}
 }

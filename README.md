@@ -2,7 +2,7 @@
 
 With composer:
 ```php
-composer require webchemistry\images:1.2.2
+composer require webchemistry\images:1.4
 ```
 
 Config.neon:
@@ -22,6 +22,17 @@ class BasePresenter extends Nette\Application\UI\Presenter {
 ?>
 ```
 
+Generate image´s address via Presenter:
+
+```php
+<?php
+
+class GeneratePresenter extends BasePresenter {
+    use \WebChemistry\Images\Traits\TGenerator;
+}
+?>
+```
+
 ##Usage
 
 - [Configuring](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/CONFIGURING.md)
@@ -30,3 +41,4 @@ class BasePresenter extends Nette\Application\UI\Presenter {
 - [Responsive images](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/RESPONSIVE.md)
 - [Manipulation in presenter](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/MANIPULATION.md)
 - [Image upload](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/ADDONS.md)
+- [Helpers](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/HELPERS.md)

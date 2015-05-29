@@ -5,47 +5,52 @@ namespace WebChemistry\Images\Image;
 use Nette, WebChemistry;
 
 class Content extends Creator {
-    
-    /** @var string */
-    protected $content;
-    
-    public function __construct($assetsDir, $content) {
-        parent::__construct($assetsDir);
-        
-        if (!is_string($content)) {
-            throw new WebChemistry\Images\ImageStorageException('Content of image must be string.');
-        }
-        
-        $this->content = $content;
-    }
-    
-    protected function getImageType() {
-        $fileInfo = finfo_open();
-        
-        return $this->mimeToInteger(finfo_buffer($fileInfo, $this->content, FILEINFO_MIME_TYPE));
-    }
-    
-    public function save() {
-        if (!$this->getName()) {
-            throw new WebChemistry\Images\ImageStorageException('Image name must be set.');
-        }
-        
-        $info = $this->getUniqueImage();
-        $info->createDirs();
-        
-        $imageClass = Nette\Utils\Image::fromString($this->content);
-        $this->processImage($imageClass);
-        
-        if ($this->callback) {
-            $imageClass = call_user_func_array($this->callback, array($imageClass));
-            
-            if (!$imageClass instanceof Nette\Utils\Image) {
-                throw new WebChemistry\Images\ImageStorageException('Callback must return Nette\Utils\Image.');
-            }
-        }
-        
-        $imageClass->save($info->getAbsolutePath(), $this->quality, $this->getImageType());
-        
-        return $info;
-    }
+
+	/** @var string */
+	protected $content;
+
+	public function __construct(WebChemistry\Images\Connectors\IConnector $connector, $content) {
+		parent::__construct($connector);
+
+		if (!is_string($content)) {
+			throw new WebChemistry\Images\ImageStorageException('Content of image must be string.');
+		}
+
+		$this->content = $content;
+	}
+
+	/**
+	 * @return int
+	 */
+	protected function getImageType() {
+		$fileInfo = finfo_open();
+
+		return $this->mimeToInteger(finfo_buffer($fileInfo, $this->content, FILEINFO_MIME_TYPE));
+	}
+
+	/**
+	 * @return Info
+	 * @throws WebChemistry\Images\ImageStorageException
+	 */
+	public function save() {
+		if (!$this->getName()) {
+			throw new WebChemistry\Images\ImageStorageException('Image name must be set.');
+		}
+
+		$info = $this->getUniqueImageName();
+
+		/** @var WebChemistry\Images\Bridges\Nette\Image $image */
+		$image = WebChemistry\Images\Bridges\Nette\Image::fromString($this->content);
+		$image->setQuality($this->quality);
+
+		if ($this->getWidth() || $this->getHeight()) {
+			$image->resize($this->getWidth(), $this->getHeight(), $this->getFlag());
+		}
+
+		$this->wakeUpCallbacks($image);
+
+		$this->connector->save($image, $info, $this->getImageType());
+
+		return $info;
+	}
 }

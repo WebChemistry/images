@@ -97,10 +97,10 @@ class ImagePresenter extends BasePresenter {
 
     public function after($form, $values) {
         // From upload
-        $upload = $imageStorage->fromUpload($values->upload, 'namespace');
+        $upload = $imageStorage->saveUpload($values->upload, 'namespace', FALSE);
 
         // From content
-        $upload = $imageStorage->fromContent($values->string, 'namespace');
+        $upload = $imageStorage->saveContent($values->string, 'namespace', FALSE);
 
         // Namespace
         $upload->setNamespace('namespace');
@@ -113,13 +113,7 @@ class ImagePresenter extends BasePresenter {
         // Flags
         $upload->setFlag('exact');
 
-        $upload->setCallback(function (Nette\Utils\Image $image) {
-            // Proccess
-
-            return $image;
-        });
-
-        // Uložení
+        // Save
         $info = $upload->save();
         
         (string) $info;

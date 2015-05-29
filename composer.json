@@ -1,7 +1,7 @@
 {
     "name": "webchemistry/images",
     "type": "library",
-    "description": "Images storage for easily uploading, deleting and manilpulation.",
+    "description": "Images storage for easier uploading, deleting and manipulation.",
     "license": ["GPL-3.0"],
     "support": {
         "email": "antik494@gmail.com",

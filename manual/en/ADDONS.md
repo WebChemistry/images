@@ -5,10 +5,7 @@
 For auto-uploading and auto-deleting images + preview image.
 
 **Installation:**
-
-```php
-WebChemistry\Images\Addons\UploadControl::register();
-```
+Auto-installation via config
 
 **Usage:**
 

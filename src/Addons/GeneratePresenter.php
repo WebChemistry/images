@@ -5,41 +5,40 @@ namespace WebChemistry\Images\Addons;
 use Nette, WebChemistry, Tracy;
 
 class GeneratePresenter extends Nette\Application\UI\Presenter {
-    
-    use WebChemistry\Images\Traits\TPresenter;
-    
-    /** @var bool */
-    private $resize = FALSE;
-    
-    public function __construct($resize = FALSE) {
-        $this->resize = (bool) $resize;
-    }
-    
-    public function actionDefault($name, $size = NULL, $flag = NULL, $noimage = NULL) {
-        try {
-            $file = $this->imageStorage->create($name, $size, $flag, $noimage);
-            $info = $file->createImageInfo();
-            $info = $file->createInfoLink(is_dir(dirname($info->getAbsolutePath())) && $file->isResize() ? TRUE : $this->resize);
-        } catch (WebChemistry\Images\ImageStorageException $e) {
-            if (Tracy\Debugger::isEnabled()) {
-                throw $e;
-            } else {
-                $this->getHttpResponse()->setCode(404);
-                
-                $this->terminate();
-            }
-        }
-        
-        if ($info->isImageExists()) {
-            $image = Nette\Utils\Image::fromFile($info->getAbsolutePath());
 
-            $info = getimagesize($info->getAbsolutePath());
+	use WebChemistry\Images\Traits\TPresenter;
 
-            $image->send($info[2]);
-        } else {
-            $this->getHttpResponse()->setCode(404);
+	/** @var bool */
+	private $resize = FALSE;
 
-            $this->terminate();
-        }
-    }
+	public function __construct($resize = FALSE) {
+		$this->resize = (bool) $resize;
+	}
+
+	public function actionDefault($name, $size = NULL, $flag = NULL, $noimage = NULL) {
+		try {
+			$image = $this->imageStorage->get($name, $size, $flag, $noimage);
+
+			if (!$image->getInfo()->isImageExists() && !$this->resize) {
+				$info = $image->getOriginal();
+			} else {
+				$info = $image->getInfo();
+			}
+		} catch (\Exception $e) {
+			Tracy\Debugger::getLogger()
+						  ->log($e);
+
+			$this->error('Image error.');
+		}
+
+		if ($info->isImageExists()) {
+			$image = $info->getNetteImageClass();
+
+			$image->send($info->getImageType());
+		} else {
+			$this->error('Image not found.');
+		}
+
+		$this->terminate();
+	}
 }
