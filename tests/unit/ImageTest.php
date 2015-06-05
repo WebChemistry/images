@@ -132,4 +132,16 @@ class ImageTest extends \Codeception\TestCase\Test
 		$this->assertFileNotExists(E::getWwwDir('/assets/namespace/50%x_4/test.png'));
 	}
 
+	public function testNoImage() {
+		$image = $this->storage->get('imageNotExists.png', '250x150|crop:50,100%,40,20', 'fill');
+		$this->assertEquals('assets/noimage/250x150_4-f10b0af20d18b56ad08386bc2f103254/noimage.png', $image->getLink());
+		$this->assertFileExists(E::getWwwDir('/assets/noimage/250x150_4-f10b0af20d18b56ad08386bc2f103254/noimage.png'));
+	}
+
+	public function testNotExistNoImage() {
+		$image = $this->storage->get('imageNotExists.png', '250x150', 'fit', 'imageNotExists.png');
+		$this->assertEquals(NULL, $image->getLink(FALSE, TRUE));
+		$this->assertEquals('#noimage', $image->getLink());
+	}
+
 }

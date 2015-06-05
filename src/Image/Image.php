@@ -6,8 +6,8 @@ use Nette, WebChemistry;
 
 class Image extends Container {
 
-	/** @var Image */
-	protected $noImage;
+	/** @var string */
+	private $noImage;
 
 	/** @var Info */
 	protected $original;
@@ -22,10 +22,14 @@ class Image extends Container {
 
 		$this->setAbsoluteName($absoluteName);
 		$this->original = $this->getOriginal();
+		$this->noImage = $noImage;
+	}
 
-		if ($noImage) {
-			$this->noImage = new self($connector, $noImage);
-		}
+	/**
+	 * @internal
+	 */
+	public function regenerateOriginal() {
+		$this->original = $this->getOriginal();
 	}
 
 	/**
@@ -33,15 +37,28 @@ class Image extends Container {
 	 * @return $this
 	 */
 	public function setNoImage($noImage) {
-		$this->noImage = new self($this->connector, $noImage);
+		$this->noImage = $noImage;
 
 		return $this;
 	}
 
 	/**
+	 * @return Image
+	 */
+	public function getNoImage() {
+		$clone = clone $this;
+
+		$clone->setAbsoluteName($this->noImage);
+		$clone->setNoImage(NULL);
+		$clone->regenerateOriginal();
+
+		return $clone;
+	}
+
+	/**
 	 * @param bool $original
 	 * @param bool $createInfo
-	 * @return string|Info
+	 * @return null|string|Info NULL = createInfo TRUE and noimage not exists. String = noimage not exists.
 	 */
 	private function creator($original = FALSE, $createInfo = FALSE) {
 		$info = $this->getInfo();
@@ -49,9 +66,9 @@ class Image extends Container {
 		// Original and resized image does not exist.
 		if (!$info->isImageExists() && !$this->original->isImageExists()) {
 			if ($this->noImage) {
-				return $this->noImage->getLink();
+				return $this->getNoImage()->getLink($original, $createInfo);
 			} else {
-				return '#noimage';
+				return $createInfo ? NULL : '#noimage';
 			}
 		}
 
@@ -81,7 +98,6 @@ class Image extends Container {
 		if ($info->isImageExists()) {
 			return $createInfo ? $info : str_replace('%', '%25', $this->connector->getLink($info));
 		}
-		//return $createInfo ? $info : $this->connector->getLink($info); // Disallow re-loading page as image
 	}
 
 	/**
@@ -95,11 +111,13 @@ class Image extends Container {
 	/**
 	 * @param bool $original
 	 * @param bool $returnInfo
-	 * @return string|Info
+	 * @return null|string|Info NULL = createInfo TRUE and noimage not exists. String = noimage not exists.
 	 */
 	public function getLink($original = FALSE, $returnInfo = FALSE) {
 		return $this->creator($original, $returnInfo);
 	}
+
+
 
 	/************************* Deprecated **************************/
 

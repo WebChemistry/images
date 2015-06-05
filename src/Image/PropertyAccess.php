@@ -291,6 +291,21 @@ class PropertyAccess extends Nette\Object implements IImage {
 		return $this;
 	}
 
+	/**
+	 * Set parameters [height, width, flag] from parent. If is null reset all parameters.
+	 *
+	 * @param PropertyAccess $parent
+	 */
+	public function setParent(PropertyAccess $parent = NULL) {
+		if ($parent === NULL) {
+			$parent = new self;
+		}
+
+		$this->setWidth($parent->getWidth());
+		$this->setHeight($parent->getHeight());
+		$this->setFlag($parent->getFlag());
+	}
+
 	/************************* Others **************************/
 
 	/**
