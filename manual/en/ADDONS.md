@@ -21,7 +21,7 @@ protected function createComponentForm() {
             ->setNamespace('namespace');
 
     // or
-    $form->addImageUpload('upload2', 'Upload 2', $row->upload, 'namespace');
+    $form->addImageUpload('upload2', 'Upload 2', 'namespace', $row->upload);
 
     $form->onSuccess[] = $this->afterForm;
 
