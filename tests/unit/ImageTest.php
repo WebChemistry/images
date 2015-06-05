@@ -44,18 +44,19 @@ class ImageTest extends \Codeception\TestCase\Test
     }
 
     // tests
-    public function testInfo()
+    public function testImageClass()
     {
-		$image = $this->storage->get('namespace/name.jpg', '140x150', 'fill')->getInfo();
-		$this->assertInstanceOf('WebChemistry\Images\Image\Info', $image);
+		$image = $this->storage->get('namespace/name.jpg', '140x150', 'fill');
+		$this->assertInstanceOf('WebChemistry\Images\Image\Image', $image);
 		$this->assertEquals(4, $image->getFlag());
 		$this->assertEquals('namespace', $image->getNamespace());
-		$this->assertEquals(NULL, $image->getPrefix());
 		$this->assertEquals('name.jpg', $image->getName());
 		$this->assertEquals(140, $image->getWidth());
 		$this->assertEquals(150, $image->getHeight());
 
+
 		$image = $this->storage->get('name.jpg', '100%x');
+		$this->assertInstanceOf('WebChemistry\Images\Image\Image', $image);
 		$this->assertEquals(NULL, $image->getNamespace());
 		$this->assertEquals('100%', $image->getWidth());
 		$this->assertEquals(NULL, $image->getHeight());
@@ -64,13 +65,39 @@ class ImageTest extends \Codeception\TestCase\Test
 		$image = $this->storage->get('name.jpg', 'x150');
 		$this->assertEquals(150, $image->getHeight());
 		$this->assertEquals(NULL, $image->getWidth());
-
-		/*$image = $this->storage->get('name.jpg', 'crop(50, 50, 50, 50%)');
-		$this->assertEquals([50,50,50,'50%'], $image->getCrop());*/
     }
+
+	public function testInfo() {
+		$info = $this->storage->get('namespace/name.jpg', '140x150', 'fill')->getInfo();
+		$this->assertInstanceOf('WebChemistry\Images\Image\Info', $info);
+		$this->assertEquals(4, $info->getFlag());
+		$this->assertEquals('namespace', $info->getNamespace());
+		$this->assertEquals(NULL, $info->getPrefix());
+		$this->assertEquals('name.jpg', $info->getName());
+		$this->assertEquals(140, $info->getWidth());
+		$this->assertEquals(150, $info->getHeight());
+		$this->assertEquals('namespace/name.jpg', $info->getAbsoluteName());
+		$this->assertEquals('namespace/name.jpg', (string) $info);
+		$this->assertEquals('140x150_4', $info->getBaseFolder());
+		$this->assertEquals('name.jpg', $info->getNameWithPrefix());
+
+		$info = $this->storage->get('name.jpg', 'x150')->getInfo();
+		$this->assertEquals('name.jpg', $info->getAbsoluteName());
+		$this->assertEquals('name.jpg', (string) $info);
+
+		$info = $this->storage->get('test.png')->getInfo();
+		$this->assertInstanceOf('WebChemistry\Images\Bridges\Nette\Image', $info->getNetteImageClass());
+		$this->assertSame(array(
+			0 => 128, 1 => 128, 2 => 3, 3 => 'width="128" height="128"', 'bits' => 8, 'mime' => 'image/png'
+		), $info->getImageSize());
+		$this->assertSame(3, $info->getImageType());
+
+	}
 
 	public function testCreateImage() {
 		$image = $this->storage->get('test.png', '120x150');
+		$info = $image->getInfo();
+		
 		$this->assertEquals('assets/original/test.png', $image->getLink(TRUE));
 		$this->assertFileExists(E::getWwwDir('/assets/original/test.png'));
 		$this->assertEquals('assets/120x150/test.png', $image->getLink());

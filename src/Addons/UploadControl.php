@@ -32,6 +32,12 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
 	/** @var boolean */
 	protected $multiple = FALSE;
 
+	/** @var array */
+	protected $previewSize = array(
+		'width' => NULL,
+		'height' => NULL
+	);
+
 	/**
 	 * @param string|null $label
 	 * @param string|null $namespace
@@ -162,6 +168,23 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
 	 */
 	public function setNamespace($namespace) {
 		$this->namespace = $namespace;
+
+		return $this;
+	}
+
+	/**
+	 * @param null|string|int $width FALSE = is skipped
+	 * @param null|string|int $height FALSE = is skipped
+	 * @return $this
+	 */
+	public function setPreviewSize($width = FALSE, $height = FALSE) {
+		if ($width !== FALSE) {
+			$this->previewSize['width'] = $width;
+		}
+
+		if ($height !== FALSE) {
+			$this->previewSize['height'] = $height;
+		}
 
 		return $this;
 	}
@@ -311,6 +334,8 @@ class UploadControl extends Nette\Forms\Controls\UploadControl {
 	public function getImage() {
 		$image = Html::el('img')
 					 ->setClass('upload-preview-image')
+					 ->setWidth($this->previewSize['width'])
+					 ->setHeight($this->previewSize['height'])
 					 ->setSrc($this->lookup('Nette\Application\IPresenter')
 								   ->getTemplate()->basePath . '/' . $this->getStorage()
 																		  ->get($this->default)

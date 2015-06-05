@@ -197,7 +197,9 @@ class Info extends Nette\Object {
 			return $this->getConnectorPrefix() . $this->image->getAbsoluteUrl();
 		}
 
-		return $this->getConnectorPrefix() . $this->namespaceFolder() . $this->getNameWithPrefix();
+		$folder = $this->getConnectorPrefix() . $this->namespaceFolder();
+
+		return  ($folder ? $folder . '/' : NULL) . $this->getNameWithPrefix();
 	}
 
 	/************************* Others **************************/
