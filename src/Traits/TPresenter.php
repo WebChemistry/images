@@ -9,6 +9,8 @@ trait TPresenter {
 	/** @var WebChemistry\Images\Storage */
 	public $imageStorage;
 
+    public $onTemplateCreated = array();
+
 	/**
 	 * @param WebChemistry\Images\Storage $storage
 	 */
@@ -20,6 +22,8 @@ trait TPresenter {
 		$template = parent::createTemplate();
 
 		$template->imageStorage = $this->imageStorage;
+
+        $this->onTemplateCreated($template);
 
 		return $template;
 	}
