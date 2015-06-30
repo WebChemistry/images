@@ -51,6 +51,6 @@ class Content extends Creator {
 
 		$this->connector->save($image, $info, $this->getImageType());
 
-		return $info;
+		return $this->savedInfo = $info;
 	}
 }

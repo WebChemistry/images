@@ -10,7 +10,17 @@ class Environment {
 		'temp' => NULL
 	];
 
+	private static $params = [];
+
 	private static $debug;
+
+	public function set($name, $value) {
+		self::$params[$name] = $value;
+	}
+
+	public function get($name) {
+		return self::$params[$name];
+	}
 
 	public static function dumpToFile($file, $content) {
 		@mkdir(self::getTempDir('/dumps'));
@@ -46,8 +56,6 @@ class Environment {
 		$configurator->addConfig(self::getDataDir('/test.config.neon'));
 
 		$container = $configurator->createContainer();
-
-		$container->getByType('Nette\Application\Application')->run();
 
 		self::setContainer($container);
 	}

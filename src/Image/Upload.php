@@ -45,6 +45,6 @@ class Upload extends Creator {
 
 		$this->connector->save($image, $info, $this->mimeToInteger($this->fileUpload->getContentType()));
 
-		return $info;
+		return $this->savedInfo = $info;
 	}
 }

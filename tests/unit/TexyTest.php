@@ -16,12 +16,14 @@ class TexyTest extends \Codeception\TestCase\Test {
 		$this->texy = $texy;
 
 		Environment::copy('/test.png', array(
-			'original'
+			'original',
+			'image.png' => 'namespace/200x100_8'
 		), '/assets');
 		\WebChemistry\Images\Texy::register($texy, Environment::getByType('WebChemistry\Images\Storage'), '', '/baseUri');
 	}
 
 	protected function _after() {
+		Environment::cleanFrom('/assets');
 	}
 
 	// tests

@@ -20,7 +20,8 @@ class ImageTest extends \Codeception\TestCase\Test
 			'namespace/original',
 			'namespace/namespace/original',
 			'noimage.png' => 'noimage/original',
-			'namespace/250x'
+			'namespace/250x',
+			'namespace/50%x_4'
 		], '/assets');
     }
 
@@ -40,7 +41,7 @@ class ImageTest extends \Codeception\TestCase\Test
 
     protected function _after()
     {
-		//Environment::cleanFrom('/assets');
+		Environment::cleanFrom('/assets');
     }
 
     // tests
@@ -116,15 +117,30 @@ class ImageTest extends \Codeception\TestCase\Test
 	public function testUpload() {
 		$image = $this->storage->saveUpload($this->createUpload(), 'namespace', TRUE);
 		$this->assertInstanceOf('WebChemistry\Images\Image\Upload', $image);
-		$this->assertInstanceOf('WebChemistry\Images\Image\Info', $image->getInfo());
+		$info = $image->getInfo();
+		$this->assertInstanceOf('WebChemistry\Images\Image\Info', $info);
+		$this->assertSame('namespace/test-upload.png', (string) $info);
+		$this->assertNull($info->getPrefix());
 
+		// Image with prefix
+		$image = $this->storage->saveUpload($this->createUpload(), 'namespace', TRUE);
+		$info = $image->getInfo();
+		$this->assertNotNull($info->getPrefix());
+		$this->assertSame('namespace/' . $info->getPrefix() . \WebChemistry\Images\Image\Info::PREFIX_SEP . 'test-upload.png', $info->getAbsoluteName());
 	}
 
 	public function testContentUpload() {
-		$image = $this->storage->saveContent(file_get_contents(E::getWwwDir('/test.png')), 'test.png', 'namespace');
+		$image = $this->storage->saveContent(file_get_contents(E::getWwwDir('/test.png')), 'test.png', 'namespace_content');
 		$this->assertInstanceOf('WebChemistry\Images\Image\Content', $image);
-		$this->assertInstanceOf('WebChemistry\Images\Image\Info', $image->getInfo());
+		$info = $image->getInfo();
+		$this->assertInstanceOf('WebChemistry\Images\Image\Info', $info);
+		$this->assertNull($info->getPrefix());
 
+		// Image with prefix
+		$image = $this->storage->saveContent(file_get_contents(E::getWwwDir('/test.png')), 'test.png', 'namespace_content');
+		$info = $image->getInfo();
+		$this->assertNotNull($info->getPrefix());
+		$this->assertSame('namespace_content/' . $info->getPrefix() . \WebChemistry\Images\Image\Info::PREFIX_SEP . 'test.png', $info->getAbsoluteName());
 	}
 
 	public function testMixedSize() {
