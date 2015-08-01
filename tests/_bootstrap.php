@@ -46,6 +46,8 @@ class E {
 	public static function createDirs($basePath, array $dirs = array()) {
 		$basePath = self::directory($basePath);
 
+		@mkdir($basePath);
+
 		foreach ($dirs as $dir) {
 			$explode = explode('/', str_replace('\\', '/', $dir));
 			$base = $basePath;
