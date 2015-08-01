@@ -1,14 +1,14 @@
-# Doplòky
+# DoplÅˆky
 
 ## Upload control
 
-Slouí pro automatické nahrávání a odstraòování obrázkù.
+SlouÅ¾Ã­ pro automatickÃ© nahrÃ¡vÃ¡nÃ­ a odstraÅˆovÃ¡nÃ­ obrÃ¡zkÅ¯.
 
 **Instalace:**
 
-Pøi registrování extenze se automaticky pøipojí k Nette formuláøím, pokud to nezakáeme v config souboru.
+PÅ™i registrovÃ¡nÃ­ extenze se automaticky pÅ™ipojÃ­ k Nette formulÃ¡Å™Ã­m, pokud to nezakÃ¡Å¾eme v config souboru.
 
-**Pouítí:**
+**PouÅ¾Ã­tÃ­:**
 
 ```php
 
@@ -18,7 +18,7 @@ protected function createComponentForm() {
     $row = $this->getFromDatabase();
 
     $form->addImageUpload('upload', 'Upload')
-            ->setDefaultValue($row->upload) // Obsahuje napø. namespace/upload.png
+            ->setDefaultValue($row->upload) // Obsahuje napÅ™. namespace/upload.png
             ->setNamespace('namespace');
 
     // nebo
@@ -32,14 +32,14 @@ protected function createComponentForm() {
 public function afterForm($form, $values) {
     $row = $this->getFromDatabase();
     
-    $row->upload = $values->upload; // Obsahuje namespace/unikatniNazevObrazku.png nebo NULL, kdy není vyplnìno pole nebo zaškrtnuto odstranìní.
+    $row->upload = $values->upload; // Obsahuje namespace/unikatniNazevObrazku.png nebo NULL, kdyÅ¾ nenÃ­ vyplnÄ›no pole nebo zaÅ¡krtnuto odstranÄ›nÃ­.
 
     $row->update();
 }
 
 ```
 
-**Html náhledu**
+**Html nÃ¡hledu**
 
 ```html
 <div class="upload-preview-image-container">
@@ -47,30 +47,30 @@ public function afterForm($form, $values) {
 </div>
 ```
 
-## Povinné pole
+## PovinnÃ© pole
 
-Pøí vıchozí hodnotì se objeví checkbox + upload.
+PÅ™Ã­ vÃ½chozÃ­ hodnotÄ› se objevÃ­ checkbox + upload.
 
 **Nastanou tyto situace:**
 
-Obrázek nemá vıchozí hodnotu nebo obrázek neexistuje:
-*Obrázek není nahrán*: Chyba.
-*Obrázek je nahrán*: Úspìch.
+ObrÃ¡zek nemÃ¡ vÃ½chozÃ­ hodnotu nebo obrÃ¡zek neexistuje:<br>
+*ObrÃ¡zek nenÃ­ nahrÃ¡n*: Chyba.<br>
+*ObrÃ¡zek je nahrÃ¡n*: ÃšspÄ›ch.
 
-Pole má vıchozí hodnotu:
-*Obrázek není nahrán a checkbox není zaškrnutı*: Úspìch.
-*Obrázek je nahrán a checkbox není zaškrtnutı*: Úspìch. (Moná v budoucnu chyba?)
-*Obrázek je nahrán a checkbox je zaškrtnutı*: Úspìch.
-*Obrázek není nahrán a checkbox je zaškrtnutı*: Chyba.
+Pole mÃ¡ vÃ½chozÃ­ hodnotu:<br>
+*ObrÃ¡zek nenÃ­ nahrÃ¡n a checkbox nenÃ­ zaÅ¡krnutÃ½*: ÃšspÄ›ch.<br>
+*ObrÃ¡zek je nahrÃ¡n a checkbox nenÃ­ zaÅ¡krtnutÃ½*: ÃšspÄ›ch. (MoÅ¾nÃ¡ v budoucnu chyba?)<br>
+*ObrÃ¡zek je nahrÃ¡n a checkbox je zaÅ¡krtnutÃ½*: ÃšspÄ›ch.<br>
+*ObrÃ¡zek nenÃ­ nahrÃ¡n a checkbox je zaÅ¡krtnutÃ½*: Chyba.<br>
 
 ## Funkce
 
 ```php
 
-$upload->setPreviewSize(200, 200); // Nastaví pevnou velikost náhledu
+$upload->setPreviewSize(200, 200); // NastavÃ­ pevnou velikost nÃ¡hledu
 
-$upload->isUpload(); // FALSE = Zaškrtnuto mazání nebo obrázek nebyl nahrán
+$upload->isUpload(); // FALSE = ZaÅ¡krtnuto mazÃ¡nÃ­ nebo obrÃ¡zek nebyl nahrÃ¡n
 
-$upload->getRawValue(); // Vrátí bolean nebo pole uploadù
+$upload->getRawValue(); // VrÃ¡tÃ­ bolean nebo pole uploadÅ¯
 
 ```
