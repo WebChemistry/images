@@ -1,46 +1,56 @@
 <?php
 
-use Environment as E;
-
 class LatteTest extends \Codeception\TestCase\Test {
-	/**
-	 * @var \UnitTester
-	 */
-	protected $tester;
+
+	/** @var Nette\Application\UI\ITemplateFactory */
+	protected $factory;
 
 	protected function _before() {
-		E::copy('/test.png', array(
+		/** @var \Nette\Application\UI\ITemplateFactory factory */
+		$this->factory = E::getByType('Nette\Application\UI\ITemplateFactory');
+
+		E::createDirs('%www%/assets', [
 			'namespace/namespace/namespace/250x150_4',
-			'noimage.png' => 'mynoimage/original'
-		), '/assets');
+			'mynoimage/original'
+		]);
+
+		E::copy('%data%/test.png', [
+			'%www%/assets/namespace/namespace/namespace/250x150_4/%name%',
+			'%www%/assets/mynoimage/original/noimage.png'
+		]);
 	}
 
-	protected function createLatte($file) {
-		/** @var Nette\Application\UI\ITemplateFactory $factory */
-		$factory = E::getByType('Nette\Application\UI\ITemplateFactory');
-		$latte = $factory->createTemplate();
+	/**
+	 * This method is called after the last test of this test class is run.
+	 *
+	 * @since Method available since Release 3.4.0
+	 */
+	public static function tearDownAfterClass() {
+		E::truncateDirectory('%www%/assets');
+	}
 
-		return $latte->getLatte()->renderToString(E::getDataDir('/templates/' . $file), array(
+	private function createTemplate($file) {
+		$template = $this->factory->createTemplate();
+
+		return $template->getLatte()->renderToString(E::directory('%data%/templates/' . $file), array(
 			'imageStorage' => E::getByType('WebChemistry\Images\Storage'),
 			'basePath' => '',
 			'baseUri' => ''
 		));
 	}
 
-	private function fileEquals($file, $content) {
-		$this->assertEquals(file_get_contents(E::getDataDir('/expected/' . $file)), $content);
+	protected function tearDown() {
 	}
 
-    protected function _after() {
-	}
+	public function testBaseMacros() {
+		$content = $this->createTemplate('base.latte');
 
-    public function testBaseMacros() {
-		$content = $this->createLatte('base.latte');
-		$this->fileEquals('base.dmp', $content);
+		$this->assertStringEqualsFile(E::dumpedFile('base'), $content);
 	}
 
 	public function testAttrMacros() {
-		$content = $this->createLatte('attr.latte');
-		$this->fileEquals('attr.dmp', $content);
+		$content = $this->createTemplate('attr.latte');
+
+		$this->assertStringEqualsFile(E::dumpedFile('attr'), $content);
 	}
 }

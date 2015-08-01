@@ -1,0 +1,16 @@
+nette:
+    application:
+        mapping:
+            *: Test\Presenters\*Presenter
+
+extensions:
+    images: WebChemistry\Images\DI\Extension
+
+services:
+    mysharpen: MySharpen
+
+images:
+    wwwDir: %wwwDir%
+    settings:
+        helpers:
+            mySharpen: MySharpen()

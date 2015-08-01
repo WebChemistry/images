@@ -1,2 +1,3 @@
-tests/temp
-tests/www/assets
+tests/temp/*
+tests/www/assets/*
+tests/_output/*
