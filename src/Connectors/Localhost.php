@@ -8,6 +8,7 @@ use WebChemistry\Images\Bridges\Nette\Image;
 use WebChemistry\Images\Image\Content;
 use WebChemistry\Images\Image\Delete;
 use WebChemistry\Images\Image\Info;
+use WebChemistry\Images\Image\PropertyAccess;
 use WebChemistry\Images\Image\Upload;
 
 class Localhost extends Nette\Object implements IConnector {
@@ -139,9 +140,9 @@ class Localhost extends Nette\Object implements IConnector {
 	 * @param Info $info
 	 * @return Info
 	 */
-	public function getUniqueImageName(Info $info) {
+	public function getUniqueImageName(Info $info, PropertyAccess $propertyAccess) {
 		while ($this->isExists($info)) {
-			$info->generatePrefix();
+			$propertyAccess->generatePrefix();
 		}
 
 		return $info;

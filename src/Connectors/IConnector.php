@@ -6,6 +6,7 @@ use Nette\Http\FileUpload;
 use WebChemistry\Images\Bridges\Nette\Image;
 use WebChemistry\Images\Image\Content;
 use WebChemistry\Images\Image\Info;
+use WebChemistry\Images\Image\PropertyAccess;
 use WebChemistry\Images\Image\Upload;
 
 interface IConnector {
@@ -54,9 +55,10 @@ interface IConnector {
 
 	/**
 	 * @param Info $info
+	 * @param PropertyAccess $propertyAccess
 	 * @return string
 	 */
-	public function getUniqueImageName(Info $info);
+	public function getUniqueImageName(Info $info, PropertyAccess $propertyAccess);
 
 	/**
 	 * @param Image   $image

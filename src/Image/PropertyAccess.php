@@ -33,8 +33,23 @@ class PropertyAccess extends Nette\Object implements IImage {
 	/** @var string */
 	private $url;
 
+	/** @var string */
+	private $suffix;
+
 	/** @var array */
 	protected $useHelpers = array();
+
+	/** @var string */
+	protected $prefix;
+
+	/**
+	 * @return $this
+	 */
+	public function generatePrefix() {
+		$this->setPrefix(Nette\Utils\Random::generate());
+
+		return $this;
+	}
 
 	/************************* Getters **************************/
 
@@ -56,6 +71,13 @@ class PropertyAccess extends Nette\Object implements IImage {
 	 * @return string
 	 */
 	public function getName() {
+		return $this->name . '.' . $this->suffix;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getNameWithoutSuffix() {
 		return $this->name;
 	}
 
@@ -94,7 +116,41 @@ class PropertyAccess extends Nette\Object implements IImage {
 		return $this->absoluteUrl;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getSuffix() {
+		return $this->suffix;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPrefix() {
+		return $this->prefix;
+	}
+
 	/************************* Setters **************************/
+
+	/**
+	 * @param string $prefix
+	 * @return $this
+	 */
+	public function setPrefix($prefix) {
+		$this->prefix = $prefix;
+
+		return $this;
+	}
+
+	/**
+	 * @param string $suffix
+	 * @return $this
+	 */
+	public function setSuffix($suffix) {
+		$this->suffix = $suffix;
+
+		return $this;
+	}
 
 	/**
 	 * @param string $absoluteUrl
@@ -199,7 +255,8 @@ class PropertyAccess extends Nette\Object implements IImage {
 
 		$explode = explode('/', $name);
 
-		$this->name = end($explode);
+		$this->setName(end($explode));
+		//$this->name = end($explode);
 		array_pop($explode);
 		$this->namespace = $explode ? implode('/', $explode) : NULL;
 
@@ -212,6 +269,23 @@ class PropertyAccess extends Nette\Object implements IImage {
 	 * @throws WebChemistry\Images\ImageStorageException
 	 */
 	public function setName($name) {
+		$name = $this->parseString($name);
+
+		if (strpos($name, '/') !== FALSE) {
+			throw new WebChemistry\Images\ImageStorageException('Name of image must not contain /');
+		}
+
+		$this->name = substr($name, 0, strrpos($name, '.'));
+		$this->setSuffix(substr($name, strrpos($name, '.') + 1));
+
+		return $this;
+	}
+
+	/**
+	 * @param string $name
+	 * @return $this
+	 */
+	public function setNameWithoutSuffix($name) {
 		$this->name = $this->parseString($name);
 
 		if (strpos($this->name, '/') !== FALSE) {

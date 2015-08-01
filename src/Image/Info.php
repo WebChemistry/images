@@ -22,9 +22,6 @@ class Info extends Nette\Object {
 	/** @var IConnector */
 	private $connector;
 
-	/** @var string */
-	private $prefix;
-
 	/**
 	 * @param IImage      $image
 	 * @param IConnector  $connector
@@ -91,7 +88,7 @@ class Info extends Nette\Object {
 	 * @return string
 	 */
 	public function getPrefix() {
-		return $this->prefix;
+		return $this->image->prefix;
 	}
 
 	/**
@@ -243,10 +240,6 @@ class Info extends Nette\Object {
 	 */
 	public function __toString() {
 		return $this->getAbsoluteName();
-	}
-
-	public function generatePrefix() {
-		$this->prefix = Nette\Utils\Random::generate();
 	}
 
 	/************************* Deprecated **************************/
