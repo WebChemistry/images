@@ -11,9 +11,6 @@ class Creator extends Container {
 	/** @var int */
 	protected $quality;
 
-	/** @var Info */
-	protected $savedInfo;
-
 	/**
 	 * @param int $quality
 	 * @return $this
@@ -60,18 +57,6 @@ class Creator extends Container {
 		}
 
 		return $mimeType;
-	}
-
-	/**
-	 * @return Info
-	 */
-	public function getInfo() {
-		if ($this->savedInfo) {
-			return $this->savedInfo;
-		}
-
-		// Disallow create image to "resized" directory
-		return $this->getOriginal();
 	}
 
 	/************************* Deprecated **************************/

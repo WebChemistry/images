@@ -108,7 +108,7 @@ class Container extends PropertyAccess {
 	 * @return Info
 	 */
 	public function getUniqueImageName() {
-		return $this->connector->getUniqueImageName($this->getInfo());
+		return $this->connector->getUniqueImageName($this->getInfo(), $this);
 	}
 
 	/************************* Deprecated **************************/
