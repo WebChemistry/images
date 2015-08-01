@@ -2,7 +2,7 @@
 
 Composer:
 ```php
-composer require webchemistry\images:1.4.2
+composer require webchemistry\images:1.4.3
 ```
 
 config:
