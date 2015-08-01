@@ -111,6 +111,25 @@ class ImageTest extends \Codeception\TestCase\Test {
 		$this->assertSame(1, $info->getImageType());
 	}
 
+	public function testFlag() {
+		$image = $this->storage->get('namespace/name.jpg', '140x150', ['stretch', 'shrink_only']);
+		$info = $image->getInfo();
+
+		$this->assertSame(3, $info->getFlag());
+
+		$image->setFlag(NULL);
+		$this->assertNull($image->getFlag());
+
+		$image->setFlag(8);
+		$this->assertSame(8, $image->getFlag());
+
+		$image->setFlag([8, 5]);
+		$this->assertSame(13, $image->getFlag());
+
+		$image->setFlag(['shrink_only', 8]);
+		$this->assertSame(9, $image->getFlag());
+	}
+
 	public function testCreateImage() {
 		$image = $this->storage->get('test.png', '120x150');
 		$info = $image->getInfo();

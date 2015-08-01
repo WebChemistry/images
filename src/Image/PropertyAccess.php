@@ -61,7 +61,7 @@ class PropertyAccess extends Nette\Object implements IImage {
 	}
 
 	/**
-	 * @return int
+	 * @return int|null
 	 */
 	public function getFlag() {
 		return $this->flag;
@@ -354,10 +354,20 @@ class PropertyAccess extends Nette\Object implements IImage {
 	 * @throws WebChemistry\Images\ImageStorageException
 	 */
 	public function setFlag($flag) {
+		if ($flag === NULL) {
+			$this->flag = NULL;
+
+			return $this;
+		}
+
 		$return = 0;
 
 		foreach ((array) $flag as $row) {
-			$return += $this->flagToInteger($row);
+			if (!is_numeric($row)) {
+				$return += $this->flagToInteger($row);
+			} else {
+				$return += $row;
+			}
 		}
 
 		$this->flag = $return;
