@@ -1,17 +1,17 @@
-##Installation
+## Installation
 
-With composer:
+Composer:
 ```php
 composer require webchemistry\images:1.4.2
 ```
 
-Config.neon:
+config:
 ```yaml
 extensions:
     images: WebChemistry\Images\DI\Extension
 ```
 
-Image storage in Presenter (as Trait):
+Presenter trait:
 
 ```php
 <?php
@@ -22,23 +22,12 @@ class BasePresenter extends Nette\Application\UI\Presenter {
 ?>
 ```
 
-Generate image´s address via Presenter:
+## Usage
 
-```php
-<?php
-
-class GeneratePresenter extends BasePresenter {
-    use \WebChemistry\Images\Traits\TGenerator;
-}
-?>
-```
-
-##Usage
-
-- [Configuring](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/CONFIGURING.md)
-- [Generation of images in presenter](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/GENERATION.md)
-- [Macros](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/NORMAL.md)
-- [Responsive images](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/RESPONSIVE.md)
-- [Manipulation in presenter](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/MANIPULATION.md)
-- [Image upload](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/ADDONS.md)
-- [Helpers](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/en/HELPERS.md)
+- [Konfigurace](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/cs/configuring.md)
+- [Manipulace obrázku](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/cs/manipulation.md)
+- [Manipulace obrázku 2](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/cs/property.md)
+- [Doplňky (UploadControl)](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/cs/addons.md)
+- [Makra](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/cs/macros.md)
+- [Helpers](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/cs/helpers.md)
+- [Router](https://github.com/AntikCz/WebChemistry-Images/blob/master/manual/cs/generation.md)
