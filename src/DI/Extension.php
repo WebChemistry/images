@@ -45,7 +45,7 @@ class Extension extends Nette\DI\CompilerExtension {
 
 		$builder->addDefinition($this->prefix('connector.localhost'))
 				->setClass('WebChemistry\Images\Connectors\Localhost', array(
-					$config['wwwDir'] . '/' . $config['assetsDir'], $config['assetsDir']
+					$config['wwwDir'], $config['assetsDir']
 				));
 
 		$manager = $builder->addDefinition($this->prefix('manager'))

@@ -25,7 +25,7 @@ class Localhost extends Nette\Object implements IConnector {
 	 */
 	public function __construct($absoluteDir, $dir) {
 		$this->assetsDir = rtrim($dir, '/\\');
-		$this->absoluteDir = rtrim($absoluteDir, '/\\');
+		$this->absoluteDir = rtrim($absoluteDir, '/\\') . '/' . $this->assetsDir;
 	}
 
 	/**
