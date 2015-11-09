@@ -1,6 +1,6 @@
 # Konfigurace
 
-Výchozí hodnoty:
+VÃ½chozÃ­ hodnoty:
 
 ```yaml
 image:
@@ -13,7 +13,7 @@ image:
     assetsDir: 'assets'
     noimage: 'noimage/noimage.png'
     settings:
-        connectors: # Budoucí feature
+        connectors: # BudoucÃ­ feature
         upload:
             label: 'Delete this image?'
         helpers:
@@ -22,7 +22,7 @@ image:
             quality: WebChemistry\Images\Helpers\Quality
     router:
         mask: 'show-image/<name>[/<size>[/<flag>[/<noimage>]]]'
-        resize: no # Nepovoluje vytvoøení obrázkù
+        resize: no # Nepovoluje vytvoÅ™enÃ­ obrÃ¡zkÃ¹
         flag: 0
         disable: no
 ```
