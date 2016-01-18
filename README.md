@@ -1,9 +1,7 @@
-## Installation
+# Deprecated
+Please use [new storage](https://github.com/WebChemistry/Images)
 
-Composer:
-```php
-composer require webchemistry\images:1.4.3
-```
+## Installation
 
 config:
 ```yaml
