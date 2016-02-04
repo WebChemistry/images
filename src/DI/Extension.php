@@ -3,7 +3,6 @@
 namespace WebChemistry\Images\DI;
 
 use Nette;
-use WebChemistry\Images\ImageStorageException;
 
 class Extension extends Nette\DI\CompilerExtension {
 
@@ -11,7 +10,8 @@ class Extension extends Nette\DI\CompilerExtension {
 	protected $defaults = [
 		'defaultImage' => 'default/default.png',
 		'registration' => [
-			'upload' => TRUE
+			'upload' => TRUE,
+			'multiUpload' => TRUE
 		],
 		'assetsDir' => 'assets',
 		'wwwDir' => '%wwwDir%',
@@ -62,6 +62,10 @@ class Extension extends Nette\DI\CompilerExtension {
 
 		if ($config['registration']['upload']) {
 			$init->addBody('WebChemistry\Images\Controls\Upload::register();');
+		}
+
+		if ($config['registration']['multiUpload']) {
+			$init->addBody('WebChemistry\Images\Controls\MultiUpload::register();');
 		}
 	}
 }
