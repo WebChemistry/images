@@ -2,15 +2,16 @@
 
 namespace WebChemistry\Images\Helpers;
 
-use WebChemistry\Images\Bridges\Nette\Image;
+use Nette\Utils\Image;
 
-class Sharpen implements IHelper {
+class Sharpen implements IHelper{
 
 	/**
 	 * @param Image  $image
-	 * @param string $parameter
+	 * @param array $parameters
 	 */
-	public function invoke(Image &$image, $parameter) {
+	public function invoke(Image $image, array $parameters) {
 		$image->sharpen();
 	}
+
 }

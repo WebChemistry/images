@@ -1,5 +1,30 @@
 # Helpers
 
+## Vytvoření nového helperu
+
+**Třída:**
+```php
+
+class MyHelper extends WebChemistry\Images\Helpers\AbstractHelper {
+
+	public function invoke(Image $image, $parameter = NULL) {
+		$array = $this->formatParameters($parameter);
+		
+		$image->sharpen();
+	}
+	
+}
+
+```
+
+**Registrace:**
+
+```yaml
+images:
+	helpers:
+		myHelper: MyHelper
+```
+
 ## Crop
 
 ```html
@@ -8,12 +33,6 @@
 
 ```php
     $imageStorage->get('name.jpg', '200x150|crop:50,50,50%,50%')
-```
-
-## Kvalita
-
-```html
-    {img 'name.jpg', '200x150|quality:100'}
 ```
 
 ## Sharpen
@@ -25,5 +44,5 @@
 ## Kombinace
 
 ```html
-    {img 'name.jpg', '200x150|sharpen|quality:50'}
+    {img 'name.jpg', '200x150|sharpen|crop:50,50,50,50'}
 ```

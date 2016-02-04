@@ -2,25 +2,16 @@
 
 namespace WebChemistry\Images\Helpers;
 
-use WebChemistry\Images\Bridges\Nette\Image;
+use Nette\Utils\Image;
 
 class Crop implements IHelper {
 
 	/**
-	 * @param array $array
-	 * @return array
+	 * @param Image $image
+	 * @param array $parameters
 	 */
-	private function formatParameters(array $array) {
-		return array_map(function ($value) {
-			return trim($value);
-		}, $array);
+	public function invoke(Image $image, array $parameters) {
+		call_user_func_array([$image, 'crop'], $parameters);
 	}
 
-	/**
-	 * @param Image  $image
-	 * @param string $parameter
-	 */
-	public function invoke(Image &$image, $parameter) {
-		call_user_func_array([$image, 'crop'], $this->formatParameters(explode(',', $parameter)));
-	}
 }

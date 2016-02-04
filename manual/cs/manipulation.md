@@ -1,6 +1,6 @@
 # Manipulace v presenteru
 
-## Odstraòování obrázkù
+## OdstraÅˆovÃ¡nÃ­ obrÃ¡zkÅ¯
 
 ```php
 <?php
@@ -8,13 +8,13 @@
 class ImagePresenter extends BasePresenter {
 
     public function handleDeleteImage() {
-        $this->imageStorage->delete('namespace/image.jpg'); // Odstraní všechny obrázky (i upravené) s jménem image.jpg
+        $this->imageStorage->delete('namespace/image.jpg');
     }
 }
 ?>
 ```
 
-## Nahrávání obrázkù
+## NahrÃ¡vÃ¡nÃ­ obrÃ¡zkÅ¯
 
 ```php
 <?php
@@ -23,26 +23,14 @@ class ImagePresenter extends BasePresenter {
 
     public function afterUpload($form, $values) {
         /** @var \WebChemistry\Images\Image\Image $file */
-        $file = $this->imageStorage->saveUpload($values->upload, 'namespace');
-
-        $absoluteName = (string) $file->getInfo(); // Vrátí namespace/nazevObrazku.xxx
-        
-        // Vlastní zpracování obrázkù
-        $file = $this->imageStorage->saveUpload($values->upload, 'namespace', FALSE); // Obrázek se automaticky nenahraje
-        
-        $file->setNameWithoutSuffix('nazev');
-        $file->setNamespace('myNamespace');
-        
-        $file->save();
-        
-        // Pøi nastavování height, width, flag apod. se obrázek nahraje do specifické sloky, ne do original!
+        $absoluteName = $this->imageStorage->saveUpload($values->upload, 'namespace'); // VrÃ¡tÃ­ namespace/nazevObrazku.xxx
     }
 
 }
 ?>
 ```
 
-## Víceurovòové namespace
+## VÃ­ceurovÅˆovÃ© namespace
 
 ```php
 <?php
@@ -51,16 +39,14 @@ class ImagePresenter extends BasePresenter {
 
     public function afterUpload($form, $values) {
         /** @var \WebChemistry\Images\Image\Upload */
-        $file = $this->imageStorage->saveUpload($values->upload, 'namespace/secondNamespace');
-
-        $imageName = (string) $file->getInfo();
+        $absoluteName = $this->imageStorage->saveUpload($values->upload, 'namespace/secondNamespace');
     }
 
 }
 ?>
 ```
 
-## Nahrání obrázkù pøes string
+## NahrÃ¡nÃ­ obrÃ¡zku pÅ™es string
 
 ```php
 <?php
@@ -68,17 +54,15 @@ class ImagePresenter extends BasePresenter {
 class ImagePresenter extends BasePresenter {
 
     public function afterUpload($form, $values) {
-        /** @var \WebChemistry\Images\Image\Content */
-        $file = $this->imageStorage->saveConten($values->upload, 'filename.jpg', 'namespace');
-
-        $imageName = (string) $file->getInfo();
+    	$image = Nette\Utils\Image::fromString($values->content);
+        $absoluteName = $this->storage->saveContent($image, 'filename.jpg', 'namespace')
     }
 
 }
 ?>
 ```
 
-## Získání obrázkù
+## ZÃ­skÃ¡nÃ­ obrÃ¡zku
 
 ```php
 <?php
@@ -88,32 +72,13 @@ class ImagePresenter extends BasePresenter {
     public function manipulation($upload, $url) {
         $this->imageStorage->get('namespace/image.png');
         
-        // Vlastní velikosti, flag, helpery apod.
+        // VlastnÃ­ velikosti, flag, helpery apod.
         $this->imageStorage->get('namespace/image.png', '200x100');
         $this->imageStorage->get('namespace/image.png', '200x100', 'fill');
         $this->imageStorage->get('namespace/image.png', '200x100|sharpen|crop:20,20,10,10');
         
-        // Vlastní "lokální" noimage
+        // VlastnÃ­ vÃ½chozÃ­ obrÃ¡zek
         $this->imageStorage->get('namespace/image.png', NULL, NULL, 'myNoImage/image.png');
-    }
-
-}
-?>
-```
-
-## Manipulace s urèitım namespace
-
-```php
-<?php
-
-class ImagePresenter extends BasePresenter {
-
-    public function manipulation($upload, $url) {
-        $storageNamespace = $this->imageStorage->createNamespace('images');
-        
-        $storageNamespace->saveUpload($upload); // Uloí obrázek s namespace 'images'
-        $storageNamespace->delete('name.jpg'); // Odstraní obrázek namespace/name.jpg
-        $storageNamespace->saveContent(file_get_contents($url), 'image.png'); // Uloí obrázek jako images/image.png
     }
 
 }

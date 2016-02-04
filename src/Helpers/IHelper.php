@@ -2,14 +2,14 @@
 
 namespace WebChemistry\Images\Helpers;
 
-use WebChemistry\Images\Bridges\Nette\Image;
+use Nette\Utils\Image;
 
 interface IHelper {
 
 	/**
 	 * @param Image  $image
-	 * @param string $parameter
-	 * @return mixed
+	 * @param array $parameters
 	 */
-	public function invoke(Image &$image, $parameter);
+	public function invoke(Image $image, array $parameters);
+
 }

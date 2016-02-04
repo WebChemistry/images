@@ -2,7 +2,7 @@
 
 ## Upload control
 
-Slouží pro automatické nahrávání a odstraňování obrázků.
+Slouží pro automatické nahrávání a odstraňování obrázků včetně náhledu.
 
 **Instalace:**
 
@@ -19,17 +19,16 @@ protected function createComponentForm() {
 
     $form->addImageUpload('upload', 'Upload')
             ->setDefaultValue($row->upload) // Obsahuje např. namespace/upload.png
+            ->setRequired()
+            ->addRule($form::MAX_FILE_SIZE, NULL, 1024)
             ->setNamespace('namespace');
 
-    // nebo
-    $form->addImageUpload('upload2', 'Upload 2', 'namespace', $row->upload);
-
-    $form->onSuccess[] = $this->afterForm;
+    $form->onSuccess[] = $this->successForm;
 
     return $form;
 }
 
-public function afterForm($form, $values) {
+public function successForm($form, $values) {
     $row = $this->getFromDatabase();
     
     $row->upload = $values->upload; // Obsahuje namespace/unikatniNazevObrazku.png nebo NULL, když není vyplněno pole nebo zaškrtnuto odstranění.
@@ -39,38 +38,11 @@ public function afterForm($form, $values) {
 
 ```
 
-**Html náhledu**
-
-```html
-<div class="upload-preview-image-container">
-    <a href="/assets/namespace/original/upload.png"><img class="upload-preview-image" src="/assets/namespace/original/upload.png"></a>
-</div>
-```
-
-## Povinné pole
-
-Pří výchozí hodnotě se objeví checkbox + upload.
-
-**Nastanou tyto situace:**
-
-Obrázek nemá výchozí hodnotu nebo obrázek neexistuje:<br>
-*Obrázek není nahrán*: Chyba.<br>
-*Obrázek je nahrán*: Úspěch.
-
-Pole má výchozí hodnotu:<br>
-*Obrázek není nahrán a checkbox není zaškrnutý*: Úspěch.<br>
-*Obrázek je nahrán a checkbox není zaškrtnutý*: Úspěch. (Možná v budoucnu chyba?)<br>
-*Obrázek je nahrán a checkbox je zaškrtnutý*: Úspěch.<br>
-*Obrázek není nahrán a checkbox je zaškrtnutý*: Chyba.<br>
-
 ## Funkce
 
 ```php
 
-$upload->setPreviewSize(200, 200); // Nastaví pevnou velikost náhledu
-
-$upload->isUpload(); // FALSE = Zaškrtnuto mazání nebo obrázek nebyl nahrán
-
-$upload->getRawValue(); // Vrátí bolean nebo pole uploadů
+$upload->getCheckbox()->setHeight(150); // Nastaví pevnou velikost náhledu
+$upload->getCheckbox()->setWidth(150); // Vrátí bolean nebo pole uploadů
 
 ```

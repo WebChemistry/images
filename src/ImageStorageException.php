@@ -2,6 +2,4 @@
 
 namespace WebChemistry\Images;
 
-class ImageStorageException extends \Exception {
-
-}
+class ImageStorageException extends \Exception {}

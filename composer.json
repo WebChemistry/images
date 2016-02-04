@@ -1,20 +1,20 @@
 {
-    "name": "webchemistry/images",
-    "type": "library",
-    "description": "Images storage for easier uploading, deleting and manipulation.",
-    "license": ["GPL-3.0"],
-    "support": {
-        "email": "antik494@gmail.com",
-        "issues": "https://github.com/AntikCz/WebChemistry-Images/issues"
-    },
-    "keywords": ["images", "storage", "responsive"],
-    "authors": [
-        {
-            "name": "Antik",
-            "email": "antik494@gmail.com"
-        }
-    ],
-    "autoload": {
-        "classmap": ["src/"]
+  "name": "webchemistry/images",
+  "type": "library",
+  "description": "Image storage for easier uploading, deleting and manipulation.",
+  "license": ["GPL-3.0"],
+  "support": {
+    "email": "antik494@gmail.com",
+    "issues": "https://github.com/AntikCz/WebChemistry/Images/issues"
+  },
+  "keywords": ["images", "storage"],
+  "authors": [
+    {
+      "name": "Antik",
+      "email": "antik494@gmail.com"
     }
+  ],
+  "autoload": {
+    "classmap": ["src/"]
+  }
 }

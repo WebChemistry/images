@@ -1,41 +1,41 @@
-# Editace obrázkù
+# Editace obrÃ¡zkÅ¯
 
-## Šíøka
+## Å Ã­Å™ka
 
 ```php
-$image->setWidth(50); // Nastaví 50px
-$image->setWidth('25%') // Nastaví 25%
+$image->setWidth(50); // Nastav 50px
+$image->setWidth('25%') // Nastav 25%
 
-$image->setSize('50'); // Nastaví 50px
-$image->setSize('25%'); // Nastaví 25%
+$image->setSize('50'); // Nastav 50px
+$image->setSize('25%'); // Nastav 25%
 ```
 
-## Výška
+## VÃ½Å¡ka
 
 ```php
-$image->setHeight(50); // Nastaví 50px
-$image->setHeight('25%') // Nastaví 25%
+$image->setHeight(50); // Nastav 50px
+$image->setHeight('25%') // Nastav 25%
 
-$image->setSize('x50'); // Nastaví 50px
-$image->setSize('x25%'); // Nastaví 25%
+$image->setSize('x50'); // Nastav 50px
+$image->setSize('x25%'); // Nastav 25%
 ```
 
-## Název obrázku
+## NÃ¡zev obrÃ¡zku
 
 ```php
-// Výchozí název test.png
+// VÃ½chozÃ­ nÃ¡zev test.png
 
 $image->setName('image.png'); // image.png
 ```
 
 ```php
-// Výchozí název test.png
+// VÃ½chozÃ­ nÃ¡zev test.png
 
 $image->setSuffix('jpg'); // test.jpg
 ```
 
 ```php
-// Výchozí název test.png
+// VÃ½chozÃ­ nÃ¡zev test.png
 
 $image->setNameWithoutSuffix('img'); // img.png
 ```
