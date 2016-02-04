@@ -135,4 +135,11 @@ class Checkbox extends \Nette\Forms\Controls\Checkbox {
 		return $this;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getImageName() {
+		return $this->imageName;
+	}
+
 }
