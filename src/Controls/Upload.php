@@ -5,11 +5,9 @@ namespace WebChemistry\Images\Controls;
 use Nette\Application\IPresenter;
 use Nette\Forms\Controls\UploadControl;
 use Nette\Forms\Form;
-use Nette\Forms\Validator;
 use Nette\Http\FileUpload;
 use Nette\Object;
 use WebChemistry\Images\AbstractStorage;
-use WebChemistry\Images\Image\PropertyAccess;
 use WebChemistry\Images\ImageStorageException;
 
 class Upload extends UploadControl {
@@ -83,34 +81,28 @@ class Upload extends UploadControl {
 		$this->validate();
 		$this->isValidated = TRUE; // Disable validation
 
-		if ($this->required && $this->checkbox->isOk()) {
-			if ($this->value->isOk()) {
-				$this->delete = TRUE;
-			} else {
-				$this->value = $this->defaultValue;
-			}
-		} else if ($this->checkbox->isOk()) { // Checkbox process
+		if ($this->checkbox->isOk()) {
 			$this->checkbox->loadHttpData();
 			$this->delete = $this->checkbox->getValue();
-			if ($this->delete) {
-				$this->value = NULL;
-			} else {
-				$this->value = $this->defaultValue;
-			}
-		} else if (!$this->value->isOk()) {
-			$this->value = NULL;
+		}
+		if ($this->value->isOk()) {
+			$this->delete = TRUE;
 		}
 	}
 
 	public function successCallback() {
-		if ($this->delete) {
+		if ($this->delete && $this->defaultValue) {
 			$this->storage->delete($this->defaultValue);
+			$this->defaultValue = NULL;
 		}
 
 		if ($this->value instanceof FileUpload && $this->value->isOk()) { // Upload
 			$this->value = $this->storage->saveUpload($this->value, $this->namespace);
-			$this->checkbox->setImageName($this->value); // Show image after send
+		} else {
+			$this->value = $this->defaultValue;
 		}
+
+		$this->checkbox->setImageName($this->value);
 	}
 
 	/************************* Setters **************************/
@@ -157,16 +149,13 @@ class Upload extends UploadControl {
 	}
 
 	/**
-	 * FALSE - Form is not successful or control is not valid.
+	 * FileUpload - Form is not successful or control is not valid.
 	 * NULL - Image was deleted or was not uploaded
 	 * STRING - Image was uploaded or contains default image
 	 *
 	 * @return bool|null|string
 	 */
 	public function getValue() {
-		if ($this->isValidated && $this->value instanceof FileUpload) {
-			return FALSE;
-		}
 
 		return $this->value;
 	}
@@ -199,13 +188,11 @@ class Upload extends UploadControl {
 			$control->addAttributes(['required' => TRUE]);
 		}
 		if ($this->checkbox->isOk()) {
-			return $this->checkbox->getControl($this->required) . ($this->required ? $control : NULL);
+			return $control . $this->checkbox->getControl($this->required);
 		}
 
 		return $control;
 	}
-
-	/************************* UploadControl **************************/
 
 	public function validate() {
 		if (!$this->isValidated) {
