@@ -26,6 +26,9 @@ class Checkbox extends \Nette\Forms\Controls\Checkbox {
 	/** @var int */
 	private $height;
 
+	/** @var bool */
+	private $isOk;
+
 	/** @var string */
 	public static $labelContent = 'Delete this image?';
 
@@ -37,7 +40,11 @@ class Checkbox extends \Nette\Forms\Controls\Checkbox {
 	 * @return bool
 	 */
 	public function isOk() {
-		return $this->imageName && $this->getImageClass()->isExists();
+		if ($this->isOk === NULL) {
+			$this->isOk = $this->imageName && $this->getImageClass()->isExists();
+		}
+
+		return $this->isOk;
 	}
 
 	/************************* Getters **************************/
@@ -48,7 +55,6 @@ class Checkbox extends \Nette\Forms\Controls\Checkbox {
 	public function getImageClass() {
 		$image = $this->storage->createImage();
 		$image->setAbsoluteName($this->imageName);
-		$image->setDefaultImage(NULL);
 
 		return $image;
 	}
@@ -110,6 +116,7 @@ class Checkbox extends \Nette\Forms\Controls\Checkbox {
 	 * @return Checkbox
 	 */
 	public function setImageName($imageName) {
+		$this->isOk = NULL;
 		$this->imageName = $imageName;
 
 		return $this;
