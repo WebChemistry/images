@@ -187,7 +187,7 @@ abstract class PropertyAccess extends Nette\Object {
 
 		foreach ($parameters as $parameter) {
 			if (!preg_match('#([a-zA-Z]+)(:(.+))?#', $parameter, $matches)) {
-				throw new WebChemistry\Images\ImageStorageException("Regular expresion '$parameter' is not valid.");
+				throw new WebChemistry\Images\ImageStorageException("Regular expression '$parameter' is not valid.");
 			}
 
 			if (!isset($this->helpers[$matches[1]])) {
@@ -497,13 +497,6 @@ abstract class PropertyAccess extends Nette\Object {
 	 */
 	public function isBaseUri() {
 		return $this->baseUri;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getAbsoluteUrl() {
-		return $this->absoluteUrl;
 	}
 
 	/**

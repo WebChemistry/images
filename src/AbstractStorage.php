@@ -3,6 +3,7 @@
 namespace WebChemistry\Images;
 
 use Nette\Http\FileUpload;
+use Nette\Utils\Image;
 use WebChemistry\Images\Helpers\IHelper;
 use WebChemistry\Images\Image\PropertyAccess;
 
@@ -93,13 +94,12 @@ abstract class AbstractStorage {
 	}
 
 	/**
-	 * @param \Nette\Utils\Image $image
+	 * @param Image $image
 	 * @param string $fileName
 	 * @param string $namespace
-	 * @param string $imageType
 	 * @return string AbsoluteName
 	 */
-	public function saveImage(\Nette\Utils\Image $image, $fileName, $namespace = NULL) {
+	public function saveImage(Image $image, $fileName, $namespace = NULL) {
 		$newImage = $this->createImage();
 		$newImage->setName($fileName);
 		$newImage->setNamespace($namespace);

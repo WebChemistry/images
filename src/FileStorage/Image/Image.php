@@ -17,6 +17,8 @@ class Image extends Folders {
 	public $baseUri;
 
 	/**
+	 * @param string $wwwDir
+	 * @param string $assetsDir
 	 * @param string $absoluteName
 	 * @param string $defaultImage
 	 */

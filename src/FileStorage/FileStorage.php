@@ -5,7 +5,6 @@ namespace WebChemistry\Images\FileStorage;
 use Nette\Http\Request;
 use WebChemistry\Images\AbstractStorage;
 use WebChemistry\Images\FileStorage\Image\Image;
-use WebChemistry\Images\Image\PropertyAccess;
 
 class FileStorage extends AbstractStorage {
 

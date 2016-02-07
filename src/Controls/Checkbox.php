@@ -5,7 +5,6 @@ namespace WebChemistry\Images\Controls;
 use Nette\Utils\Html;
 use WebChemistry\Images\AbstractStorage;
 use WebChemistry\Images\Image\PropertyAccess;
-use WebChemistry\Images\ImageStorageException;
 
 class Checkbox extends \Nette\Forms\Controls\Checkbox {
 
