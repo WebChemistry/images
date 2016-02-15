@@ -1,5 +1,9 @@
 language: php
 
+os:
+  - linux
+  - osx
+
 php:
   - 5.4
   - 5.5
@@ -9,6 +13,7 @@ php:
 
 matrix:
   allow_failures:
+    - os: osx
     - php: 7.0
     - php: hhvm
 
