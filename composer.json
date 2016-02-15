@@ -14,6 +14,16 @@
       "email": "antik494@gmail.com"
     }
   ],
+  "require": {
+    "nette/http": "^2.3",
+    "nette/utils": "^2.3",
+    "nette/finder": "^2.3"
+  },
+  "require-dev": {
+    "nette/di": "^2.3",
+    "latte/latte": "^2.3",
+    "codeception/codeception": "^2.1"
+  },
   "autoload": {
     "classmap": ["src/"]
   }
