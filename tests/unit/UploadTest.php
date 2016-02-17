@@ -10,10 +10,10 @@ class UploadTest extends \Codeception\TestCase\Test {
 	protected $tester;
 
 	/** @var string */
-	protected $assetsDir = __DIR__ . '/../_data/tmp';
+	protected $assetsDir;
 
 	protected function _before() {
-
+		$this->assetsDir = __DIR__ . '/../_data/tmp';
 	}
 
 	protected function _after() {
