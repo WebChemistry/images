@@ -20,7 +20,6 @@ abstract class Folders extends PropertyAccess {
 	/**
 	 * @param string $wwwDir
 	 * @param string $assetsDir
-	 * @throws \WebChemistry\Images\ImageStorageException
 	 */
 	public function __construct($wwwDir, $assetsDir) {
 		$this->assetsDir = $assetsDir;

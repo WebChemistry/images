@@ -33,6 +33,9 @@ class Upload extends UploadControl {
 	/** @var bool */
 	private $required = FALSE;
 
+	/** @var FileUpload */
+	private $originalValue;
+
 	/**
 	 * @param string $label
 	 */
@@ -45,6 +48,13 @@ class Upload extends UploadControl {
 
 		$this->monitor('Nette\Application\IPresenter');
 		$this->checkbox = new Checkbox;
+	}
+
+	/**
+	 * @return FileUpload
+	 */
+	public function getOriginalValue() {
+		return $this->originalValue;
 	}
 
 	protected function attached($form) {
@@ -80,6 +90,7 @@ class Upload extends UploadControl {
 
 		$this->validate();
 		$this->isValidated = TRUE; // Disable validation
+		$this->originalValue = $this->value;
 
 		if ($this->checkbox->isOk()) {
 			$this->checkbox->loadHttpData();

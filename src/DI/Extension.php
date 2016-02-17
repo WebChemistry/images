@@ -60,11 +60,11 @@ class Extension extends Nette\DI\CompilerExtension {
 
 		$config = $this->getSettings();
 
-		if ($config['registration']['upload']) {
+		if ($config['registration']['upload'] && class_exists('Nette\Forms\Form')) {
 			$init->addBody('WebChemistry\Images\Controls\Upload::register();');
 		}
 
-		if ($config['registration']['multiUpload']) {
+		if ($config['registration']['multiUpload'] && class_exists('Nette\Forms\Form')) {
 			$init->addBody('WebChemistry\Images\Controls\MultiUpload::register();');
 		}
 	}
