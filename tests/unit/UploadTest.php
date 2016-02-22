@@ -17,7 +17,6 @@ class UploadTest extends \Codeception\TestCase\Test {
 	}
 
 	protected function _after() {
-		@copy(__DIR__ . '/../_data/image.gif', __DIR__ . '/../_data/assets/original/image.gif'); // move in FileUpload
 		Helper::removeFilesRecursive(__DIR__ . '/../_data/tmp');
 	}
 
@@ -192,6 +191,16 @@ class UploadTest extends \Codeception\TestCase\Test {
 		$this->checkRender($presenter['upload']);
 	}
 
+	/************************* Registration **************************/
+
+	public function testRegistration() {
+		\WebChemistry\Images\Controls\Upload::register();
+		$form = new \Nette\Forms\Form();
+
+		$upload = $form->addImageUpload('image');
+		$this->assertInstanceOf('WebChemistry\Images\Controls\Upload', $upload);
+	}
+
 	/************************* Helpers **************************/
 
 	protected function checkRender($form, $hasCheckbox = FALSE, $hasPreview = FALSE) {
@@ -276,6 +285,7 @@ class UploadTest extends \Codeception\TestCase\Test {
 	}
 
 	private function createUpload() {
+		@copy(__DIR__ . '/../_data/image.gif', __DIR__ . '/../_data/assets/original/image.gif'); // move in FileUpload
 		return new \Nette\Http\FileUpload([
 			'tmp_name' => __DIR__ . '/../_data/assets/original/image.gif',
 			'type' => 'image/gif',
