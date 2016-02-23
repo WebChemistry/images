@@ -9,6 +9,7 @@ image:
     defaultImage: 'default/default.png'
     registration:
         upload: yes
+        multiUpload: yes
 	helpers:
 		crop: WebChemistry\Images\Helpers\Crop
 		sharpen: WebChemistry\Images\Helpers\Sharpen

@@ -2,7 +2,6 @@
 
 ## Vytvoření nového helperu
 
-**Třída:**
 ```php
 
 class MyHelper extends WebChemistry\Images\Helpers\AbstractHelper {
@@ -24,6 +23,8 @@ images:
 	helpers:
 		myHelper: MyHelper
 ```
+
+# Výchozi helpery a použítí
 
 ## Crop
 

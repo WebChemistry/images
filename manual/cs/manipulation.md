@@ -46,7 +46,7 @@ class ImagePresenter extends BasePresenter {
 ?>
 ```
 
-## Nahrání obrázku přes string
+## Nahrání obrázku přes Nette\Image
 
 ```php
 <?php
@@ -55,7 +55,7 @@ class ImagePresenter extends BasePresenter {
 
     public function afterUpload($form, $values) {
     	$image = Nette\Utils\Image::fromString($values->content);
-        $absoluteName = $this->storage->saveContent($image, 'filename.jpg', 'namespace')
+        $absoluteName = $this->storage->saveImage($image, 'filename.jpg', 'namespace')
     }
 
 }

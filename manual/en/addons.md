@@ -1,12 +1,12 @@
-# Doplňky
+# Addons
 
 ## Upload control
-Automatické nahrávání a odstraňování obrázků včetně náhledu.
+Automatic uploading and deleting of image with preview.
 
-**Instalace:**
-Rozšíření automaticky registruje doplňky k formulářům (lze zakázat v configu).
+**Installation:**
+Extension automatically register addons to nette forms (can be disabled in config).
 
-**Použítí:**
+**Usage:**
 
 ```php
 
@@ -16,7 +16,7 @@ protected function createComponentForm() {
     $row = $this->getFromDatabase();
 
     $form->addImageUpload('upload', 'Upload')
-            ->setDefaultValue($row->upload) // Obsahuje např. namespace/upload.png
+            ->setDefaultValue($row->upload) // Contains e.g. namespace/upload.png
             ->setRequired()
             ->addRule($form::MAX_FILE_SIZE, NULL, 1024)
             ->setNamespace('namespace');
@@ -29,24 +29,24 @@ protected function createComponentForm() {
 public function successForm($form, $values) {
     $row = $this->getFromDatabase();
     
-    $row->upload = $values->upload; // Obsahuje namespace/unikatniNazevObrazku.png nebo NULL, když není vyplněno pole nebo zaškrtnuto odstranění.
+    $row->upload = $values->upload; // Contains e.g. namespace/unikatniNazevObrazku.png or NULL (when input not filled or checkbox is checked)
 
     $row->update();
 }
 
 ```
 
-## Funkce
+## Functions
 
 ```php
 
-$upload->getCheckbox()->setHeight(150); // Pevná výška náhledu
-$upload->getCheckbox()->setWidth(150); // Pevná šířka náhledu
+$upload->getCheckbox()->setHeight(150); // Height of preview
+$upload->getCheckbox()->setWidth(150); // Width of preview
 
 ```
 
 ## MultiUpload
-Vytvoří náhledy nahraných obrázku včetně checkboxu
+Creates preview of uploaded images with checkbox.
 
 ```php
 protected function createComponentForm() {
