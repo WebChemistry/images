@@ -36,6 +36,9 @@ class Upload extends UploadControl {
 	/** @var FileUpload */
 	private $originalValue;
 
+	/** @var string Used in success, error callbacks */
+	private $uploadedImage;
+
 	/**
 	 * @param string $label
 	 */
@@ -62,10 +65,6 @@ class Upload extends UploadControl {
 
 		if ($form instanceof Form) {
 			$this->checkbox->setParent($form, $form->getName());
-			if (!$form->onSuccess) {
-				$form->onSuccess = [];
-			}
-			array_unshift($form->onSuccess, [$this, 'successCallback']);
 		}
 
 		if ($form instanceof IPresenter) {
@@ -99,16 +98,28 @@ class Upload extends UploadControl {
 		if ($this->value->isOk()) {
 			$this->delete = TRUE;
 		}
+
+		$form = $this->getForm();
+		if ($form->isValid()) {
+			$form->onSubmit[] = [$this, 'errorCallback'];
+			$this->successCallback();
+		}
 	}
 
-	public function successCallback() {
+	public function errorCallback(Form $form) {
+		if (!$form->isValid() && $this->uploadedImage) {
+			$this->storage->delete($this->uploadedImage);
+		}
+	}
+
+	protected function successCallback() {
 		if ($this->delete && $this->defaultValue) {
 			$this->storage->delete($this->defaultValue);
 			$this->defaultValue = NULL;
 		}
 
 		if ($this->value instanceof FileUpload && $this->value->isOk()) { // Upload
-			$this->value = $this->storage->saveUpload($this->value, $this->namespace);
+			$this->uploadedImage = $this->value = $this->storage->saveUpload($this->value, $this->namespace);
 		} else {
 			$this->value = $this->defaultValue;
 		}

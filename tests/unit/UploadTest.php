@@ -105,6 +105,19 @@ class UploadTest extends \Codeception\TestCase\Test {
 		$this->assertInstanceOf('Nette\Http\FileUpload', $form['upload']->getValue());
 	}
 
+	public function testFilledErrorAfterSuccesCallback() {
+		$form = $this->sendRequestToPresenter('upload', TRUE, function ($form) {
+			$form->onSuccess[] = function ($form) {
+				$form->addError('');
+			};
+		});
+
+		$this->assertTrue($form->isSubmitted());
+		$this->assertTrue($form->hasErrors());
+		$this->assertFalse($form->isValid());
+		$this->assertFileNotExists($this->getUploadedImage());
+	}
+
 	/************************* Required upload control **************************/
 
 	public function testRequiredNotFilled() {

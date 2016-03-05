@@ -43,6 +43,9 @@ class MultiUpload extends UploadControl {
 	/** @var array images to delete, not exists */
 	private $wrongImages = [];
 
+	/** @var array Used in success,error callbacks */
+	private $uploadedImages = [];
+
 	/**
 	 * @param string $label
 	 */
@@ -58,13 +61,6 @@ class MultiUpload extends UploadControl {
 
 	protected function attached($form) {
 		parent::attached($form);
-
-		if ($form instanceof Form) {
-			if (!$form->onSuccess) {
-				$form->onSuccess = [];
-			}
-			array_unshift($form->onSuccess, [$this, 'successCallback']);
-		}
 
 		if ($form instanceof IPresenter) {
 			if (isset($form->imageStorage) && $form->imageStorage instanceof AbstractStorage) {
@@ -121,6 +117,20 @@ class MultiUpload extends UploadControl {
 			count($this->toDelete) === count($this->getCheckboxesFine())) {
 			$this->addError($this->getRequiredMessage());
 		}
+
+		$form = $this->getForm();
+		if ($form->isValid()) {
+			$form->onSubmit[] = [$this, 'errorCallback'];
+			$this->successCallback();
+		}
+	}
+
+	public function errorCallback(Form $form) {
+		if (!$form->isValid() && $this->uploadedImages) {
+			foreach ($this->uploadedImages as $image) {
+				$this->storage->delete($image);
+			}
+		}
 	}
 
 	public function successCallback() {
@@ -137,7 +147,7 @@ class MultiUpload extends UploadControl {
 		}
 
 		foreach ($this->toUpload as $upload) {
-			$values[] = $this->storage->saveUpload($upload, $this->namespace);
+			$this->uploadedImages[] = $values[] = $this->storage->saveUpload($upload, $this->namespace);
 		}
 
 		$this->value = array_values($values); // Reset keys
