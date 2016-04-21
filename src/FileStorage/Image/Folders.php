@@ -190,11 +190,11 @@ abstract class Folders extends PropertyAccess {
 			foreach (explode('/', $this->getNamespace()) as $namespace) {
 				$lastDir .= $namespace . '/';
 
-				@mkdir($lastDir);
+				@mkdir($lastDir, 0777, TRUE);
 			}
 		}
 
-		@mkdir($this->getAbsoluteBasePath()); // Original | resize dir
+		@mkdir($this->getAbsoluteBasePath(), 0777, TRUE); // Original | resize dir
 	}
 
 	public function generateUniqueImageName() {
