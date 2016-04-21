@@ -183,18 +183,11 @@ abstract class Folders extends PropertyAccess {
 
 	/************************* Others **************************/
 
+	/**
+	 * Create all directories recursive
+	 */
 	protected function createDirectories() {
-		if ($this->getNamespace()) {
-			$lastDir = $this->getAbsoluteAssetsDir() . '/';
-
-			foreach (explode('/', $this->getNamespace()) as $namespace) {
-				$lastDir .= $namespace . '/';
-
-				@mkdir($lastDir, 0777, TRUE);
-			}
-		}
-
-		@mkdir($this->getAbsoluteBasePath(), 0777, TRUE); // Original | resize dir
+		@mkdir($this->getAbsoluteBasePath(), 0777, TRUE); // @ - Directories may exist
 	}
 
 	public function generateUniqueImageName() {
