@@ -3,6 +3,7 @@
 namespace WebChemistry\Images;
 
 use Nette\Http\FileUpload;
+use Nette\Utils\Callback;
 use Nette\Utils\Image;
 use WebChemistry\Images\Helpers\IHelper;
 use WebChemistry\Images\Image\PropertyAccess;
@@ -56,13 +57,14 @@ abstract class AbstractStorage {
 	abstract public function createImage();
 
 	/**
-	 * @param      $absoluteName
-	 * @param null $size
-	 * @param null $flag
-	 * @param null $defaultImage
+	 * @param string $absoluteName
+	 * @param string $size
+	 * @param string|int $flag
+	 * @param string $defaultImage
+	 * @param callable $callback
 	 * @return PropertyAccess
 	 */
-	public function get($absoluteName, $size = NULL, $flag = NULL, $defaultImage = NULL) {
+	public function get($absoluteName, $size = NULL, $flag = NULL, $defaultImage = NULL, $callback = NULL) {
 		$image = $this->createImage();
 		if ($defaultImage) {
 			$image->setDefaultImage($defaultImage);
@@ -70,6 +72,10 @@ abstract class AbstractStorage {
 		$image->setAbsoluteName($absoluteName);
 		$image->setMixedSize($size);
 		$image->setFlag($flag);
+		if ($callback) {
+			Callback::check($callback);
+			$callback($image);
+		}
 
 		return $image;
 	}
@@ -77,9 +83,10 @@ abstract class AbstractStorage {
 	/**
 	 * @param FileUpload $fileUpload
 	 * @param string $namespace
+	 * @param callable $callback
 	 * @return string Absolute name
 	 */
-	public function saveUpload(FileUpload $fileUpload, $namespace = NULL) {
+	public function saveUpload(FileUpload $fileUpload, $namespace = NULL, $callback = NULL) {
 		if (!$fileUpload->isOk() || !$fileUpload->isImage()) {
 			return NULL;
 		}
@@ -87,6 +94,10 @@ abstract class AbstractStorage {
 		$image = $this->createImage();
 		$image->setNamespace($namespace);
 		$image->setName($fileUpload->getSanitizedName());
+		if ($callback) {
+			Callback::check($callback);
+			$callback($image);
+		}
 
 		$image->saveUpload($fileUpload);
 
@@ -97,12 +108,17 @@ abstract class AbstractStorage {
 	 * @param Image $image
 	 * @param string $fileName
 	 * @param string $namespace
+	 * @param callable $callback
 	 * @return string AbsoluteName
 	 */
-	public function saveImage(Image $image, $fileName, $namespace = NULL) {
+	public function saveImage(Image $image, $fileName, $namespace = NULL, $callback = NULL) {
 		$newImage = $this->createImage();
 		$newImage->setName($fileName);
 		$newImage->setNamespace($namespace);
+		if ($callback) {
+			Callback::check($callback);
+			$callback($newImage);
+		}
 
 		$newImage->save($image);
 

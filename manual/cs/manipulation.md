@@ -55,7 +55,10 @@ class ImagePresenter extends BasePresenter {
 
     public function afterUpload($form, $values) {
     	$image = Nette\Utils\Image::fromString($values->content);
-        $absoluteName = $this->storage->saveImage($image, 'filename.jpg', 'namespace')
+        $absoluteName = $this->storage->saveImage($image, 'filename.jpg', 'namespace', function (WebChemistry\Images\FileStorage\Image\Image $image) {
+        	// Úpravy obrázku před uložením
+        	$image->setQuality(100);
+        });
     }
 
 }
