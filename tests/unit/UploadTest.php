@@ -267,7 +267,7 @@ class UploadTest extends \Codeception\TestCase\Test {
 				'wwwDir' => __DIR__ . '/../_data',
 				'assetsDir' => 'tmp',
 				'defaultImage' => 'image.gif'
-			], new \Nette\Http\Request(new \Nette\Http\UrlScript()));
+			] + (new \WebChemistry\Images\DI\Extension)->defaults, new \Nette\Http\Request(new \Nette\Http\UrlScript()));
 
 			return $presenter;
 		});

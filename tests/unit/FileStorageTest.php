@@ -13,7 +13,7 @@ class FileStorageTest extends \Codeception\TestCase\Test {
 			'wwwDir' => __DIR__ . '/../_data',
 			'assetsDir' => 'tmp',
 			'defaultImage' => 'image.gif'
-		], new \Nette\Http\Request(new \Nette\Http\UrlScript()));
+		] + (new \WebChemistry\Images\DI\Extension)->defaults, new \Nette\Http\Request(new \Nette\Http\UrlScript()));
 		@copy(__DIR__ . '/../_data/image.gif', __DIR__ . '/../_data/assets/original/image.gif'); // move in FileUpload
 	}
 
@@ -115,4 +115,10 @@ class FileStorageTest extends \Codeception\TestCase\Test {
 		$this->assertTrue($image->delete());
 		$this->assertFalse($image->isExists());
 	}
+
+	public function testQuality() {
+		$image = $this->storage->createImage();
+		$this->assertSame(85, $image->getQuality());
+	}
+
 }

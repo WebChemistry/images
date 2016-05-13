@@ -3,11 +3,12 @@
 namespace WebChemistry\Images\DI;
 
 use Nette;
+use WebChemistry\Images\ImageStorageException;
 
 class Extension extends Nette\DI\CompilerExtension {
 
 	/** @var array */
-	protected $defaults = [
+	public $defaults = [
 		'defaultImage' => 'default/default.png',
 		'registration' => [
 			'upload' => TRUE,
@@ -18,7 +19,8 @@ class Extension extends Nette\DI\CompilerExtension {
 		'helpers' => [
 			'crop' => 'WebChemistry\Images\Helpers\Crop',
 			'sharpen' => 'WebChemistry\Images\Helpers\Sharpen'
-		]
+		],
+		'quality' => 85
 	];
 
 	public function loadConfiguration() {
@@ -38,6 +40,7 @@ class Extension extends Nette\DI\CompilerExtension {
 	}
 
 	/**
+	 * @throws ImageStorageException
 	 * @return array
 	 */
 	public function getSettings() {
@@ -46,6 +49,12 @@ class Extension extends Nette\DI\CompilerExtension {
 			$config['wwwDir'] = Nette\DI\Helpers::expand($config['wwwDir'], $this->getContainerBuilder()->parameters);
 		} else {
 			$config = $this->getConfig($this->defaults); // deprecated
+		}
+		
+		// Validation
+		$quality = $config['quality'];
+		if (!is_int($quality) || $quality < 0 || $quality > 100) {
+			throw new ImageStorageException('Quality must be an integer from 0 to 100.');
 		}
 
 		return $config;
