@@ -20,6 +20,9 @@ class Extension extends Nette\DI\CompilerExtension {
 			'crop' => 'WebChemistry\Images\Helpers\Crop',
 			'sharpen' => 'WebChemistry\Images\Helpers\Sharpen'
 		],
+		'checkbox' => [
+			'caption' => NULL
+		],
 		'quality' => 85
 	];
 
@@ -75,6 +78,10 @@ class Extension extends Nette\DI\CompilerExtension {
 
 		if ($config['registration']['multiUpload'] && class_exists('Nette\Forms\Form')) {
 			$init->addBody('WebChemistry\Images\Controls\MultiUpload::register();');
+		}
+
+		if ($config['checkbox']['caption']) {
+			$init->addBody('WebChemistry\Images\Controls\Checkbox::$globalCaption = ?;', [$config['checkbox']['caption']]);
 		}
 	}
 }

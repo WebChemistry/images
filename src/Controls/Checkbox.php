@@ -28,11 +28,21 @@ class Checkbox extends \Nette\Forms\Controls\Checkbox {
 	/** @var bool */
 	private $isOk;
 
+	/**
+	 * @var string
+	 * @deprecated
+	 */
+	public static $labelContent = NULL;
+
 	/** @var string */
-	public static $labelContent = 'Delete this image?';
+	public static $globalCaption = 'Delete this image?';
 
 	public function __construct($label = NULL) {
-		parent::__construct($label ? : self::$labelContent);
+		if (self::$labelContent !== NULL) {
+			trigger_error("labelContent is deprected, use globalCaption instead.", E_DEPRECATED);
+			self::$globalCaption = self::$labelContent;
+		}
+		parent::__construct($label ? : self::$globalCaption);
 	}
 
 	/**
