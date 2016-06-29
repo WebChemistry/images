@@ -4,7 +4,7 @@
 
 Composer:
 ```php
-composer require webchemistry\images
+composer require webchemistry/images
 ```
 
 config:
