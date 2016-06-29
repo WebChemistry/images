@@ -10,6 +10,8 @@ image:
     registration:
         upload: yes
         multiUpload: yes
+    checkbox:
+        caption: 'Odstranit obrázek' # Nahradí globálně titulek u checboxu 
 	helpers:
 		crop: WebChemistry\Images\Helpers\Crop
 		sharpen: WebChemistry\Images\Helpers\Sharpen
