@@ -227,10 +227,9 @@ class Upload extends UploadControl {
 			throw new ImageStorageException(sprintf('Control name must be a string, %s given', gettype($controlName)));
 		}
 
-		Object::extensionMethod('Nette\Forms\Container::' . $controlName, function ($form, $name, $label = NULL, $namespace = NULL, $defaultValue = NULL) {
+		Object::extensionMethod('Nette\Forms\Container::' . $controlName, function ($form, $name, $label = NULL, $namespace = NULL) {
 			$control = new self($label);
 			$control->setNamespace($namespace);
-			$control->setDefaultValue($defaultValue);
 
 			return $form[$name] = $control;
 		});
