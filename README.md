@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/WebChemistry/Images.svg?branch=master)](https://travis-ci.org/WebChemistry/Images)
+[![Build Status](https://travis-ci.org/WebChemistry/images.svg?branch=master)](https://travis-ci.org/WebChemistry/images)
 
 ## Installation
 
