@@ -39,7 +39,7 @@ class Checkbox extends \Nette\Forms\Controls\Checkbox {
 
 	public function __construct($label = NULL) {
 		if (self::$labelContent !== NULL) {
-			trigger_error("labelContent is deprected, use globalCaption instead.", E_DEPRECATED);
+			trigger_error("labelContent is deprected, use globalCaption instead.", E_USER_DEPRECATED);
 			self::$globalCaption = self::$labelContent;
 		}
 		parent::__construct($label ? : self::$globalCaption);
