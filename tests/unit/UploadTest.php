@@ -214,6 +214,31 @@ class UploadTest extends \Codeception\TestCase\Test {
 		$this->assertInstanceOf('WebChemistry\Images\Controls\Upload', $upload);
 	}
 
+	/************************* Events **************************/
+
+	public function testOnBeforeSave() {
+		$isCalled = FALSE;
+		$form = $this->sendRequestToPresenter('upload', TRUE, function (\Nette\Forms\Form $form) use (&$isCalled) {
+			$form['upload']->onBeforeSave[] = function (\Nette\Utils\Image $image) use (&$isCalled) {
+				$isCalled = TRUE;
+
+				$image->resize(1,1);
+				
+				return $image;
+			};
+		});
+
+		$this->assertTrue($form->isSubmitted());
+		$this->assertTrue($isCalled);
+		$this->assertTrue($isCalled);
+		$this->assertFalse($form->hasErrors());
+		$this->assertFileExists($this->getUploadedImage());
+		$size = getimagesize($this->getUploadedImage());
+		$this->assertSame(1, $size[0]);
+		$this->assertSame(1, $size[1]);
+		$this->assertSame(self::IMAGE, $form['upload']->getValue());
+	}
+
 	/************************* Helpers **************************/
 
 	protected function checkRender($form, $hasCheckbox = FALSE, $hasPreview = FALSE) {

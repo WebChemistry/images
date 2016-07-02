@@ -7,6 +7,8 @@ use Nette\Forms\Controls\UploadControl;
 use Nette\Forms\Form;
 use Nette\Http\FileUpload;
 use Nette\Object;
+use Nette\Utils\Callback;
+use Nette\Utils\Image;
 use WebChemistry\Images\AbstractStorage;
 use WebChemistry\Images\ImageStorageException;
 
@@ -38,6 +40,9 @@ class Upload extends UploadControl {
 
 	/** @var string Used in success, error callbacks */
 	private $uploadedImage;
+
+	/** @var callable[] */
+	public $onBeforeSave = [];
 
 	/**
 	 * @param string $label
@@ -119,7 +124,15 @@ class Upload extends UploadControl {
 		}
 
 		if ($this->value instanceof FileUpload && $this->value->isOk()) { // Upload
-			$this->uploadedImage = $this->value = $this->storage->saveUpload($this->value, $this->namespace);
+			$image = $this->value->toImage();
+			foreach ($this->onBeforeSave as $callback) {
+				Callback::check($callback);
+				$image = $callback($image);
+				if (!$image instanceof Image) {
+					throw new ImageStorageException('Callback must return value instance of Nette\Utils\Image');
+				}
+			}
+			$this->uploadedImage = $this->value = $this->storage->saveImage($image, $this->value->getSanitizedName(), $this->namespace);
 		} else {
 			$this->value = $this->defaultValue;
 		}
