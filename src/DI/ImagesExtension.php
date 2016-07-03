@@ -62,13 +62,9 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 	 * @return array
 	 */
 	public function getSettings() {
-		if (method_exists($this, 'validateConfig')) {
-			$config = $this->validateConfig($this->defaults, $this->config);
-			$config['wwwDir'] = Nette\DI\Helpers::expand($config['wwwDir'], $this->getContainerBuilder()->parameters);
-		} else {
-			$config = $this->getConfig($this->defaults); // deprecated
-		}
-		
+		$config = $this->validateConfig($this->defaults);
+		$config['wwwDir'] = Nette\DI\Helpers::expand($config['wwwDir'], $this->getContainerBuilder()->parameters);
+
 		// Validation
 		$quality = $config['quality'];
 		if (!is_int($quality) || !Validators::isInRange($quality, [0, 100])) {
