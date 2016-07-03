@@ -9,7 +9,7 @@ use Nette\Forms\Form;
 use Nette\Forms\Validator;
 use Nette\Http\FileUpload;
 use Nette\Object;
-use WebChemistry\Images\AbstractStorage;
+use WebChemistry\Images\IImageStorage;
 use WebChemistry\Images\ImageStorageException;
 
 class MultiUpload extends UploadControl {
@@ -23,7 +23,7 @@ class MultiUpload extends UploadControl {
 	/** @var Checkbox[] */
 	private $checkboxes = [];
 
-	/** @var AbstractStorage */
+	/** @var IImageStorage */
 	private $storage;
 
 	/** @var array */
@@ -57,17 +57,17 @@ class MultiUpload extends UploadControl {
 			->addRule(Form::IMAGE)
 			->endCondition();
 
-		$this->monitor('Nette\Application\IPresenter');
+		$this->monitor(IPresenter::class);
 	}
 
 	protected function attached($form) {
 		parent::attached($form);
 
 		if ($form instanceof IPresenter) {
-			if (isset($form->imageStorage) && $form->imageStorage instanceof AbstractStorage) {
+			if (isset($form->imageStorage) && $form->imageStorage instanceof IImageStorage) {
 				$this->storage = $form->imageStorage;
 			} else {
-				$this->storage = $form->context->getByType('WebChemistry\Images\AbstractStorage');
+				$this->storage = $form->context->getByType(IImageStorage::class);
 			}
 
 			$form = $this->getForm();
@@ -174,10 +174,10 @@ class MultiUpload extends UploadControl {
 	}
 
 	/**
-	 * @param AbstractStorage $storage
+	 * @param IImageStorage $storage
 	 * @return Upload
 	 */
-	public function setStorage(AbstractStorage $storage) {
+	public function setStorage(IImageStorage $storage) {
 		$this->storage = $storage;
 
 		return $this;
