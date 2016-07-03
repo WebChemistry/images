@@ -44,7 +44,7 @@ abstract class AbstractStorage implements IImageStorage {
 			}
 
 			if (!$helpers[$name] instanceof IHelper) {
-				throw new ImageStorageException("Helper '$name' must be instance of WebChemistry\\Images\\Helpers\\IHelper");
+				throw new ImageStorageException("Helper '$name' must be instance of " . IHelper::class);
 			}
 		}
 
