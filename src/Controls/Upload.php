@@ -3,6 +3,7 @@
 namespace WebChemistry\Images\Controls;
 
 use Nette\Application\IPresenter;
+use Nette\ComponentModel\IComponent;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\UploadControl;
 use Nette\Forms\Form;
@@ -66,6 +67,12 @@ class Upload extends UploadControl {
 		return $this->originalValue;
 	}
 
+	/**
+	 * This method will be called when the component (or component's parent)
+	 * becomes attached to a monitored object. Do not call this method yourself.
+	 * @param IComponent $form
+	 * @return void
+	 */
 	protected function attached($form) {
 		parent::attached($form);
 
@@ -112,6 +119,9 @@ class Upload extends UploadControl {
 		}
 	}
 
+	/**
+	 * @param Form $form
+	 */
 	public function errorCallback(Form $form) {
 		if (!$form->isValid() && $this->uploadedImage) {
 			$this->storage->delete($this->uploadedImage);
@@ -236,6 +246,10 @@ class Upload extends UploadControl {
 		}
 	}
 
+	/**
+	 * @param string $controlName
+	 * @throws ImageStorageException
+	 */
 	public static function register($controlName = 'addImageUpload') {
 		if (!is_string($controlName)) {
 			throw new ImageStorageException(sprintf('Control name must be a string, %s given', gettype($controlName)));

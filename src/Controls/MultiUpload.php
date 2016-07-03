@@ -3,6 +3,7 @@
 namespace WebChemistry\Images\Controls;
 
 use Nette\Application\IPresenter;
+use Nette\ComponentModel\IComponent;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\UploadControl;
 use Nette\Forms\Form;
@@ -60,6 +61,12 @@ class MultiUpload extends UploadControl {
 		$this->monitor(IPresenter::class);
 	}
 
+	/**
+	 * This method will be called when the component (or component's parent)
+	 * becomes attached to a monitored object. Do not call this method yourself.
+	 * @param IComponent $form
+	 * @return void
+	 */
 	protected function attached($form) {
 		parent::attached($form);
 
@@ -126,6 +133,9 @@ class MultiUpload extends UploadControl {
 		}
 	}
 
+	/**
+	 * @param Form $form
+	 */
 	public function errorCallback(Form $form) {
 		if (!$form->isValid() && $this->uploadedImages) {
 			foreach ($this->uploadedImages as $image) {
@@ -275,6 +285,10 @@ class MultiUpload extends UploadControl {
 		return is_array($this->value) ? $this->value : [$this->value];
 	}
 
+	/**
+	 * @param string $controlName
+	 * @throws ImageStorageException
+	 */
 	public static function register($controlName = 'addMultiImageUpload') {
 		if (!is_string($controlName)) {
 			throw new ImageStorageException(sprintf('Control name must be a string, %s given', gettype($controlName)));

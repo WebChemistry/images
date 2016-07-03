@@ -95,19 +95,17 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 	public function afterCompile(Nette\PhpGenerator\ClassType $class) {
 		$methods = $class->getMethods();
 		$init = $methods['initialize'];
-
 		$config = $this->getSettings();
 
 		if ($config['registration']['upload'] && class_exists('Nette\Forms\Form')) {
 			$init->addBody(Upload::class . '::register();');
 		}
-
 		if ($config['registration']['multiUpload'] && class_exists('Nette\Forms\Form')) {
 			$init->addBody(MultiUpload::class . '::register();');
 		}
-
 		if ($config['checkbox']['caption']) {
 			$init->addBody(Checkbox::class . '::$globalCaption = ?;', [$config['checkbox']['caption']]);
 		}
 	}
+
 }
