@@ -5,7 +5,7 @@ namespace WebChemistry\Images\DI;
 use Nette;
 use WebChemistry\Images\ImageStorageException;
 
-class Extension extends Nette\DI\CompilerExtension {
+class ImagesExtension extends Nette\DI\CompilerExtension {
 
 	/** @var array */
 	public $defaults = [
