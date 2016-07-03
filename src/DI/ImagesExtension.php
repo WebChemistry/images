@@ -34,7 +34,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			'caption' => NULL
 		],
 		'quality' => 85,
-		'callbacks' => [
+		'events' => [
 			'onCreate' => [],
 			'onSave' => [],
 			'onUploadSave' => []
@@ -74,7 +74,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			if (!is_int($quality) || !Validators::isInRange($quality, [0, 100])) {
 				throw new ImageStorageException('Quality must be an integer from 0 to 100.');
 			}
-			foreach ($config['callbacks'] as $name => $array) {
+			foreach ($config['events'] as $name => $array) {
 				Validators::assert($array, 'array');
 				foreach ($array as $callback) {
 					Nette\Utils\Callback::check($callback);

@@ -33,9 +33,9 @@ class FileStorage extends AbstractStorage {
 		foreach ($this->helpers as $name => $helper) {
 			$image->addHelper($helper, $name);
 		}
-		$image->onSave = $this->settings['callbacks']['onSave'];
-		$image->onUploadSave = $this->settings['callbacks']['onUploadSave'];
-		$image->onCreate = $this->settings['callbacks']['onCreate'];
+		$image->onSave = $this->settings['events']['onSave'];
+		$image->onUploadSave = $this->settings['events']['onUploadSave'];
+		$image->onCreate = $this->settings['events']['onCreate'];
 		$image->setQuality($this->settings['quality']);
 		$image->setBasePath($this->basePath);
 		$image->setBaseUri($this->baseUri);
