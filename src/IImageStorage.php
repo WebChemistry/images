@@ -21,7 +21,7 @@ interface IImageStorage {
 	 * @param callable $callback
 	 * @return PropertyAccess
 	 */
-	public function get($absoluteName, $size = NULL, $flag = NULL, $defaultImage = NULL, $callback = NULL);
+	public function get($absoluteName, $size = NULL, $flag = NULL, $defaultImage = NULL, callable $callback = NULL);
 
 	/**
 	 * @param FileUpload $fileUpload
@@ -29,7 +29,7 @@ interface IImageStorage {
 	 * @param callable $callback
 	 * @return string Absolute name
 	 */
-	public function saveUpload(FileUpload $fileUpload, $namespace = NULL, $callback = NULL);
+	public function saveUpload(FileUpload $fileUpload, $namespace = NULL, callable $callback = NULL);
 
 	/**
 	 * @param Image $image
@@ -38,7 +38,7 @@ interface IImageStorage {
 	 * @param callable $callback
 	 * @return string AbsoluteName
 	 */
-	public function saveImage(Image $image, $fileName, $namespace = NULL, $callback = NULL);
+	public function saveImage(Image $image, $fileName, $namespace = NULL, callable $callback = NULL);
 
 	/**
 	 * @param string $absoluteName

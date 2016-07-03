@@ -64,7 +64,7 @@ abstract class AbstractStorage implements IImageStorage {
 	 * @param callable $callback
 	 * @return PropertyAccess
 	 */
-	public function get($absoluteName, $size = NULL, $flag = NULL, $defaultImage = NULL, $callback = NULL) {
+	public function get($absoluteName, $size = NULL, $flag = NULL, $defaultImage = NULL, callable $callback = NULL) {
 		$image = $this->createImage();
 		if ($defaultImage) {
 			$image->setDefaultImage($defaultImage);
@@ -86,7 +86,7 @@ abstract class AbstractStorage implements IImageStorage {
 	 * @param callable $callback
 	 * @return string Absolute name
 	 */
-	public function saveUpload(FileUpload $fileUpload, $namespace = NULL, $callback = NULL) {
+	public function saveUpload(FileUpload $fileUpload, $namespace = NULL, callable $callback = NULL) {
 		if (!$fileUpload->isOk() || !$fileUpload->isImage()) {
 			return NULL;
 		}
@@ -111,7 +111,7 @@ abstract class AbstractStorage implements IImageStorage {
 	 * @param callable $callback
 	 * @return string AbsoluteName
 	 */
-	public function saveImage(Image $image, $fileName, $namespace = NULL, $callback = NULL) {
+	public function saveImage(Image $image, $fileName, $namespace = NULL, callable $callback = NULL) {
 		$newImage = $this->createImage();
 		$newImage->setName($fileName);
 		$newImage->setNamespace($namespace);
