@@ -4,7 +4,14 @@
 Automatic uploading and deleting of image with preview.
 
 **Installation:**
-Extension automatically register addons to nette forms (can be disabled in config).
+Extension automatically register addons to nette forms.
+
+We can disable in config:
+```php
+images:
+    registration:
+        upload: no
+```
 
 **Usage:**
 
@@ -29,7 +36,7 @@ protected function createComponentForm() {
 public function successForm($form, $values) {
     $row = $this->getFromDatabase();
     
-    $row->upload = $values->upload; // Contains e.g. namespace/unikatniNazevObrazku.png or NULL (when input not filled or checkbox is checked)
+    $row->upload = $values->upload; // Contains e.g. namespace/uniqueNameOfImage.png or NULL (when input not filled or checkbox is checked)
 
     $row->update();
 }
@@ -42,11 +49,18 @@ public function successForm($form, $values) {
 
 $upload->getCheckbox()->setHeight(150); // Height of preview
 $upload->getCheckbox()->setWidth(150); // Width of preview
+$upload->getCheckbox()->caption = 'My caption'; // Sets caption locally
+WebChemistry\Images\Controls\Checkbox::$globalCaption = 'My global caption'; // Sets caption globally
 
 ```
 
 ## MultiUpload
-Creates preview of uploaded images with checkbox.
+Auto-registration disabling:
+```yaml
+images:
+    registration:
+        multiUpload: no
+```
 
 ```php
 protected function createComponentForm() {

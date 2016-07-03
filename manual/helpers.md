@@ -4,11 +4,9 @@
 
 ```php
 
-class MyHelper extends WebChemistry\Images\Helpers\AbstractHelper {
+class MyHelper implements WebChemistry\Images\Helpers\IHelper {
 
-	public function invoke(Image $image, $parameter = NULL) {
-		$array = $this->formatParameters($parameter);
-		
+	public function invoke(Image $image, array $parameters) {
 		$image->sharpen();
 	}
 	

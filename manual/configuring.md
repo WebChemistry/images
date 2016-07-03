@@ -13,5 +13,11 @@ image:
 	helpers:
 		crop: WebChemistry\Images\Helpers\Crop
 		sharpen: WebChemistry\Images\Helpers\Sharpen
-		quality: WebChemistry\Images\Helpers\Quality
+	checkbox:
+	    caption: NULL # Sets caption globally
+	quality: 85 # Sets quality globally
+	callbacks: # More in section events
+	    onCreate: []
+	    onSave: []
+	    onUploadSave: []
 ```

@@ -23,7 +23,7 @@ class ImagePresenter extends BasePresenter {
 
     public function afterUpload($form, $values) {
         /** @var \WebChemistry\Images\Image\Image $file */
-        $absoluteName = $this->imageStorage->saveUpload($values->upload, 'namespace'); // return namespace/nazevObrazku.xxx
+        $absoluteName = $this->imageStorage->saveUpload($values->upload, 'namespace'); // return namespace/nameOfImage.xxx
     }
 
 }
