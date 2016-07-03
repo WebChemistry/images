@@ -37,15 +37,7 @@ abstract class AbstractStorage implements IImageStorage {
 	 */
 	private function extractHelpers(array $helpers) {
 		foreach ($helpers as $name => $class) {
-			if (!is_object($class)) {
-				$helpers[$name] = new $class;
-			} else {
-				$helpers[$name] = $class;
-			}
-
-			if (!$helpers[$name] instanceof IHelper) {
-				throw new ImageStorageException("Helper '$name' must be instance of " . IHelper::class);
-			}
+			$helpers[$name] = !is_object($class) ? new $class : $class;
 		}
 
 		return $helpers;
