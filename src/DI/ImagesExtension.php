@@ -3,7 +3,15 @@
 namespace WebChemistry\Images\DI;
 
 use Nette;
+use WebChemistry\Images\Controls\Checkbox;
+use WebChemistry\Images\Controls\MultiUpload;
+use WebChemistry\Images\Controls\Upload;
+use WebChemistry\Images\FileStorage\FileStorage;
+use WebChemistry\Images\Helpers\Crop;
+use WebChemistry\Images\Helpers\Sharpen;
+use WebChemistry\Images\IImageStorage;
 use WebChemistry\Images\ImageStorageException;
+use WebChemistry\Images\Template\Macros;
 
 class ImagesExtension extends Nette\DI\CompilerExtension {
 
@@ -17,8 +25,8 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		'assetsDir' => 'assets',
 		'wwwDir' => '%wwwDir%',
 		'helpers' => [
-			'crop' => 'WebChemistry\Images\Helpers\Crop',
-			'sharpen' => 'WebChemistry\Images\Helpers\Sharpen'
+			'crop' => Crop::class,
+			'sharpen' => Sharpen::class
 		],
 		'checkbox' => [
 			'caption' => NULL
@@ -31,15 +39,15 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		$config = $this->getSettings();
 
 		$builder->addDefinition($this->prefix('storage'))
-				->setClass('WebChemistry\Images\AbstractStorage')
-				->setFactory('WebChemistry\Images\FileStorage\FileStorage', [$config['defaultImage'], $config]);
+				->setClass(IImageStorage::class)
+				->setFactory(FileStorage::class, [$config['defaultImage'], $config]);
 	}
 
 	public function beforeCompile() {
 		$builder = $this->getContainerBuilder();
 
 		$builder->getDefinition('nette.latteFactory')
-				->addSetup('WebChemistry\Images\Template\Macros::install(?->getCompiler())', array('@self'));
+				->addSetup(Macros::class . '::install(?->getCompiler())', array('@self'));
 	}
 
 	/**
@@ -73,15 +81,15 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		$config = $this->getSettings();
 
 		if ($config['registration']['upload'] && class_exists('Nette\Forms\Form')) {
-			$init->addBody('WebChemistry\Images\Controls\Upload::register();');
+			$init->addBody(Upload::class . '::register();');
 		}
 
 		if ($config['registration']['multiUpload'] && class_exists('Nette\Forms\Form')) {
-			$init->addBody('WebChemistry\Images\Controls\MultiUpload::register();');
+			$init->addBody(MultiUpload::class . '::register();');
 		}
 
 		if ($config['checkbox']['caption']) {
-			$init->addBody('WebChemistry\Images\Controls\Checkbox::$globalCaption = ?;', [$config['checkbox']['caption']]);
+			$init->addBody(Checkbox::class . '::$globalCaption = ?;', [$config['checkbox']['caption']]);
 		}
 	}
 }
