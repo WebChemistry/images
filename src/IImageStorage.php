@@ -46,4 +46,11 @@ interface IImageStorage {
 	 */
 	public function delete($absoluteName);
 
+	/**
+	 * @param callable $callback
+	 * @param string $name
+	 * @return self
+	 */
+	public function addEvent(callable $callback, $name);
+
 }

@@ -19,6 +19,13 @@ abstract class AbstractStorage implements IImageStorage {
 	/** @var array */
 	protected $settings;
 
+	/** @var array */
+	protected $events = [
+		'onCreate' => [],
+		'onSave' => [],
+		'onUploadSave' => []
+	];
+
 	/**
 	 * @param string $defaultImage
 	 * @param array $settings
@@ -28,6 +35,17 @@ abstract class AbstractStorage implements IImageStorage {
 		$this->defaultImage = $defaultImage;
 		$this->settings = $settings;
 		$this->helpers = $this->extractHelpers($settings['helpers']);
+	}
+
+	/**
+	 * @param callable $callback
+	 * @param string $name
+	 * @return self
+	 */
+	public function addEvent(callable $callback, $name) {
+		$this->events[$name][] = $callback;
+
+		return $this;
 	}
 
 	/**

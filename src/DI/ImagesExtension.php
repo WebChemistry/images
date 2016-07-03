@@ -49,6 +49,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		$builder = $this->getContainerBuilder();
 		$config = $this->getSettings();
 
+		unset($config['events']);
 		$builder->addDefinition($this->prefix('storage'))
 				->setClass(IImageStorage::class)
 				->setFactory($config['imageStorage'], [$config['defaultImage'], $config]);
@@ -56,9 +57,26 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 	public function beforeCompile() {
 		$builder = $this->getContainerBuilder();
+		$config = $this->getSettings();
+
+		$storage = $builder->getDefinition($this->prefix('storage'));
 
 		$builder->getDefinition('nette.latteFactory')
 				->addSetup(Macros::class . '::install(?->getCompiler())', array('@self'));
+
+		foreach ($config['events'] as $name => $events) {
+			foreach ($events as $event) {
+				if (strpos($event, '::') !== FALSE) {
+					list($class, $method) = explode('::', $event);
+					if (strpos($event, '@') !== FALSE) {
+						$event = [$builder->getDefinition(substr($class, 1)), $method];
+					} else {
+						$event = [new $class, $method];
+					}
+				}
+				$storage->addSetup('addEvent', [$event, $name]);
+			}
+		}
 	}
 
 	/**
@@ -75,11 +93,8 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			if (!is_int($quality) || !Validators::isInRange($quality, [0, 100])) {
 				throw new ImageStorageException('Quality must be an integer from 0 to 100.');
 			}
-			foreach ($config['events'] as $name => $array) {
+			foreach ($config['events'] as $name => &$array) {
 				Validators::assert($array, 'array');
-				foreach ($array as $callback) {
-					Nette\Utils\Callback::check($callback);
-				}
 			}
 			foreach ($config['helpers'] as $name => $class) {
 				if (!class_exists($class) || $class instanceof IHelper) {
