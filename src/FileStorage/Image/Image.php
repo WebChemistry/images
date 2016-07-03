@@ -66,12 +66,11 @@ class Image extends Folders {
 		return $this;
 	}
 
+	/**
+	 * @return string
+	 */
 	private function getPathBefore() {
-		if ($this->isBaseUri()) {
-			return $this->baseUri;
-		} else {
-			return $this->basePath;
-		}
+		return $this->isBaseUri() ? $this->baseUri : $this->basePath;
 	}
 
 	/**
@@ -128,7 +127,7 @@ class Image extends Folders {
 			}
 
 			foreach ($this->onCreate as $callback) {
-				$callback($image);
+				$callback($image, $this);
 			}
 
 			$this->createDirectories();

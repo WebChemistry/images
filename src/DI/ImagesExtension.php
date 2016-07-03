@@ -31,7 +31,10 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		'checkbox' => [
 			'caption' => NULL
 		],
-		'quality' => 85
+		'quality' => 85,
+		'callbacks' => [
+			'onCreate' => []
+		]
 	];
 
 	public function loadConfiguration() {
