@@ -8,7 +8,7 @@ use Nette\Utils\Image;
 use WebChemistry\Images\Helpers\IHelper;
 use WebChemistry\Images\Image\PropertyAccess;
 
-abstract class AbstractStorage {
+abstract class AbstractStorage implements IImageStorage {
 
 	/** @var string */
 	protected $defaultImage;
