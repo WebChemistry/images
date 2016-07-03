@@ -41,6 +41,9 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		]
 	];
 
+	/** @var array */
+	private $settings = [];
+
 	public function loadConfiguration() {
 		$builder = $this->getContainerBuilder();
 		$config = $this->getSettings();
@@ -62,27 +65,31 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 	 * @return array
 	 */
 	public function getSettings() {
-		$config = $this->validateConfig($this->defaults);
-		$config['wwwDir'] = Nette\DI\Helpers::expand($config['wwwDir'], $this->getContainerBuilder()->parameters);
+		if (!$this->settings) {
+			$config = $this->validateConfig($this->defaults);
+			$config['wwwDir'] = Nette\DI\Helpers::expand($config['wwwDir'], $this->getContainerBuilder()->parameters);
 
-		// Validation
-		$quality = $config['quality'];
-		if (!is_int($quality) || !Validators::isInRange($quality, [0, 100])) {
-			throw new ImageStorageException('Quality must be an integer from 0 to 100.');
-		}
-		foreach ($config['callbacks'] as $name => $array) {
-			Validators::assert($array, 'array');
-			foreach ($array as $callback) {
-				Nette\Utils\Callback::check($callback);
+			// Validation
+			$quality = $config['quality'];
+			if (!is_int($quality) || !Validators::isInRange($quality, [0, 100])) {
+				throw new ImageStorageException('Quality must be an integer from 0 to 100.');
 			}
-		}
-		foreach ($config['helpers'] as $name => $class) {
-			if (!class_exists($class) || $class instanceof IHelper) {
-				throw new ImageStorageException("Helper $name must be instance of " . IHelper::class);
+			foreach ($config['callbacks'] as $name => $array) {
+				Validators::assert($array, 'array');
+				foreach ($array as $callback) {
+					Nette\Utils\Callback::check($callback);
+				}
 			}
+			foreach ($config['helpers'] as $name => $class) {
+				if (!class_exists($class) || $class instanceof IHelper) {
+					throw new ImageStorageException("Helper $name must be instance of " . IHelper::class);
+				}
+			}
+
+			$this->settings = $config;
 		}
 
-		return $config;
+		return $this->settings;
 	}
 
 	/**
