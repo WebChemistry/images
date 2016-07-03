@@ -68,8 +68,7 @@ class FoldersTest extends \Codeception\TestCase\Test {
 		$this->folder->addHelper(new WebChemistry\Images\Helpers\Sharpen, 'sharpen');
 		$this->folder->addHelper(new WebChemistry\Images\Helpers\Crop, 'crop');
 		$this->folder->parseHelpers(['sharpen', 'crop:20, 50, 150']);
-		$hash = md5('WebChemistry\Images\Helpers\SharpenWebChemistry\Images\Helpers\Crop20,50,150');
-		$this->assertSame(__DIR__ . '/../_data/assets/namespace/250x150_8-' . $hash . '/myprefix' . FolderMock::PREFIX_SEP . 'file.jpg',
+		$this->assertSame(__DIR__ . '/../_data/assets/namespace/250x150_8-sharpen-crop.20.50.150/myprefix' . FolderMock::PREFIX_SEP . 'file.jpg',
 			$this->folder->getAbsolutePath());
 	}
 

@@ -149,7 +149,7 @@ class PropertyAccessTest extends \Codeception\TestCase\Test {
 		$this->assertNull($this->property->getHash());
 
 		$this->property->parseHelpers(['sharpen', 'crop:20, 50, 150']);
-		$this->assertSame(md5('WebChemistry\Images\Helpers\SharpenWebChemistry\Images\Helpers\Crop20,50,150'), $this->property->getHash());
+		$this->assertSame('-sharpen-crop.20.50.150', $this->property->getHash());
 	}
 
 	public function testDefaultImage() {

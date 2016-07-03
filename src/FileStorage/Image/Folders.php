@@ -154,11 +154,7 @@ abstract class Folders extends PropertyAccess {
 	 * @return string
 	 */
 	private function hashFolder() {
-		if ($hash = $this->getHash()) {
-			return '-' . $hash;
-		}
-
-		return NULL;
+		return $this->getHash();
 	}
 
 	/**

@@ -50,7 +50,7 @@ abstract class PropertyAccess extends Nette\Object {
 	/** @var string */
 	private $suffix;
 
-	/** @var array [class, parameters] */
+	/** @var array [class, parameters, name] */
 	protected $useHelpers = [];
 
 	/** @var string */
@@ -119,6 +119,13 @@ abstract class PropertyAccess extends Nette\Object {
 	/************************* Helpers **************************/
 
 	/**
+	 * @param string $string
+	 */
+	protected function removeAllSpaces($string) {
+		return preg_replace('#\s+#', '', $string);
+	}
+
+	/**
 	 * @return string
 	 */
 	protected function getHash() {
@@ -127,12 +134,15 @@ abstract class PropertyAccess extends Nette\Object {
 		}
 
 		$hash = NULL;
-
 		foreach ($this->useHelpers as $parameters) {
-			$hash .= preg_replace('#\s+#', '', (is_object($parameters[0]) ? get_class($parameters[0]) : $parameters[0])) . preg_replace('#\s+#', '', $parameters[1]);
+			list(, $params, $name) = $parameters;
+			$hash .= '-' . $name;
+			if ($params) {
+				$hash .= '.' . str_replace(',', '.', $params);
+			}
 		}
 
-		return md5($hash);
+		return $hash;
 	}
 
 	/**
@@ -189,12 +199,11 @@ abstract class PropertyAccess extends Nette\Object {
 			if (!preg_match('#([a-zA-Z]+)(:(.+))?#', $parameter, $matches)) {
 				throw new WebChemistry\Images\ImageStorageException("Regular expression '$parameter' is not valid.");
 			}
-
 			if (!isset($this->helpers[$matches[1]])) {
 				throw new WebChemistry\Images\ImageStorageException("Helper '$matches[1]' is not exists.");
 			}
 
-			$this->useHelpers[] = array($this->helpers[$matches[1]], isset($matches[3]) ? $matches[3] : NULL);
+			$this->useHelpers[] = [$this->helpers[$matches[1]], isset($matches[3]) ? $this->removeAllSpaces(trim($matches[3], ',')) : NULL, $matches[1]];
 		}
 	}
 

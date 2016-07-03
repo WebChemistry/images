@@ -91,7 +91,7 @@ class FileStorageTest extends \Codeception\TestCase\Test {
 		$absoluteName = $this->storage->saveUpload($upload);
 		$image = $this->storage->get($absoluteName);
 
-		$this->assertSame('tmp/20%25x150_8-8191d4d245b5af1a1e4b60a75ac32f4c/image.gif',
+		$this->assertSame('tmp/20%25x150_8-sharpen/image.gif',
 			$this->storage->get($absoluteName, '20%x150|sharpen', 'exact')->getLink());
 
 		$this->assertTrue($image->isExists());
@@ -106,7 +106,7 @@ class FileStorageTest extends \Codeception\TestCase\Test {
 		$absoluteName = $this->storage->saveUpload($upload, 'namespace/namespace');
 		$image = $this->storage->get($absoluteName);
 
-		$this->assertSame('tmp/namespace/namespace/20%25x150_8-8191d4d245b5af1a1e4b60a75ac32f4c/image.gif',
+		$this->assertSame('tmp/namespace/namespace/20%25x150_8-sharpen/image.gif',
 			$this->storage->get($absoluteName, '20%x150|sharpen', 'exact')->getLink());
 
 		$this->assertTrue($image->isExists());
