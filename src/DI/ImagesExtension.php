@@ -33,7 +33,9 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		],
 		'quality' => 85,
 		'callbacks' => [
-			'onCreate' => []
+			'onCreate' => [],
+			'onSave' => [],
+			'onUploadSave' => []
 		]
 	];
 

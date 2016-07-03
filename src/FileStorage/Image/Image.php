@@ -7,8 +7,14 @@ use WebChemistry\Images\ImageStorageException;
 
 class Image extends Folders {
 
-	/** @var Callback[] */
+	/** @var callable[] */
 	public $onCreate = [];
+
+	/** @var callable[] */
+	public $onSave = [];
+
+	/** @var callable[] */
+	public $onUploadSave = [];
 
 	/** @var string */
 	public $basePath;
@@ -81,6 +87,10 @@ class Image extends Folders {
 	public function save(Nette\Utils\Image $image, $imageType = NULL) {
 		$this->createDirectories();
 
+		foreach ($this->onSave as $callback) {
+			$callback($this, $image, $imageType);
+		}
+
 		$image->save($this->getUploadPath(), $this->getQuality(), $imageType);
 	}
 
@@ -91,6 +101,10 @@ class Image extends Folders {
 	 */
 	public function saveUpload(Nette\Http\FileUpload $image, $imageType = NULL) {
 		$this->createDirectories();
+
+		foreach ($this->onUploadSave as $callback) {
+			$callback($this, $image, $imageType);
+		}
 
 		$image->move($this->getUploadPath());
 	}
@@ -127,7 +141,7 @@ class Image extends Folders {
 			}
 
 			foreach ($this->onCreate as $callback) {
-				$callback($image, $this);
+				$callback($this, $image);
 			}
 
 			$this->createDirectories();
