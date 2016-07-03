@@ -38,7 +38,8 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			'onCreate' => [],
 			'onSave' => [],
 			'onUploadSave' => []
-		]
+		],
+		'imageStorage' => FileStorage::class
 	];
 
 	/** @var array */
@@ -50,7 +51,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 		$builder->addDefinition($this->prefix('storage'))
 				->setClass(IImageStorage::class)
-				->setFactory(FileStorage::class, [$config['defaultImage'], $config]);
+				->setFactory($config['imageStorage'], [$config['defaultImage'], $config]);
 	}
 
 	public function beforeCompile() {
