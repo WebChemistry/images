@@ -67,7 +67,7 @@ class Checkbox extends \Nette\Forms\Controls\Checkbox {
 		}
 
 		$html = Html::el('div');
-		$html->class[] = 'preview-image-container';
+		$html->addClass('preview-image-container');
 		$html->setHtml(Html::el('img')->src($this->getImageClass()->getLink())->height($this->height)
 			->width($this->width));
 
