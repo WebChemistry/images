@@ -5,7 +5,6 @@ namespace WebChemistry\Images;
 use Nette\Http\FileUpload;
 use Nette\Utils\Callback;
 use Nette\Utils\Image;
-use WebChemistry\Images\Helpers\IHelper;
 use WebChemistry\Images\Image\PropertyAccess;
 
 abstract class AbstractStorage implements IImageStorage {
