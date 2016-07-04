@@ -81,8 +81,8 @@ abstract class Folders extends PropertyAccess {
 	}
 
 	/**
-	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-1sa5fa5fs15afs61/prefix_._filename.jpg
-	 *         \-------------------------------------------------------------------------------/
+	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-sharpen/prefix_._filename.jpg
+	 *         \----------------------------------------------------------------------/
 	 * @return string
 	 */
 	public function getRelativePath() {
@@ -103,8 +103,8 @@ abstract class Folders extends PropertyAccess {
 	}
 
 	/**
-	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-1sa5fa5fs15afs61/prefix_._filename.jpg
-	 *                                         \-------------------------/
+	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-sharpen/prefix_._filename.jpg
+	 *                                         \----------------/
 	 * @return string
 	 */
 	private function baseFolder() {
@@ -112,7 +112,7 @@ abstract class Folders extends PropertyAccess {
 	}
 
 	/**
-	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-1sa5fa5fs15afs61/prefix_._filename.jpg
+	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-sharpen/prefix_._filename.jpg
 	 *                                         \------/
 	 * @return string
 	 */
@@ -136,7 +136,7 @@ abstract class Folders extends PropertyAccess {
 	}
 
 	/**
-	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-1sa5fa5fs15afs61/prefix_._filename.jpg
+	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-sharpen/prefix_._filename.jpg
 	 *                                                \-/
 	 * @return string
 	 */
@@ -149,8 +149,8 @@ abstract class Folders extends PropertyAccess {
 	}
 
 	/**
-	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-1sa5fa5fs15afs61/prefix_._filename.jpg
-	 *                                                   \----------------/
+	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-sharpen/prefix_._filename.jpg
+	 *                                                   \-------/
 	 * @return string
 	 */
 	private function hashFolder() {
@@ -158,8 +158,8 @@ abstract class Folders extends PropertyAccess {
 	}
 
 	/**
-	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-1sa5fa5fs15afs61/prefix_._filename.jpg
-	 * \-----------------------------------------------------------------/
+	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-sharpen/prefix_._filename.jpg
+	 * \---------------------------------------------------------/
 	 *
 	 * @return string
 	 */
@@ -168,7 +168,7 @@ abstract class Folders extends PropertyAccess {
 	}
 
 	/**
-	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-1sa5fa5fs15afs61/prefix_._filename.jpg
+	 * %wwwDir%/%assetsDir%/namespace/namespace/120x150_8-sharpen/prefix_._filename.jpg
 	 * \---------------------------------------/
 	 *
 	 * @return string
