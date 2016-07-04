@@ -83,6 +83,7 @@ class Image extends Folders {
 	 * @param Nette\Utils\Image $image
 	 * @param string $imageType
 	 * @throws ImageStorageException
+	 * @return self
 	 */
 	public function save(Nette\Utils\Image $image, $imageType = NULL) {
 		$this->createDirectories();
@@ -98,6 +99,7 @@ class Image extends Folders {
 	 * @param Nette\Http\FileUpload $image
 	 * @param string $imageType
 	 * @throws ImageStorageException
+	 * @return self
 	 */
 	public function saveUpload(Nette\Http\FileUpload $image, $imageType = NULL) {
 		$this->createDirectories();
