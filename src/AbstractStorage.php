@@ -3,7 +3,6 @@
 namespace WebChemistry\Images;
 
 use Nette\Http\FileUpload;
-use Nette\Utils\Callback;
 use Nette\Utils\Image;
 use WebChemistry\Images\Image\PropertyAccess;
 
@@ -82,7 +81,6 @@ abstract class AbstractStorage implements IImageStorage {
 		$image->setMixedSize($size);
 		$image->setFlag($flag);
 		if ($callback) {
-			Callback::check($callback);
 			$callback($image);
 		}
 
@@ -104,7 +102,6 @@ abstract class AbstractStorage implements IImageStorage {
 		$image->setNamespace($namespace);
 		$image->setName($fileUpload->getSanitizedName());
 		if ($callback) {
-			Callback::check($callback);
 			$callback($image);
 		}
 
@@ -125,7 +122,6 @@ abstract class AbstractStorage implements IImageStorage {
 		$newImage->setName($fileName);
 		$newImage->setNamespace($namespace);
 		if ($callback) {
-			Callback::check($callback);
 			$callback($newImage);
 		}
 
