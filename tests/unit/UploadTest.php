@@ -230,13 +230,29 @@ class UploadTest extends \Codeception\TestCase\Test {
 
 		$this->assertTrue($form->isSubmitted());
 		$this->assertTrue($isCalled);
-		$this->assertTrue($isCalled);
 		$this->assertFalse($form->hasErrors());
 		$this->assertFileExists($this->getUploadedImage());
 		$size = getimagesize($this->getUploadedImage());
 		$this->assertSame(1, $size[0]);
 		$this->assertSame(1, $size[1]);
 		$this->assertSame(self::IMAGE, $form['upload']->getValue());
+	}
+
+	public function testOnSave() {
+		$isCalled = FALSE;
+		$form = $this->sendRequestToPresenter('upload', TRUE, function (\Nette\Forms\Form $form) use (&$isCalled) {
+			$form['upload']->onSave[] = function (\WebChemistry\Images\FileStorage\Image\Image $image) use (&$isCalled) {
+				$isCalled = TRUE;
+
+				$image->setName('newName.jpg');
+				$image->setNamespace('new_namespace');
+			};
+		});
+
+		$this->assertTrue($form->isSubmitted());
+		$this->assertTrue($isCalled);
+		$this->assertFalse($form->hasErrors());
+		$this->assertFileExists($this->assetsDir . '/new_namespace/original/newName.jpg');
 	}
 
 	/************************* Helpers **************************/

@@ -149,7 +149,12 @@ class Upload extends UploadControl {
 					throw new ImageStorageException('Callback must return value instance of Nette\Utils\Image');
 				}
 			}
-			$this->uploadedImage = $this->value = $this->storage->saveImage($image, $this->value->getSanitizedName(), $this->namespace);
+			$this->uploadedImage = $this->value = $this->storage->saveImage($image, $this->value->getSanitizedName(), $this->namespace, function ($image) {
+				foreach ($this->onSave as $callback) {
+					Callback::check($callback);
+					$callback($image);
+				}
+			});
 		} else {
 			$this->value = $this->defaultValue;
 		}
