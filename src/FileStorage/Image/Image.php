@@ -26,7 +26,7 @@ class Image extends Folders {
 	 * @param string $wwwDir
 	 * @param string $assetsDir
 	 */
-	public function __construct($wwwDir = NULL, $assetsDir = NULL) {
+	public function __construct($wwwDir, $assetsDir) {
 		parent::__construct($wwwDir, $assetsDir);
 	}
 
