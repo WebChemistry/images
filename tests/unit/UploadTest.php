@@ -216,10 +216,10 @@ class UploadTest extends \Codeception\TestCase\Test {
 
 	/************************* Events **************************/
 
-	public function testOnBeforeSave() {
+	public function testOnUpload() {
 		$isCalled = FALSE;
 		$form = $this->sendRequestToPresenter('upload', TRUE, function (\Nette\Forms\Form $form) use (&$isCalled) {
-			$form['upload']->onBeforeSave[] = function (\Nette\Utils\Image $image) use (&$isCalled) {
+			$form['upload']->onUpload[] = function (\Nette\Utils\Image $image) use (&$isCalled) {
 				$isCalled = TRUE;
 
 				$image->resize(1,1);

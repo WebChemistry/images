@@ -43,8 +43,14 @@ class Upload extends UploadControl {
 	/** @var string Used in success, error callbacks */
 	private $uploadedImage;
 
-	/** @var callable[] */
+	/** @var callable[] @deprecated */
 	public $onBeforeSave = [];
+
+	/** @var callable[] */
+	public $onSave = [];
+
+	/** @var callable[] */
+	public $onUpload = [];
 
 	/**
 	 * @param string $label
@@ -136,7 +142,7 @@ class Upload extends UploadControl {
 
 		if ($this->value instanceof FileUpload && $this->value->isOk()) { // Upload
 			$image = $this->value->toImage();
-			foreach ($this->onBeforeSave as $callback) {
+			foreach (array_merge($this->onBeforeSave, $this->onUpload) as $callback) {
 				Callback::check($callback);
 				$image = $callback($image);
 				if (!$image instanceof Image) {
