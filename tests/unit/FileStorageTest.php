@@ -19,6 +19,7 @@ class FileStorageTest extends \Codeception\TestCase\Test {
 		] + (new \WebChemistry\Images\DI\ImagesExtension)->defaults, new \Nette\Http\Request(new \Nette\Http\UrlScript()));
 		@copy(__DIR__ . '/../_data/image.gif', __DIR__ . '/../_data/assets/original/image.gif'); // move in FileUpload
 		$this->assetsDir .= '/tmp';
+		@mkdir($this->assetsDir);
 	}
 
 	protected function _after() {
