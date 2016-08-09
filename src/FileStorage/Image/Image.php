@@ -47,7 +47,11 @@ class Image extends Folders {
 		$files = Nette\Utils\Finder::findFiles($this->getNameWithPrefix())->from($directory)->limitDepth(1);
 		foreach ($files as $file) {
 			@unlink($file);
+			$dir = dirname((string) $file);
+			@rmdir($dir); // can have files
 		}
+
+		@rmdir($directory); // can have directories
 
 		return (bool) $files;
 	}

@@ -286,6 +286,9 @@ class UploadTest extends \Codeception\TestCase\Test {
 	}
 
 	protected function copyImage($dest) {
+		if (!file_exists(dirname($dest))) {
+			mkdir(dirname($dest), 0777, TRUE);
+		}
 		@copy(__DIR__ . '/../_data/image.gif', $dest);
 	}
 

@@ -5,16 +5,20 @@ class FileStorageTest extends \Codeception\TestCase\Test {
 	/** @var \WebChemistry\Images\FileStorage\FileStorage */
 	private $storage;
 
+	/** @var string */
+	private $assetsDir;
+
 	protected function _before() {
 		$this->storage = new \WebChemistry\Images\FileStorage\FileStorage('image.gif', [
 			'helpers' => [
 				'sharpen' => new \WebChemistry\Images\Helpers\Sharpen()
 			],
-			'wwwDir' => __DIR__ . '/../_data',
+			'wwwDir' => $this->assetsDir = __DIR__ . '/../_data',
 			'assetsDir' => 'tmp',
 			'defaultImage' => 'image.gif'
 		] + (new \WebChemistry\Images\DI\ImagesExtension)->defaults, new \Nette\Http\Request(new \Nette\Http\UrlScript()));
 		@copy(__DIR__ . '/../_data/image.gif', __DIR__ . '/../_data/assets/original/image.gif'); // move in FileUpload
+		$this->assetsDir .= '/tmp';
 	}
 
 	protected function _after() {
@@ -119,6 +123,20 @@ class FileStorageTest extends \Codeception\TestCase\Test {
 	public function testQuality() {
 		$image = $this->storage->createImage();
 		$this->assertSame(85, $image->getQuality());
+	}
+
+	public function testDelete() {
+		$this->storage->saveUpload($this->createUpload());
+		$this->assertFileExists($this->assetsDir . '/original');
+		$this->assertFileExists($this->assetsDir . '/original/image.gif');
+
+		$image = $this->storage->createImage();
+		$image->setAbsoluteName('image.gif');
+
+		$image->delete();
+
+		$this->assertFileNotExists($this->assetsDir . '/original/image.gif');
+		$this->assertFileNotExists($this->assetsDir . '/original');
 	}
 
 }
