@@ -17,10 +17,10 @@ class Image extends Folders {
 	public $onUploadSave = [];
 
 	/** @var string */
-	public $basePath;
+	protected $basePath;
 
 	/** @var string */
-	public $baseUri;
+	protected $baseUri;
 
 	/**
 	 * @param string $wwwDir
