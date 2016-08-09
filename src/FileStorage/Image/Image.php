@@ -25,14 +25,9 @@ class Image extends Folders {
 	/**
 	 * @param string $wwwDir
 	 * @param string $assetsDir
-	 * @param string $absoluteName
-	 * @param string $defaultImage
 	 */
-	public function __construct($wwwDir = NULL, $assetsDir = NULL, $absoluteName = NULL, $defaultImage = NULL) {
+	public function __construct($wwwDir = NULL, $assetsDir = NULL) {
 		parent::__construct($wwwDir, $assetsDir);
-
-		$this->setAbsoluteName($absoluteName);
-		$this->setDefaultImage($defaultImage);
 	}
 
 	/**
