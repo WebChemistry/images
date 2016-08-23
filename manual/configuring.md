@@ -3,7 +3,7 @@
 **Default values:**
 
 ```yaml
-image:
+images:
     wwwDir: %wwwDir%
     assetsDir: 'assets'
     defaultImage: 'default/default.png'

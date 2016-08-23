@@ -10,7 +10,7 @@ composer require webchemistry/images
 config:
 ```yaml
 extensions:
-    images: WebChemistry\Images\DI\ImagesExtension
+    images: WebChemistry\Images\DI\Extension
 ```
 
 Presenter trait:
