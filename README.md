@@ -19,7 +19,7 @@ Presenter trait:
 <?php
 
 class BasePresenter extends Nette\Application\UI\Presenter {
-    use \WebChemistry\Images\TPresenter;
+    use WebChemistry\Images\TPresenter;
 }
 ?>
 ```
