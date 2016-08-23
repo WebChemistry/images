@@ -10,7 +10,7 @@ composer require webchemistry/images
 config:
 ```yaml
 extensions:
-    images: WebChemistry\Images\DI\ImagesExtension
+    images: WebChemistry\Images\DI\Extension
 ```
 
 Presenter trait:
@@ -19,7 +19,7 @@ Presenter trait:
 <?php
 
 class BasePresenter extends Nette\Application\UI\Presenter {
-    use WebChemistry\Images\TPresenter;
+    use \WebChemistry\Images\TPresenter;
 }
 ?>
 ```
