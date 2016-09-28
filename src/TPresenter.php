@@ -6,7 +6,7 @@ use Nette\Application\UI\ITemplate;
 
 trait TPresenter {
 
-	/** @var AbstractStorage @inject */
+	/** @var IImageStorage @inject */
 	public $imageStorage;
 
 	/**
