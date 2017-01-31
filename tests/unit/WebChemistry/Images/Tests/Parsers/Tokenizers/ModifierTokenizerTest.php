@@ -55,13 +55,15 @@ class ModifierTokenizerTest extends \Codeception\Test\Unit {
 		$tokenizer->nextToken();
 		$tokenizer->nextToken();
 
-		$this->assertSame('[', ($token = $tokenizer->nextToken())->token);
+		$token = $tokenizer->nextToken();
+		$this->assertSame('[', $token->token);
 		$this->assertSame(Token::BRACKET_LEFT, $token->type);
 
 		$tokenizer->nextToken();
 		$tokenizer->nextToken();
 
-		$this->assertSame('[', ($token = $tokenizer->nextToken())->token);
+		$token = $tokenizer->nextToken();
+		$this->assertSame('[', $token->token);
 		$this->assertSame(Token::BRACKET_LEFT, $token->type);
 	}
 
