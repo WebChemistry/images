@@ -72,7 +72,14 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			$def = $builder->addDefinition($this->prefix('storage.local'))
 				->setClass(IImageStorage::class)
 				->setFactory(LocalStorage::class,
-					[$config['local']['wwwDir'], $config['local']['assetsDir'], $modifiers, '@Nette\Http\Request', $config['local']['defaultImage']]
+					[
+						$config['local']['wwwDir'],
+						$config['local']['assetsDir'],
+						$modifiers,
+						'@' . Nette\Http\Request::class,
+						'@' . IImageFactory::class,
+						$config['local']['defaultImage'],
+					]
 				);
 
 			if ($config['default'] !== 'local') {
