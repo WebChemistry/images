@@ -54,25 +54,25 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 		// local
 		if ($config['local']['enable']) {
-			if ($config['wwwDir'] === NULL) {
-				$config['wwwDir'] = $builder->parameters['wwwDir'];
+			if ($config['local']['wwwDir'] === NULL) {
+				$config['local']['wwwDir'] = $builder->parameters['wwwDir'];
 			}
 
 			$modifiers = $builder->addDefinition($this->prefix('modifiers.local'))
 				->setClass(ModifierContainer::class)
 				->setAutowired(FALSE);
 
-			foreach ($config['modifiers'] as $modifier) {
+			foreach ($config['local']['modifiers'] as $modifier) {
 				$modifiers->addSetup('addLoader', [$modifier]);
 			}
-			foreach ($config['aliases'] as $alias => $configuration) {
+			foreach ($config['local']['aliases'] as $alias => $configuration) {
 				$modifiers->addSetup('addAlias', [$alias, ModifierParser::parse($configuration)]);
 			}
 
 			$def = $builder->addDefinition($this->prefix('storage.local'))
 				->setClass(IImageStorage::class)
 				->setFactory(LocalStorage::class,
-					[$config['wwwDir'], $config['assetsDir'], $modifiers, '@Nette\Http\Request', $config['defaultImage']]
+					[$config['local']['wwwDir'], $config['local']['assetsDir'], $modifiers, '@Nette\Http\Request', $config['local']['defaultImage']]
 				);
 
 			if ($config['default'] !== 'local') {
@@ -93,7 +93,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			$def = $builder->addDefinition($this->prefix('storage.cloudinary'))
 				->setClass(IImageStorage::class)
 				->setFactory(CloudinaryStorage::class, [
-					$config['config'], $modifiers
+					$config['cloudinary']['config'], $modifiers
 				]);
 
 			if ($config['default'] !== 'cloudinary') {
