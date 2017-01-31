@@ -14,6 +14,7 @@ use WebChemistry\Images\Storages\LocalStorage;
 use WebChemistry\Images\Template\IImageModifiers;
 use WebChemistry\Images\Template\ImageFacade;
 use WebChemistry\Images\Template\ImageModifiers;
+use WebChemistry\Images\Template\Macros;
 
 class ImagesExtension extends Nette\DI\CompilerExtension {
 
@@ -111,5 +112,13 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		$builder->addDefinition($this->prefix('template.facade'))
 			->setClass(ImageFacade::class);
 	}
+
+	public function beforeCompile() {
+		$builder = $this->getContainerBuilder();
+
+		$builder->getDefinition('nette.latteFactory')
+			->addSetup(Macros::class . '::install(?->getCompiler())', ['@self']);
+	}
+
 
 }
