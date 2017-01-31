@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/WebChemistry/images.svg?branch=master)](https://travis-ci.org/WebChemistry/images)
 
-## Installation
+## Instalace
 
 Composer:
 ```php
@@ -10,7 +10,7 @@ composer require webchemistry/images
 config:
 ```yaml
 extensions:
-    images: WebChemistry\Images\DI\Extension
+    images: WebChemistry\Images\DI\ImagesExtension
 ```
 
 Presenter trait:
@@ -24,20 +24,213 @@ class BasePresenter extends Nette\Application\UI\Presenter {
 ?>
 ```
 
-## Usage
+### Konfigurace
 
-- [Configuration](https://github.com/WebChemistry/Images/blob/master/manual/en/configuring.md)
-- [Manipulation](https://github.com/WebChemistry/Images/blob/master/manual/en/manipulation.md)
-- [Manipulation 2](https://github.com/WebChemistry/Images/blob/master/manual/en/property.md)
-- [Addons (UploadControl, MultiUpload)](https://github.com/WebChemistry/Images/blob/master/manual/en/addons.md)
-- [Macros](https://github.com/WebChemistry/Images/blob/master/manual/en/macros.md)
-- [Helpers](https://github.com/WebChemistry/Images/blob/master/manual/en/helpers.md)
+```yaml
+local: ## Nastavení pro lokalni uloziste
+    enable: yes
+    defaultImage: null
+    wwwDir: %wwwDir%
+    assetsDir: assets
+    modifiers: []
+    aliases: []
+cloudinary:
+    enable: yes
+    config:
+      apiKey: null
+      apiSecret: null
+      cloudName: null
+      secure: no
+    aliases: []
+default: local ## Vychozi uloziste [cloudinary, local]
+```
 
-## Použití
+### Tvorba aliasů
+Aliasy umožnují snadnou modifikací obrazků
 
-- [Konfigurace](https://github.com/WebChemistry/Images/blob/master/manual/cs/configuring.md)
-- [Manipulace obrázku](https://github.com/WebChemistry/Images/blob/master/manual/cs/manipulation.md)
-- [Manipulace obrázku 2](https://github.com/WebChemistry/Images/blob/master/manual/cs/property.md)
-- [Doplňky (UploadControl, MultiUpload)](https://github.com/WebChemistry/Images/blob/master/manual/cs/addons.md)
-- [Makra](https://github.com/WebChemistry/Images/blob/master/manual/cs/macros.md)
-- [Helpers](https://github.com/WebChemistry/Images/blob/master/manual/cs/helpers.md)
+**Použití jednoho modifieru**
+```yaml
+local:
+    aliases:
+      myAlias: "resize:12,50"
+```
+
+**Více modifierů**
+```yaml
+local:
+    aliases:
+      myAlias: "resize:12,50,exact|sharpen"
+```
+
+**Použití polí**
+```yaml
+cloudinary:
+    aliases:
+      myAlias: "border:[width: 4, color: #553311]"
+```
+
+### Vlastní modifiery
+V konfiguraci stačí zaregistrovat loader
+
+```yaml
+local:
+    modifiers:
+      - ModifiersLoader
+```
+
+vytvořit třídu a přidávat modifiery
+```php
+class ModifiersLoader implements WebChemistry\Images\Modifiers\ILoader {
+    
+    public function load(WebChemistry\Images\Modifiers\ModifierContainer $modifierContainer) {
+        $modifierContainer->addModifiers('custom', function (Nette\Utils\Image $image, $param) {
+            // zpracovani obrazku $image
+        });
+    }
+
+}
+```
+
+a použití
+```yaml
+local:
+    aliases:
+      custom: "custom:param1"
+```
+
+### Ukladaní obrázků
+
+**$upload** - Instance Nette\Utils\Upload
+**$location** - Cesta obrázku uložená v řetězci
+**$storage** - Instance WebChemistry\Images\IStorage
+
+Nette upload
+```php
+// vytvorime zdroj pro obrazek
+$resource = $storage->createUploadResource($upload);
+// nebo z cesty
+$resource = $storage->createLocalResource($location);
+
+// pridame namespace
+$resource->setNamespace('namespace');
+
+// ulozime
+$result = $storage->save($resource);
+
+// zobrazime url adresu
+echo $storage->link($result);
+```
+
+Před nahráním obrázku ho můžeme upravit
+```php
+$resource->setAlias("custom");
+
+// Kombinace více aliasů
+$resource->setAliases(["custom", "custom2"]);
+
+$id = $resource->getId(); // Ziskání id
+// nebo
+$id = (string) $resource;
+```
+
+Obrázek se uloží v namespace/original/obrazek.jpg
+
+### Získávání obrázků
+
+**$id** Identifikátor ziskány z uloženeho obrázku viz sekce ukládání obrázků
+
+```php
+$resource = $storage->createResource($id);
+
+$link = $storage->link($resource);
+```
+
+### Kopírování obrázků
+
+**$id** Identifikátor ziskány z uloženeho obrázku viz sekce ukládání obrázků
+
+```php
+$resource = $storage->createResource($id);
+$dest = $storage->createResource("namespace/obrazek.jpg"); 
+
+// Muzeme zmodifikovat
+$dest->setAlias("custom");
+
+$storage->copy($resource, $dest);
+```
+
+Zkopíruje se jen originální obrázek a v případně se zmodifikuje.
+
+### Přesouvání obrázků
+
+**$id** Identifikátor ziskány z uloženeho obrázku viz sekce ukládání obrázků
+
+```php
+$resource = $storage->createResource($id);
+$dest = $storage->createResource("namespace/obrazek.jpg"); 
+
+// Muzeme zmodifikovat
+$dest->setAlias("custom");
+
+$storage->move($resource, $dest);
+```
+
+### Odstranění obrázků
+
+**$id** Identifikátor ziskány z uloženeho obrázku viz sekce ukládání obrázků
+
+```php
+$resource = $storage->createResource($id);
+
+$storage->delete($id);
+```
+
+Odstraní se jak originální obrázek, tak i jeho modifikace.
+
+### Modifikace obrázků
+
+**$id** Identifikátor ziskány z uloženeho obrázku viz sekce ukládání obrázků
+
+1) Uložením
+
+```php
+$resource = $storage->createResource($id);
+$resource->setAlias("custom");
+$storage->save($resource);
+```
+Uloží se do namespace/custom/obrazek.jpg
+
+2) Získáním adresy
+
+```php
+$resource = $storage->createResource($id);
+$resource->setAlias("custom");
+echo $storage->link($resource);
+```
+Uloží se do namespace/custom/obrazek.jpg
+
+## Šablony
+
+Zobrazení obrázku
+```html
+{img 'image.jpg'}
+<img n:img="'image.jpg'">
+```
+
+Zobrazení obrázku s celou adresou
+```html
+{img 'image.jpg'|baseUri}
+<img n:img="'image.jpg'|baseUri">
+```
+
+Zvláštní výchozí obrázek
+```html
+{img 'image.jpg'|noImage:"noimage.jpg"}
+<img n:img="'image.jpg'|noImage:'noimage.jpg'">
+```
+
+Zobrazení modifikace obrázku
+```html
+{img 'image.jpg', custom}
+<img n:img="'image.jpg', custom">
+```

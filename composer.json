@@ -1,32 +1,42 @@
 {
-  "name": "webchemistry/images",
-  "type": "library",
-  "description": "Image storage for easier uploading, deleting and manipulation.",
-  "license": ["GPL-3.0"],
-  "support": {
-    "email": "antik494@gmail.com",
-    "issues": "https://github.com/AntikCz/WebChemistry/Images/issues"
-  },
-  "keywords": ["images", "storage"],
-  "authors": [
-    {
-      "name": "Antik",
-      "email": "antik494@gmail.com"
-    }
-  ],
-  "require": {
-    "nette/http": "^2.3",
-    "nette/utils": "^2.3",
-    "nette/finder": "^2.3"
-  },
-  "require-dev": {
-    "nette/di": "^2.3",
-    "latte/latte": "^2.3",
-    "codeception/codeception": "^2.1",
-    "nette/forms": "2.3",
-    "nette/application": "2.3"
-  },
-  "autoload": {
-    "classmap": ["src/"]
-  }
+	"name": "webchemistry/images",
+	"type": "library",
+	"description": "Image storage for easier uploading, deleting and manipulation.",
+	"license": [
+		"GPL-3.0"
+	],
+	"support": {
+		"email": "antik494@gmail.com",
+		"issues": "https://github.com/AntikCz/WebChemistry/Images/issues"
+	},
+	"keywords": [
+		"images",
+		"storage"
+	],
+	"authors": [
+		{
+			"name": "Antik",
+			"email": "antik494@gmail.com"
+		}
+	],
+	"require": {
+		"php": ">= 5.5",
+		"nette/http": "^2.3",
+		"nette/utils": "^2.3",
+		"nette/finder": "^2.3",
+		"nette/tokenizer": "^2.2"
+	},
+	"require-dev": {
+		"nette/di": "^2.3",
+		"latte/latte": "^2.3",
+		"codeception/codeception": "^2.1",
+		"nette/forms": "2.3",
+		"nette/application": "2.3",
+		"webchemistry/testing-helpers": "dev-master",
+	},
+	"autoload": {
+		"psr-4": {
+			"WebChemistry\\Images\\": "src/"
+		}
+	}
 }

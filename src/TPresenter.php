@@ -2,12 +2,18 @@
 
 namespace WebChemistry\Images;
 
+
 use Nette\Application\UI\ITemplate;
+use WebChemistry\Images\Template\ImageFacade;
 
 trait TPresenter {
 
-	/** @var AbstractStorage @inject */
-	public $imageStorage;
+	/** @var ImageFacade */
+	private $imageFacade;
+
+	public function inject_ImageStorage(ImageFacade $imageFacade) {
+		$this->imageFacade = $imageFacade;
+	}
 
 	/**
 	 * @param ITemplate $template
@@ -16,7 +22,7 @@ trait TPresenter {
 	public function createTemplate($template = NULL) {
 		$template = $template ? : parent::createTemplate();
 
-		$template->imageStorage = $this->imageStorage;
+		$template->_imageFacade = $this->imageFacade;
 
 		return $template;
 	}
