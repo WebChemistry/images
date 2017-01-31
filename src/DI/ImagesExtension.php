@@ -3,8 +3,12 @@
 namespace WebChemistry\Images\DI;
 
 
+use Doctrine\DBAL\Types\Type;
+use Kdyby\Doctrine\Connection;
+use Kdyby\Doctrine\DI\OrmExtension;
 use Nette;
 use WebChemistry\Images\Controls\UploadControl;
+use WebChemistry\Images\Doctrine\ImageType;
 use WebChemistry\Images\IImageStorage;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\Image\ImageFactory;
@@ -41,6 +45,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		],
 		'default' => 'local',
 		'registerControl' => TRUE,
+		'registerType' => TRUE,
 	];
 
 	/** @var array */
@@ -130,6 +135,13 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 		$builder->getDefinition('nette.latteFactory')
 			->addSetup(Macros::class . '::install(?->getCompiler())', ['@self']);
+
+		if (class_exists(Connection::class)) {
+			foreach ($builder->findByTag(OrmExtension::class) as $service) {
+				$builder->getDefinition($service)
+					->addSetup('getDatabasePlatform()->registerDoctrineTypeMapping', ['db_' . ImageType::TYPE, ImageType::TYPE]);
+			}
+		}
 	}
 
 	public function afterCompile(Nette\PhpGenerator\ClassType $class) {
@@ -137,6 +149,9 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 		if ($this->cfg['registerControl']) {
 			$init->addBody(UploadControl::class . '::register();');
+		}
+		if ($this->cfg['registerType'] && class_exists(Type::class)) {
+			$init->addBody(Type::class . '::addType(?, ?)', [ImageType::TYPE, ImageType::class]);
 		}
 	}
 

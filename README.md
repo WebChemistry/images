@@ -237,6 +237,7 @@ Zobrazení modifikace obrázku
 
 ## Formuláře
 
+Automatickou registraci provede extenze.
 S touto komponentou odpadá povinnost vytvoření třídy pro obrázek.
 ```php
 $form->addImageUpload('image', 'Obrazek')
@@ -246,4 +247,41 @@ $form->addImageUpload('image', 'Obrazek')
 $form->onSuccess[] = function ($form, array $values) use ($storage) {
     $storage->save($values['image']);
 };    
+```
+
+## Doctrine typ
+
+Automatickou registraci provede extenze.
+Položku pro obrázek lze vytvořit přes anotaci typ **image**:
+
+```php
+class Entity {
+    
+    /**
+     * @ORM\Column(type="image")
+     */
+    protected $image;
+
+}
+```
+
+**nullable=true** změna obrázku z povinného na nepovinný
+
+Uložení nového obrázku, bere jen instaci IFileStorage nebo NULL v případě nastaveného nullable v anotaci Column
+```php
+$form->onSuccess[] = function ($form, $values) {
+    $en = new Entity();
+    $en->image = $this->storage->save($values->image);
+    
+    $this->em->persist($en);
+    $this->em->flush();
+};
+```
+
+Získání obrázku
+```php
+$en = $this->em->getRepository(Entity::class)->find(1);
+if ($en->image !== NULL) { // V pripade nullable
+    $link = $this->storage->link($en->image);
+}
 ```
