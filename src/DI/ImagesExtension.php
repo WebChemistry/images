@@ -4,6 +4,7 @@ namespace WebChemistry\Images\DI;
 
 
 use Nette;
+use WebChemistry\Images\Controls\UploadControl;
 use WebChemistry\Images\IImageStorage;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\Image\ImageFactory;
@@ -39,11 +40,26 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			'aliases' => [],
 		],
 		'default' => 'local',
+		'registerControl' => TRUE,
 	];
+
+	/** @var array */
+	private $cfg = [];
+
+	private function parseConfig() {
+		if (!$this->cfg) {
+			$this->cfg = $this->validateConfig($this->defaults);
+			if ($this->cfg['local']['wwwDir'] === NULL) {
+				$this->cfg['local']['wwwDir'] = $this->getContainerBuilder()->parameters['wwwDir'];
+			}
+		}
+
+		return $this->cfg;
+	}
 
 	public function loadConfiguration() {
 		$builder = $this->getContainerBuilder();
-		$config = $this->validateConfig($this->defaults);
+		$config = $this->parseConfig();
 
 		$builder->addDefinition($this->prefix('imageFactory'))
 			->setClass(IImageFactory::class)
@@ -55,10 +71,6 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 		// local
 		if ($config['local']['enable']) {
-			if ($config['local']['wwwDir'] === NULL) {
-				$config['local']['wwwDir'] = $builder->parameters['wwwDir'];
-			}
-
 			$modifiers = $builder->addDefinition($this->prefix('modifiers.local'))
 				->setClass(ModifierContainer::class)
 				->setAutowired(FALSE);
@@ -120,5 +132,12 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			->addSetup(Macros::class . '::install(?->getCompiler())', ['@self']);
 	}
 
+	public function afterCompile(Nette\PhpGenerator\ClassType $class) {
+		$init = $class->getMethods()['initialize'];
+
+		if ($this->cfg['registerControl']) {
+			$init->addBody(UploadControl::class . '::register();');
+		}
+	}
 
 }

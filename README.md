@@ -234,3 +234,16 @@ Zobrazení modifikace obrázku
 {img 'image.jpg', custom}
 <img n:img="'image.jpg', custom">
 ```
+
+## Formuláře
+
+S touto komponentou odpadá povinnost vytvoření třídy pro obrázek.
+```php
+$form->addImageUpload('image', 'Obrazek')
+    ->setRequired()
+    ->setNamespace('namespace');
+
+$form->onSuccess[] = function ($form, array $values) use ($storage) {
+    $storage->save($values['image']);
+};    
+```
