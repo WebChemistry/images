@@ -100,8 +100,8 @@ class LocalStorage extends Storage {
 			return FALSE;
 		}
 		$image = $this->imageFactory->createFromFile($originalPath);
-		$this->makeDir($path);
 		$this->modifierContainer->modifyImage($resource, $image);
+		$this->makeDir($path);
 		$image->save($path);
 
 		return $location;
