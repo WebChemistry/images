@@ -29,9 +29,12 @@ class UploadControl extends Forms\Controls\UploadControl {
 	}
 
 	/**
-	 * @return UploadResource
+	 * @return UploadResource|null
 	 */
 	public function getValue() {
+		if (!$this->value->isOk()) {
+			return null;
+		}
 		$value = new UploadResource($this->value);
 		$value->setNamespace($this->namespace);
 
