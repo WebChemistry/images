@@ -23,7 +23,7 @@ class UploadControl extends Forms\Controls\UploadControl {
 	public function loadHttpData() {
 		parent::loadHttpData();
 
-		if ($this->value->isOk() && !$this->value->isImage()) {
+		if ($this->value->isOk() && (!$this->value->isImage() || $this->value->getContentType() === 'image/svg+xml')) {
 			$this->addError(Forms\Validator::$messages[Form::IMAGE]);
 		}
 	}
