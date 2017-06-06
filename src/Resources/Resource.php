@@ -81,14 +81,20 @@ abstract class Resource implements IResource {
 	 * @param string $alias
 	 */
 	public function setAlias($alias) {
-		$this->aliases = [$alias];
+		$isSvg = mb_strtolower(substr($this->name, -3)) === 'svg';
+	    	if (!$isSvg) {
+            		$this->aliases = [$alias];
+        	}
 	}
 
 	/**
 	 * @param array $aliases
 	 */
 	public function setAliases(array $aliases) {
-		$this->aliases = $aliases;
+		$isSvg = mb_strtolower(substr($this->name, -3)) === 'svg';
+	    	if (!$isSvg) {
+            		$this->aliases = $aliases;
+        	}		
 	}
 
 	/**
