@@ -17,7 +17,7 @@ class UploadResource extends TransferResource {
 	 * @throws ResourceException
 	 */
 	public function __construct(FileUpload $upload) {
-		if (!$upload->isOk() || !$upload->isImage()) {
+		if (!$upload->isOk() || (!$upload->isImage() && $upload->getContentType() !== 'image/svg+xml')) {
 			throw new ResourceException('Uploaded image is not ok.');
 		}
 		$this->upload = $upload;
