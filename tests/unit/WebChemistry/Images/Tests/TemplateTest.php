@@ -15,8 +15,11 @@ use WebChemistry\Images\Template\ImageFacade;
 use WebChemistry\Images\Template\ImageModifiers;
 use WebChemistry\Images\Template\Macros;
 use WebChemistry\Test\Services;
+use WebChemistry\Testing\TUnitTest;
 
 class TemplateTest extends \Codeception\Test\Unit {
+
+	use TUnitTest;
 
 	/** @var TemplateMock */
 	private $latte;
@@ -55,7 +58,7 @@ class TemplateTest extends \Codeception\Test\Unit {
 	}
 
 	protected function _after() {
-		Services::fileSystem()->removeDirRecursive(__DIR__ . '/output');
+		$this->services->fileSystem->removeDirRecursive(__DIR__ . '/output');
 	}
 
 	public function testBasicNoImage() {

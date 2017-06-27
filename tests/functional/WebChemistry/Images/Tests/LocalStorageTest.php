@@ -15,12 +15,11 @@ use WebChemistry\Images\Resources\ImageResource;
 use WebChemistry\Images\Resources\ITransferResource;
 use WebChemistry\Images\Resources\ResourceException;
 use WebChemistry\Images\Storages\LocalStorage;
-use WebChemistry\Test\Services;
-use WebChemistry\Test\TMethods;
+use WebChemistry\Testing\TUnitTest;
 
 class LocalStorageTest extends \Codeception\Test\Unit {
 
-	use TMethods;
+	use TUnitTest;
 
 	/** @var LocalStorage */
 	private $storage;
@@ -71,7 +70,7 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 	}
 
 	protected function _after() {
-		Services::fileSystem()->removeDirRecursive(__DIR__ . '/output');
+		$this->services->fileSystem->removeDirRecursive(__DIR__ . '/output');
 	}
 
 	public function testSaveImage() {
@@ -92,7 +91,7 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 	}
 
 	public function testSaveTwice() {
-		$this->assertThrowException(function () {
+		$this->assertThrownException(function () {
 			$resource = $this->createUploadResource();
 			$this->storage->save($resource);
 			$this->storage->save($resource);
@@ -111,10 +110,10 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		$dir = __DIR__ . '/output/original';
 		$this->storage->save($this->createUploadResource());
 
-		$this->assertSame(1, Services::fileSystem()->fileCount($dir));
+		$this->assertSame(1, $this->services->fileSystem->fileCount($dir));
 
 		$this->storage->save($this->createUploadResource());
-		$this->assertSame(2, Services::fileSystem()->fileCount($dir));
+		$this->assertSame(2, $this->services->fileSystem->fileCount($dir));
 	}
 
 	public function testModifiers() {
@@ -164,7 +163,7 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 	}
 
 	public function testCopySameDest() {
-		$this->assertThrowException(function () {
+		$this->assertThrownException(function () {
 			$src = $this->storage->createResource('namespace/upload.gif');
 			$dest = $this->storage->createResource('namespace/upload.gif');
 

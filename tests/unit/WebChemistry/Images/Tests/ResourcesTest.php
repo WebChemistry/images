@@ -2,15 +2,14 @@
 
 namespace WebChemistry\Images\Tests;
 
-use WebChemistry\Images\Resources\FileResource;
 use WebChemistry\Images\Resources\Resource;
 use WebChemistry\Images\Resources\ResourceException;
 use WebChemistry\Images\TypeException;
-use WebChemistry\Test\TMethods;
+use WebChemistry\Testing\TUnitTest;
 
 class ResourcesTest extends \Codeception\Test\Unit {
 
-	use TMethods;
+	use TUnitTest;
 
 	protected function _before() {
 	}
@@ -22,13 +21,13 @@ class ResourcesTest extends \Codeception\Test\Unit {
 		$resource = new ResourceMock('image.gif');
 		$this->assertSame('image.gif', $resource->getName());
 
-		$this->assertThrowException(function () {
+		$this->assertThrownException(function () {
 			new ResourceMock(NULL);
 		}, TypeException::class);
-		$this->assertThrowException(function () {
+		$this->assertThrownException(function () {
 			new ResourceMock('');
 		}, TypeException::class);
-		$this->assertThrowException(function () {
+		$this->assertThrownException(function () {
 			new ResourceMock(5);
 		}, TypeException::class);
 	}
@@ -40,10 +39,10 @@ class ResourcesTest extends \Codeception\Test\Unit {
 		$resource = new ResourceMock('image.gif', 'namespace/namespace');
 		$this->assertSame('namespace/namespace', $resource->getNamespace());
 
-		$this->assertThrowException(function () {
+		$this->assertThrownException(function () {
 			new ResourceMock('image.gif', 5);
 		}, TypeException::class);
-		$this->assertThrowException(function () {
+		$this->assertThrownException(function () {
 			new ResourceMock('image.gif', 'namespace@');
 		}, ResourceException::class);
 	}
@@ -58,11 +57,11 @@ class ResourcesTest extends \Codeception\Test\Unit {
 		$this->assertSame('image.gif', $resource->getName());
 		$this->assertNull($resource->getNamespace());
 
-		$this->assertThrowException(function () {
+		$this->assertThrownException(function () {
 			new ResourceIdMock(NULL);
 		}, ResourceException::class);
 
-		$this->assertThrowException(function () {
+		$this->assertThrownException(function () {
 			new ResourceIdMock(10);
 		}, ResourceException::class);
 	}

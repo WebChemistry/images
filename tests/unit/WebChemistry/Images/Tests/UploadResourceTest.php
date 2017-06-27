@@ -5,11 +5,11 @@ use Nette\Http\FileUpload;
 use Nette\Utils\Image;
 use WebChemistry\Images\Resources\ResourceException;
 use WebChemistry\Images\Resources\Transfer\UploadResource;
-use WebChemistry\Test\TMethods;
+use WebChemistry\Testing\TUnitTest;
 
 class UploadResourceTest extends \Codeception\Test\Unit {
 
-	use TMethods;
+	use TUnitTest;
 
 	protected function _before() {
 	}
@@ -34,7 +34,7 @@ class UploadResourceTest extends \Codeception\Test\Unit {
 	}
 
 	public function testInvalidUpload() {
-		$this->assertThrowException(function () {
+		$this->assertThrownException(function () {
 			$upload = new FileUpload([
 				'name' => 'image.gif',
 				'type' => 'image/gif',
@@ -44,7 +44,7 @@ class UploadResourceTest extends \Codeception\Test\Unit {
 			]);
 			new UploadResource($upload);
 		}, ResourceException::class);
-		$this->assertThrowException(function () {
+		$this->assertThrownException(function () {
 			$upload = new FileUpload([
 				'name' => 'text',
 				'type' => 'text',

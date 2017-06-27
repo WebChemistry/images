@@ -3,11 +3,11 @@ namespace WebChemistry\Images\Tests\Parsers\Tokenizers;
 
 use WebChemistry\Images\Parsers\Tokenizers\ModifierTokenizer;
 use WebChemistry\Images\Parsers\Tokenizers\Token;
-use WebChemistry\Test\TMethods;
+use WebChemistry\Testing\TUnitTest;
 
 class ModifierTokenizerTest extends \Codeception\Test\Unit {
 
-	use TMethods;
+	use TUnitTest;
 
 	public function testBasic() {
 		$tokenizer = new ModifierTokenizer('modifier:param1|modifier');

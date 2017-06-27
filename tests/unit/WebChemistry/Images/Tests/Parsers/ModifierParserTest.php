@@ -3,11 +3,11 @@ namespace WebChemistry\Images\Tests\Parsers;
 
 use WebChemistry\Images\Parsers\ModifierParser;
 use WebChemistry\Images\Parsers\ParserException;
-use WebChemistry\Test\TMethods;
+use WebChemistry\Testing\TUnitTest;
 
 class ModifierParserTest extends \Codeception\Test\Unit {
 
-	use TMethods;
+	use TUnitTest;
 
 	public function testBasic() {
 		$values = ModifierParser::parse('modifier');
@@ -31,7 +31,7 @@ class ModifierParserTest extends \Codeception\Test\Unit {
 	}
 
 	public function testCommaError() {
-		$this->assertThrowException(function () {
+		$this->assertThrownException(function () {
 			ModifierParser::parse('modifier:param,,param1');
 		}, ParserException::class);
 	}
