@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/WebChemistry/images.svg?branch=master)](https://travis-ci.org/WebChemistry/images)
 
+[Starší verze 2](https://github.com/WebChemistry/images/tree/v2.2)
+
 ## Instalace
 
 Composer:
