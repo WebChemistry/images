@@ -24,7 +24,8 @@
 		"nette/http": "^2.3",
 		"nette/utils": "^2.3",
 		"nette/finder": "^2.3",
-		"nette/tokenizer": "^2.2"
+		"nette/tokenizer": "^2.2",
+		"aws/aws-sdk-php": "^3.31"
 	},
 	"require-dev": {
 		"nette/di": "^2.3",
