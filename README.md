@@ -46,7 +46,7 @@ cloudinary:
     aliases: []
 s3:
     enable: yes
-    config
+    config:
         bucket: 'Your-Bucket',
         version: 'latest',
         region: 'eu-west-1',
