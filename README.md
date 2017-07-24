@@ -44,7 +44,19 @@ cloudinary:
       cloudName: null
       secure: no
     aliases: []
-default: local ## Vychozi uloziste [cloudinary, local]
+s3:
+    enable: yes
+    config => [
+        bucket => 'Your-Bucket',
+        version => 'latest',
+        region => 'eu-west-1',
+        credentials => 
+          key => 'AWS_KEY',
+          secret => 'AWS_SECRET'
+        
+      ],
+    aliases: []
+default: local ## Vychozi uloziste [cloudinary, local, s3]
 ```
 
 ### Tvorba aliasů
