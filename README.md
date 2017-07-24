@@ -46,15 +46,13 @@ cloudinary:
     aliases: []
 s3:
     enable: yes
-    config => [
+    config =>
         bucket => 'Your-Bucket',
         version => 'latest',
         region => 'eu-west-1',
         credentials => 
           key => 'AWS_KEY',
           secret => 'AWS_SECRET'
-        
-      ],
     aliases: []
 default: local ## Vychozi uloziste [cloudinary, local, s3]
 ```
