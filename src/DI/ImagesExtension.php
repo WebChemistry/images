@@ -16,6 +16,7 @@ use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Parsers\ModifierParser;
 use WebChemistry\Images\Storages\CloudinaryStorage;
 use WebChemistry\Images\Storages\LocalStorage;
+use WebChemistry\Images\Storages\S3Storage;
 use WebChemistry\Images\Template\IImageModifiers;
 use WebChemistry\Images\Template\ImageFacade;
 use WebChemistry\Images\Template\ImageModifiers;
@@ -42,6 +43,19 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 				'secure' => FALSE,
 			],
 			'aliases' => [],
+		],
+		's3' => [
+			'enable' => FALSE,
+			'config' => [
+				'bucket' => null,
+				'version' => 'latest',
+				'region' => 'eu-west-1',
+				'credentials' => [
+					'key' => null,
+					'secret' => null
+				]
+			],
+			'aliases' => []
 		],
 		'default' => 'local',
 		'registerControl' => TRUE,
@@ -122,6 +136,27 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 				]);
 
 			if ($config['default'] !== 'cloudinary') {
+				$def->setAutowired(FALSE);
+			}
+		}
+
+		// AWS S3
+		if($config['s3']['enable']){
+			$modifiers = $builder->addDefinition($this->prefix('modifiers.s3'))
+				->setClass(ModifierContainer::class)
+				->setAutowired(FALSE);
+
+			foreach ($config['s3']['aliases'] as $alias => $toParse) {
+				$modifiers->addSetup('addAlias', [$alias, ModifierParser::parse($toParse)]);
+			}
+
+			$def = $builder->addDefinition($this->prefix('storage.s3'))
+				->setClass(IImageStorage::class)
+				->setFactory(S3Storage::class, [
+					$config['s3']['config'], $modifiers
+				]);
+
+			if ($config['default'] !== 's3') {
 				$def->setAutowired(FALSE);
 			}
 		}
