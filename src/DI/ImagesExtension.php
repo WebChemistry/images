@@ -172,9 +172,9 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			->addSetup(Macros::class . '::install(?->getCompiler())', ['@self']);
 
 		if (class_exists(Connection::class)) {
-			foreach ($builder->findByTag(OrmExtension::class) as $service) {
-				$builder->getDefinition($service)
-					->addSetup('getDatabasePlatform()->registerDoctrineTypeMapping', ['db_' . ImageType::TYPE, ImageType::TYPE]);
+			foreach ($builder->findByTag(OrmExtension::TAG_CONNECTION) as $name => $_) {
+				$builder->getDefinition($name)
+					->addSetup('?->getDatabasePlatform()->registerDoctrineTypeMapping(?, ?)', ['@self', 'db_' . ImageType::TYPE, ImageType::TYPE]);
 			}
 		}
 	}
