@@ -27,6 +27,13 @@ abstract class Resource implements IResource {
 	/************************* Properties **************************/
 
 	/**
+	 * @param string $suffix
+	 */
+	public function setSuffix($suffix) {
+		$this->name = pathinfo($this->name)['filename'] . '.' . $suffix;
+	}
+
+	/**
 	 * @param string $name
 	 * @throws TypeException
 	 */
