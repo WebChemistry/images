@@ -116,11 +116,7 @@ abstract class Resource implements IResource {
 	 * @return string
 	 */
 	public function getId() {
-		if ($this->namespace) {
-			$this->namespace .= '/';
-		}
-
-		return $this->namespace . $this->getName();
+		return ($this->namespace ? $this->namespace . '/' : '') . $this->getName();
 	}
 
 	/**
