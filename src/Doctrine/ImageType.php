@@ -35,12 +35,12 @@ class ImageType extends Type {
 		}
 	}
 
-	public function convertToPHPValueSQL($sqlExpr, $platform) {
-		if ($sqlExpr === NULL) {
+	public function convertToPHPValue($value, AbstractPlatform $platform) {
+		if ($value === NULL) {
 			return NULL;
 		}
 
-		return new FileResource($sqlExpr);
+		return new FileResource($value);
 	}
 
 	public function getDefaultLength(AbstractPlatform $platform) {
