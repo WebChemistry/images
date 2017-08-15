@@ -34,7 +34,7 @@ class ModifierContainer {
 	 * @param ILoader $modifier
 	 */
 	public function addLoader(ILoader $modifier) {
-		$this->loaders[] = $modifier;
+		$this->loaders[] = new $modifier;
 	}
 
 	/**
