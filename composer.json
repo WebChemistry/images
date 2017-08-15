@@ -7,7 +7,7 @@
 	],
 	"support": {
 		"email": "antik494@gmail.com",
-		"issues": "https://github.com/AntikCz/WebChemistry/Images/issues"
+		"issues": "https://github.com/AntikCz/WebChemistry/images/issues"
 	},
 	"keywords": [
 		"images",
@@ -24,8 +24,7 @@
 		"nette/http": "^2.3",
 		"nette/utils": "^2.3",
 		"nette/finder": "^2.3",
-		"nette/tokenizer": "^2.2",
-		"aws/aws-sdk-php": "^3.31"
+		"nette/tokenizer": "^2.2"
 	},
 	"require-dev": {
 		"nette/di": "^2.3",
@@ -33,7 +32,12 @@
 		"codeception/codeception": "^2.1",
 		"nette/forms": "2.3",
 		"nette/application": "2.3",
-		"webchemistry/testing-helpers": "dev-master"
+		"webchemistry/testing-helpers": "dev-master",
+		"aws/aws-sdk-php": "^3.31"
+	},
+	"suggest": {
+		"aws/aws-sdk-php": "To save an image on Amazon",
+		"cloudinary/cloudinary_php": "To save an image on Cloudinary"
 	},
 	"autoload": {
 		"psr-4": {
