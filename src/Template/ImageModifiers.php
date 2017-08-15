@@ -3,7 +3,7 @@
 namespace WebChemistry\Images\Template;
 
 
-use Nette\Http\Request;
+use Nette\Http\IRequest;
 use WebChemistry\Images\IImageStorage;
 use WebChemistry\Images\Resources\IFileResource;
 
@@ -15,7 +15,7 @@ class ImageModifiers implements IImageModifiers {
 	/** @var IImageStorage */
 	private $imageStorage;
 
-	public function __construct(Request $request, IImageStorage $imageStorage) {
+	public function __construct(IRequest $request, IImageStorage $imageStorage) {
 		$this->baseUri = rtrim($request->getUrl()->getBaseUrl(), '/');
 		$this->imageStorage = $imageStorage;
 	}

@@ -3,7 +3,7 @@
 namespace WebChemistry\Images\Storages;
 
 
-use Nette\Http\Request;
+use Nette\Http\IRequest;
 use Nette\Utils\Finder;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\ImageStorageException;
@@ -42,11 +42,11 @@ class LocalStorage extends Storage {
 	 * @param string $wwwDir
 	 * @param string $assetsDir
 	 * @param ModifierContainer $modifierContainer
-	 * @param Request $request
+	 * @param IRequest $request
 	 * @param IImageFactory $imageFactory
 	 * @param string|null $defaultImage
 	 */
-	public function __construct($wwwDir, $assetsDir, ModifierContainer $modifierContainer, Request $request,
+	public function __construct($wwwDir, $assetsDir, ModifierContainer $modifierContainer, IRequest $request,
 								IImageFactory $imageFactory, $defaultImage = NULL) {
 		$assetsDir = trim($assetsDir, '/\\');
 		$assetsDir = ($assetsDir ? $assetsDir . '/' : '');

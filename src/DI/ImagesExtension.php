@@ -108,7 +108,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 						$config['local']['wwwDir'],
 						$config['local']['assetsDir'],
 						$modifiers,
-						'@' . Nette\Http\Request::class,
+						'@' . Nette\Http\IRequest::class,
 						'@' . IImageFactory::class,
 						$config['local']['defaultImage'],
 					]
