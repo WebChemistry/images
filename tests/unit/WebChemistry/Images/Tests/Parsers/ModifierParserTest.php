@@ -88,4 +88,14 @@ class ModifierParserTest extends \Codeception\Test\Unit {
 		], $values);
 	}
 
+	public function testNull() {
+		$values = ModifierParser::parse('modifier:param,null');
+
+		$this->assertSame([
+			'modifier' => [
+				'param', null,
+			]
+		], $values);
+	}
+
 }

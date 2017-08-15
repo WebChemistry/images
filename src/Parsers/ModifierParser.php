@@ -8,6 +8,8 @@ use WebChemistry\Images\Parsers\Tokenizers\Token;
 
 class ModifierParser {
 
+	private static $convert = ['null' => null, 'NULL' => null];
+
 	/** @var ModifierTokenizer */
 	private static $tokenizer;
 
@@ -16,6 +18,10 @@ class ModifierParser {
 
 	/** @var mixed reference to values */
 	private static $active;
+
+	protected static function convertValue($value) {
+		return array_key_exists($value, self::$convert) ? self::$convert[$value] : $value;
+	}
 
 	public static function parse($input) {
 		self::$tokenizer = new ModifierTokenizer($input);
@@ -91,7 +97,7 @@ class ModifierParser {
 				throw new ParserException('Expected left bracket or value, ' . ParserException::convertType($token->type) . ' given.');
 			}
 
-			self::$active[] = $token->token;
+			self::$active[] = self::convertValue($token->token);
 			$isFirst = FALSE;
 		}
 	}
@@ -134,7 +140,7 @@ class ModifierParser {
 				throw new ParserException('Expected left bracket or value, ' . ParserException::convertType($token->type) . ' given.');
 			}
 
-			self::$active[$key] = $token->token;
+			self::$active[$key] = self::convertValue($token->token);
 			$isFirst = FALSE;
 		}
 	}
