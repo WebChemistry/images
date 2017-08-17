@@ -94,7 +94,12 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 				->setClass(ModifierContainer::class)
 				->setAutowired(FALSE);
 
-			foreach ($config['local']['modifiers'] as $modifier) {
+			foreach ($config['local']['modifiers'] as $name => $modifier) {
+				if (!Nette\Utils\Strings::startsWith($modifier, '@')) {
+					$modifier = $builder->addDefinition($this->prefix('modifier.' . $name))
+						->setClass($modifier);
+				}
+
 				$modifiers->addSetup('addLoader', [$modifier]);
 			}
 			foreach ($config['local']['aliases'] as $alias => $configuration) {
