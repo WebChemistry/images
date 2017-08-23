@@ -12,6 +12,9 @@ class ModifierContainer {
 	/** @var callable[] */
 	private $modifiers = [];
 
+	/** @var callable[] */
+	private $parameterModifiers = [];
+
 	/** @var ILoader[] */
 	private $loaders = [];
 
@@ -23,11 +26,23 @@ class ModifierContainer {
 	 * @param callable|NULL $callback
 	 * @throws TypeException
 	 */
-	public function addModifier($name, callable $callback = NULL) {
+	public function addModifier($name, callable $callback) {
 		if (!$name || !is_string($name)) {
 			throw new TypeException('string', $name);
 		}
 		$this->modifiers[$name] = $callback;
+	}
+
+	/**
+	 * @param string $name
+	 * @param callable|NULL $callback
+	 * @throws TypeException
+	 */
+	public function addParameterModifier($name, callable $callback)  {
+		if (!$name || !is_string($name)) {
+			throw new TypeException('string', $name);
+		}
+		$this->parameterModifiers[$name] = $callback;
 	}
 
 	/**
@@ -40,6 +55,7 @@ class ModifierContainer {
 	/**
 	 * @param string $alias
 	 * @param array $modifiers
+	 * @throws ModifierException
 	 * @throws TypeException
 	 */
 	public function addAlias($alias, array $modifiers) {
@@ -72,6 +88,30 @@ class ModifierContainer {
 		return $modifiers;
 	}
 
+	public function getImageParameters(IResource $resource) {
+		$this->load();
+
+		$parameters = new ImageParameters();
+		foreach ($resource->getAliases() as $alias) {
+			if (!isset($this->aliases[$alias])) {
+				throw new ModifierException("Configuration for alias '$alias' not exists.");
+			}
+
+			foreach ($this->aliases[$alias] as $modifier => $values) {
+				if (!isset($this->parameterModifiers[$modifier])) {
+					continue;
+				}
+
+				$callback = $this->parameterModifiers[$modifier];
+
+				array_unshift($values, $parameters);
+				call_user_func_array($callback, $values);
+			}
+		}
+
+		return $parameters;
+	}
+
 	public function modifyImage(IResource $resource, Image $image) {
 		$this->load();
 
@@ -81,7 +121,7 @@ class ModifierContainer {
 			}
 			foreach ($this->aliases[$alias] as $modifier => $values) {
 				if (!isset($this->modifiers[$modifier])) {
-					throw new ModifierException("Modifier '$modifier' not exists in alias '$alias'.");
+					continue;
 				}
 
 				$callback = $this->modifiers[$modifier];

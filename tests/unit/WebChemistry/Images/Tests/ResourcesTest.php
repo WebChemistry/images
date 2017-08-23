@@ -22,12 +22,6 @@ class ResourcesTest extends \Codeception\Test\Unit {
 		$this->assertSame('image.gif', $resource->getName());
 
 		$this->assertThrownException(function () {
-			new ResourceMock(NULL);
-		}, TypeException::class);
-		$this->assertThrownException(function () {
-			new ResourceMock('');
-		}, TypeException::class);
-		$this->assertThrownException(function () {
 			new ResourceMock(5);
 		}, TypeException::class);
 	}
@@ -56,10 +50,6 @@ class ResourcesTest extends \Codeception\Test\Unit {
 		$resource = new ResourceIdMock('image.gif');
 		$this->assertSame('image.gif', $resource->getName());
 		$this->assertNull($resource->getNamespace());
-
-		$this->assertThrownException(function () {
-			new ResourceIdMock(NULL);
-		}, ResourceException::class);
 
 		$this->assertThrownException(function () {
 			new ResourceIdMock(10);

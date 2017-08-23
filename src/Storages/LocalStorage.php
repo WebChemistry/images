@@ -66,9 +66,10 @@ class LocalStorage extends Storage {
 	 */
 	public function link(IFileResource $resource) {
 		$location = $this->getLink($resource);
+		$parameters = $this->modifierContainer->getImageParameters($resource);
 
 		// Image not exists
-		$defaultImage = $resource->getDefaultImage() ? : $this->defaultImage;
+		$defaultImage = $parameters->getDefaultImage() ? : $this->defaultImage;
 		if ($location === FALSE && $defaultImage) {
 			if ($defaultImage && $location === FALSE) {
 				$default = $this->createResource($defaultImage);
@@ -77,7 +78,7 @@ class LocalStorage extends Storage {
 			}
 		}
 
-		return $location === FALSE ? NULL : ($resource->isBaseUri() ? $this->baseUri : $this->basePath). $location;
+		return $location === FALSE ? NULL : ($parameters->getParameter('baseUri') ? $this->baseUri : $this->basePath). $location;
 	}
 
 	/**

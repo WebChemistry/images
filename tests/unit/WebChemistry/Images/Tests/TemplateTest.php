@@ -74,13 +74,6 @@ class TemplateTest extends \Codeception\Test\Unit {
 		$this->assertSame('/output/original/upload.gif', trim($string));
 	}
 
-	public function testModifiers() {
-		$this->storage->save($this->createUploadResource());
-		$string = $this->latte->renderToString($this->getFile('resize'));
-
-		$this->assertSame('http://example.com/output/resize/upload.gif', trim($string));
-	}
-
 	public function testAttr() {
 		$this->storage->save($this->createUploadResource());
 		$string = $this->latte->renderToString($this->getFile('attr'));

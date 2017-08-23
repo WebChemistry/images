@@ -38,8 +38,8 @@ abstract class Resource implements IResource {
 	 * @throws TypeException
 	 */
 	protected function setName($name) {
-		if (!$name || !is_string($name)) {
-			throw new TypeException('non-empty string', $name);
+		if ($name && !is_string($name)) {
+			throw new TypeException('string', $name);
 		}
 
 		$this->name = $name;
@@ -103,8 +103,8 @@ abstract class Resource implements IResource {
 	 * @throws ResourceException
 	 */
 	protected function parseId($id) {
-		if (!$id || !is_string($id)) {
-			throw new ResourceException('Identifier must be non empty string.');
+		if ($id && !is_string($id)) {
+			throw new ResourceException('Identifier must be string.');
 		}
 		$explode = explode('/', $id);
 		$count = count($explode);

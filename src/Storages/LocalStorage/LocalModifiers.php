@@ -7,6 +7,7 @@ use Nette\Utils\Image;
 use WebChemistry\Images\Image\IImage;
 use WebChemistry\Images\ImageStorageException;
 use WebChemistry\Images\Modifiers\ILoader;
+use WebChemistry\Images\Modifiers\ImageParameters;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 
 class LocalModifiers implements ILoader {
@@ -26,15 +27,19 @@ class LocalModifiers implements ILoader {
 			$image->crop($left, $top, $width, $height);
 		});
 		$modifierContainer->addModifier('resize', [$this, 'resize']);
-
-		/////////////////////////////////////////////////////////////////
-
-		$modifierContainer->addModifier('quality', NULL);
+		$modifierContainer->addModifier('quality', [$this, 'quality']);
 		$modifierContainer->addModifier('sharpen', function (Image $image) {
 			$image->sharpen();
 		});
-		$modifierContainer->addModifier('baseUri', NULL);
-		$modifierContainer->addModifier('defaultImage', NULL);
+
+		/////////////////////////////////////////////////////////////////
+
+		$modifierContainer->addParameterModifier('defaultImage', function (ImageParameters $imageParameters, $image) {
+			$imageParameters->setDefaultImage($image);
+		});
+		$modifierContainer->addParameterModifier('baseUri', function (ImageParameters $imageParameters) {
+			$imageParameters->addParameter('baseUri', TRUE);
+		});
 	}
 
 	public function resize(Image $image, $width, $height, $flag = Image::FIT) {
