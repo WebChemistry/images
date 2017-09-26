@@ -47,7 +47,7 @@ cloudinary:
 s3:
     enable: yes
     defaultImage: null
-    namespaceBC: no # Back Compatibility. Pokud je nastaveno na TRUE, soubory budou ledány také bez prefixu `/original/`
+    namespaceBC: no # Back Compatibility. Pokud je nastaveno na TRUE, soubory budou hledány také bez prefixu `/original/`
     config:
         bucket: 'Your-Bucket'
         version: 'latest'
