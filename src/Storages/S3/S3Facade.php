@@ -70,10 +70,13 @@ class S3Facade {
 	 */
 	public function save(ITransferResource $resource, $forceModify = FALSE) {
 		try {
+			$image = $resource->toImage($this->imageFactory);
+			$this->modifierContainer->modifyImage($resource, $image);
+
 			$this->client->putObject([
 				'Bucket' => $this->bucket,
 				'Key' => $this->getResourceId($resource, $forceModify),
-				'Body' => file_get_contents($resource->getLocation()),
+				'Body' => (string) $image,
 				'ContentType' => 'image/' . array_reverse(explode('.', $resource->getName()))[0],
 				'ACL' => 'public-read',
 			]);
@@ -98,7 +101,6 @@ class S3Facade {
 		}
 
 		$image = $this->imageFactory->createFromFile($originalLink);
-		$this->modifierContainer->modifyImage($resource, $image);
 		$tmpResource = new ImageObjectResource($image, $resource->getId());
 		$tmpResource->setAliases($resource->getAliases());
 		$this->save($tmpResource, TRUE);
