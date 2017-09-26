@@ -57,7 +57,8 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 					'secret' => null
 				]
 			],
-			'aliases' => []
+			'aliases' => [],
+			'modifiers' => [],
 		],
 		'default' => 'local',
 		'registerControl' => TRUE,
@@ -153,6 +154,14 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 				->setClass(ModifierContainer::class)
 				->setAutowired(FALSE);
 
+			foreach ($config['s3']['modifiers'] as $name => $modifier) {
+				if (!Nette\Utils\Strings::startsWith($modifier, '@')) {
+					$modifier = $builder->addDefinition($this->prefix('s3.modifier.' . $name))
+						->setClass($modifier);
+				}
+
+				$modifiers->addSetup('addLoader', [$modifier]);
+			}
 			foreach ($config['s3']['aliases'] as $alias => $toParse) {
 				$modifiers->addSetup('addAlias', [$alias, ModifierParser::parse($toParse)]);
 			}
