@@ -127,9 +127,12 @@ class S3Facade {
 	 */
 	public function copy(IFileResource $src, IFileResource $dest) {
 		try{
-			$resource = new LocalResource($this->getResourceId($src->getOriginal()), $dest->getId());
-			$resource->setAliases($dest->getAliases());
-			$this->save($resource);
+			$this->client->copyObject([
+				'Bucket' => $this->bucket,
+				'Key' => $this->getResourceId($dest->getOriginal()),
+				'CopySource' => "{$this->bucket}/{$this->getResourceId($src->getOriginal())}",
+				'ACL' => 'public-read',
+			]);
 		}catch(S3Exception $e){
 			throw new ImageStorageException($e->getMessage(), $e->getCode(), $e);
 		}
