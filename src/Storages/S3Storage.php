@@ -4,6 +4,7 @@ namespace WebChemistry\Images\Storages;
 
 
 use WebChemistry\Images\Image\IImageFactory;
+use WebChemistry\Images\Modifiers\BaseModifiers;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Resources\IFileResource;
 use WebChemistry\Images\Resources\IResource;
@@ -31,6 +32,7 @@ class S3Storage extends Storage {
 	 * @param string|NULL                                       $defaultImage
 	 */
 	public function __construct(array $config, ModifierContainer $modifierContainer, IImageFactory $imageFactory, $defaultImage = NULL) {
+		$modifierContainer->addLoader(new BaseModifiers());
 		$this->modifierContainer = $modifierContainer;
 		$this->facade = new S3Facade($config, $modifierContainer, $imageFactory);
 		$this->defaultImage = $defaultImage;

@@ -7,6 +7,7 @@ use Nette\Http\IRequest;
 use Nette\Utils\Finder;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\ImageStorageException;
+use WebChemistry\Images\Modifiers\BaseModifiers;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Resources\IFileResource;
 use WebChemistry\Images\Resources\IResource;
@@ -50,6 +51,7 @@ class LocalStorage extends Storage {
 								IImageFactory $imageFactory, $defaultImage = NULL) {
 		$assetsDir = trim($assetsDir, '/\\');
 		$assetsDir = ($assetsDir ? $assetsDir . '/' : '');
+		$modifierContainer->addLoader(new BaseModifiers());
 		$modifierContainer->addLoader(new LocalModifiers());
 
 		$this->modifierContainer = $modifierContainer;
