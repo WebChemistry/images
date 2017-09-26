@@ -46,15 +46,17 @@ cloudinary:
     aliases: []
 s3:
     enable: yes
+    defaultImage: null
+    namespaceBC: no # Back Compatibility. Pokud je nastaveno na TRUE, soubory budou hledány také bez prefixu `/original/`
     config:
-        bucket: 'Your-Bucket',
-        version: 'latest',
-        region: 'eu-west-1',
+        bucket: 'Your-Bucket'
+        version: 'latest'
+        region: 'eu-west-1'
         credentials:
-          key: 'AWS_KEY',
+          key: 'AWS_KEY'
           secret: 'AWS_SECRET'
     aliases: []
-default: local ## Vychozi uloziste [cloudinary, local, s3]
+default: local ## Výchozí uložiště [cloudinary, local, s3]
 ```
 
 ### Tvorba aliasů
