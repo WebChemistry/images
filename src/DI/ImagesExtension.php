@@ -46,6 +46,8 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		],
 		's3' => [
 			'enable' => FALSE,
+			'defaultImage' => NULL,
+			'namespaceBC' => FALSE,
 			'config' => [
 				'bucket' => null,
 				'version' => 'latest',
@@ -158,8 +160,14 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			$def = $builder->addDefinition($this->prefix('storage.s3'))
 				->setClass(IImageStorage::class)
 				->setFactory(S3Storage::class, [
-					$config['s3']['config'], $modifiers
+					'config' => $config['s3']['config'],
+					'modifierContainer' => $modifiers,
+					'defaultImage' => $config['s3']['defaultImage'],
 				]);
+
+			if ($config['s3']['namespaceBC']) {
+				$def->addSetup('setBackCompatibility');
+			}
 
 			if ($config['default'] !== 's3') {
 				$def->setAutowired(FALSE);
