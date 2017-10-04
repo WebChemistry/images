@@ -3,6 +3,9 @@
 namespace WebChemistry\Images\Image;
 
 
+use Nette\InvalidArgumentException;
+use WebChemistry\Images\Resources\IResource;
+
 class Image extends \Nette\Utils\Image implements IImage {
 
 	/** @var int */
@@ -29,5 +32,26 @@ class Image extends \Nette\Utils\Image implements IImage {
 		return parent::save($file, $quality === NULL ? $this->quality : $quality, $type);
 	}
 
+	/**
+	 * @param \WebChemistry\Images\Resources\IResource|string $resource
+	 *
+	 * @return int
+	 * @throws \Nette\InvalidArgumentException
+	 */
+	public static function getImageType($resource)
+	{
+		$resource = $resource instanceof IResource ? $resource->getName() : $resource;
+		$extensions = [
+			'jpeg'  => Image::JPEG,
+			'jpg'   => Image::JPEG,
+			'png'   => Image::PNG,
+			'gif'   => Image::GIF,
+			'webp'  => Image::WEBP,
+		];
+		if (!isset($extensions[$extension = strtolower(pathinfo($resource, PATHINFO_EXTENSION))])) {
+			throw new InvalidArgumentException("Unsupported file extension '$extension'.");
+		}
 
+		return $extensions[$extension];
+	}
 }
