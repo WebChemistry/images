@@ -3,6 +3,7 @@
 namespace WebChemistry\Images\Resources\Transfer;
 
 use Nette\Utils\Image;
+use WebChemistry\Images\Image\Image as WImage;
 
 class ImageObjectResource extends LocalResource {
 
@@ -15,7 +16,7 @@ class ImageObjectResource extends LocalResource {
 	 */
 	public function __construct(Image $image, $id) {
 		$this->tmpFile = $tmp = tmpfile();
-		fwrite($tmp, $image->toString());
+		fwrite($tmp, $image->toString(WImage::getImageType($id)));
 		fseek($tmp, 0);
 		$metaData = stream_get_meta_data($tmp);
 

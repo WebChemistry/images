@@ -6,6 +6,7 @@ namespace WebChemistry\Images\Storages\S3;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use WebChemistry\Images\Image\IImageFactory;
+use WebChemistry\Images\Image\Image;
 use WebChemistry\Images\ImageStorageException;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Resources\FileResource;
@@ -13,7 +14,6 @@ use WebChemistry\Images\Resources\IFileResource;
 use WebChemistry\Images\Resources\IResource;
 use WebChemistry\Images\Resources\Transfer\ImageObjectResource;
 use WebChemistry\Images\Resources\Transfer\ITransferResource;
-use WebChemistry\Images\Resources\Transfer\LocalResource;
 
 class S3Facade {
 
@@ -76,7 +76,7 @@ class S3Facade {
 			$this->client->putObject([
 				'Bucket' => $this->bucket,
 				'Key' => $this->getResourceId($resource, $forceModify),
-				'Body' => (string) $image,
+				'Body' => $image->toString(Image::getImageType($resource)),
 				'ContentType' => 'image/' . array_reverse(explode('.', $resource->getName()))[0],
 				'ACL' => 'public-read',
 			]);
