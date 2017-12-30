@@ -1,5 +1,6 @@
 {
 	"name": "webchemistry/images",
+	"minimum-stability": "dev",
 	"type": "library",
 	"description": "Image storage for easier uploading, deleting and manipulation.",
 	"license": [
@@ -20,18 +21,18 @@
 		}
 	],
 	"require": {
-		"php": ">= 5.5",
-		"nette/http": "^2.3",
-		"nette/utils": "^2.3",
-		"nette/finder": "^2.3",
-		"nette/tokenizer": "^2.2"
+		"php": ">= 7.1",
+		"nette/http": "^3.0@dev",
+		"nette/utils": "^3.0@dev",
+		"nette/finder": "^3.0@dev",
+		"nette/tokenizer": "^2.3"
 	},
 	"require-dev": {
-		"nette/di": "^2.3",
-		"latte/latte": "^2.3",
+		"nette/di": "^3.0@dev",
+		"latte/latte": "^3.0@dev",
 		"codeception/codeception": "^2.1",
-		"nette/forms": "2.3",
-		"nette/application": "2.3",
+		"nette/forms": "^3.0@dev",
+		"nette/application": "^3.0@dev",
 		"webchemistry/testing-helpers": "dev-master",
 		"aws/aws-sdk-php": "^3.31"
 	},

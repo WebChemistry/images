@@ -19,7 +19,7 @@ class UploadControl extends Forms\Controls\UploadControl {
 		$this->namespace = $namespace;
 	}
 
-	public function loadHttpData() {
+	public function loadHttpData(): void {
 		parent::loadHttpData();
 
 		if ($this->value->isOk() && !$this->value->isImage()) {
