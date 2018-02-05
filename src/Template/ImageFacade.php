@@ -25,7 +25,11 @@ class ImageFacade {
 	 * @return string
 	 */
 	public function create($id, ...$aliases) {
-		$resource = $this->storage->createResource($id);
+		if (!$id instanceof IFileResource) {
+			$resource = $this->storage->createResource($id);
+		} else {
+			$resource = $id;
+		}
 		$resource->setAliases($aliases);
 
 		return $resource;
