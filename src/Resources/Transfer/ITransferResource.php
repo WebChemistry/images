@@ -12,7 +12,7 @@ interface ITransferResource extends IResource {
 	 * @param IImageFactory $factory
 	 * @return Image
 	 */
-	public function toImage(IImageFactory $factory = NULL);
+	public function toImage(IImageFactory $factory = null);
 
 	/**
 	 * @internal

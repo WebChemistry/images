@@ -27,27 +27,27 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 	/** @var array */
 	public $defaults = [
 		'local' => [
-			'enable' => TRUE,
-			'defaultImage' => NULL,
-			'wwwDir' => NULL,
+			'enable' => true,
+			'defaultImage' => null,
+			'wwwDir' => null,
 			'assetsDir' => 'assets',
 			'modifiers' => [],
 			'aliases' => [],
 		],
 		'cloudinary' => [
-			'enable' => FALSE,
+			'enable' => false,
 			'config' => [
-				'apiKey' => NULL,
-				'apiSecret' => NULL,
-				'cloudName' => NULL,
-				'secure' => FALSE,
+				'apiKey' => null,
+				'apiSecret' => null,
+				'cloudName' => null,
+				'secure' => false,
 			],
 			'aliases' => [],
 		],
 		's3' => [
-			'enable' => FALSE,
-			'defaultImage' => NULL,
-			'namespaceBC' => FALSE,
+			'enable' => false,
+			'defaultImage' => null,
+			'namespaceBC' => false,
 			'config' => [
 				'bucket' => null,
 				'version' => 'latest',
@@ -61,8 +61,8 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			'modifiers' => [],
 		],
 		'default' => 'local',
-		'registerControl' => TRUE,
-		'registerType' => TRUE,
+		'registerControl' => true,
+		'registerType' => true,
 	];
 
 	/** @var array */
@@ -71,7 +71,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 	private function parseConfig() {
 		if (!$this->cfg) {
 			$this->cfg = $this->validateConfig($this->defaults);
-			if ($this->cfg['local']['wwwDir'] === NULL) {
+			if ($this->cfg['local']['wwwDir'] === null) {
 				$this->cfg['local']['wwwDir'] = $this->getContainerBuilder()->parameters['wwwDir'];
 			}
 		}
@@ -95,7 +95,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		if ($config['local']['enable']) {
 			$modifiers = $builder->addDefinition($this->prefix('modifiers.local'))
 				->setClass(ModifierContainer::class)
-				->setAutowired(FALSE);
+				->setAutowired(false);
 
 			foreach ($config['local']['modifiers'] as $name => $modifier) {
 				if (!Nette\Utils\Strings::startsWith($modifier, '@')) {
@@ -123,7 +123,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 				);
 
 			if ($config['default'] !== 'local') {
-				$def->setAutowired(FALSE);
+				$def->setAutowired(false);
 			}
 		}
 
@@ -131,7 +131,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		if ($config['cloudinary']['enable']) {
 			$modifiers = $builder->addDefinition($this->prefix('modifiers.cloudinary'))
 				->setClass(ModifierContainer::class)
-				->setAutowired(FALSE);
+				->setAutowired(false);
 
 			foreach ($config['cloudinary']['aliases'] as $alias => $toParse) {
 				$modifiers->addSetup('addAlias', [$alias, ModifierParser::parse($toParse)]);
@@ -144,7 +144,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 				]);
 
 			if ($config['default'] !== 'cloudinary') {
-				$def->setAutowired(FALSE);
+				$def->setAutowired(false);
 			}
 		}
 
@@ -152,7 +152,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		if($config['s3']['enable']){
 			$modifiers = $builder->addDefinition($this->prefix('modifiers.s3'))
 				->setClass(ModifierContainer::class)
-				->setAutowired(FALSE);
+				->setAutowired(false);
 
 			foreach ($config['s3']['modifiers'] as $name => $modifier) {
 				if (!Nette\Utils\Strings::startsWith($modifier, '@')) {
@@ -179,7 +179,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			}
 
 			if ($config['default'] !== 's3') {
-				$def->setAutowired(FALSE);
+				$def->setAutowired(false);
 			}
 		}
 

@@ -13,7 +13,7 @@ class Macros extends Latte\Macros\MacroSet {
 	public static function install(Latte\Compiler $compiler) {
 		$me = new static($compiler);
 
-		$me->addMacro('img', [$me, 'beginImg'], NULL, [$me, 'attrImg']);
+		$me->addMacro('img', [$me, 'beginImg'], null, [$me, 'attrImg']);
 	}
 
 	/**
@@ -42,4 +42,3 @@ class Macros extends Latte\Macros\MacroSet {
 	}
 
 }
-

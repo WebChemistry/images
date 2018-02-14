@@ -29,9 +29,9 @@ class S3Storage extends Storage {
 	 * @param array                                             $config
 	 * @param \WebChemistry\Images\Modifiers\ModifierContainer  $modifierContainer
 	 * @param \WebChemistry\Images\Image\IImageFactory          $imageFactory
-	 * @param string|NULL                                       $defaultImage
+	 * @param string|null                                       $defaultImage
 	 */
-	public function __construct(array $config, ModifierContainer $modifierContainer, IImageFactory $imageFactory, $defaultImage = NULL) {
+	public function __construct(array $config, ModifierContainer $modifierContainer, IImageFactory $imageFactory, $defaultImage = null) {
 		$modifierContainer->addLoader(new BaseModifiers());
 		$this->modifierContainer = $modifierContainer;
 		$this->facade = new S3Facade($config, $modifierContainer, $imageFactory);
@@ -44,7 +44,7 @@ class S3Storage extends Storage {
 	public function link(IFileResource $resource) {
 		$parameters = $this->modifierContainer->getImageParameters($resource);
 		$defaultImage = $parameters->getDefaultImage() ? : $this->defaultImage;
-		if (($location = $this->facade->link($resource)) === FALSE && $defaultImage) {
+		if (($location = $this->facade->link($resource)) === false && $defaultImage) {
 			$default = $this->createResource($defaultImage);
 			$default->setAliases($resource->getAliases());
 			$location = $this->facade->link($default);
@@ -91,7 +91,8 @@ class S3Storage extends Storage {
 	 *
 	 * @return void
 	 */
-	public function setBackCompatibility($backCompatibility = TRUE) {
+	public function setBackCompatibility($backCompatibility = true) {
 		$this->facade->setBackCompatibility($backCompatibility);
 	}
+
 }

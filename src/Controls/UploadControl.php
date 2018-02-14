@@ -13,8 +13,8 @@ class UploadControl extends Forms\Controls\UploadControl {
 	/** @var string */
 	private $namespace;
 
-	public function __construct($label = NULL, $namespace = NULL) {
-		parent::__construct($label, FALSE);
+	public function __construct($label = null, $namespace = null) {
+		parent::__construct($label, false);
 
 		$this->namespace = $namespace;
 	}
@@ -48,7 +48,7 @@ class UploadControl extends Forms\Controls\UploadControl {
 	}
 
 	public static function register($controlName = 'addImageUpload') {
-		Forms\Container::extensionMethod(Container::class . '::' . $controlName, function ($form, $name, $label = NULL, $namespace = NULL) {
+		Forms\Container::extensionMethod(Container::class . '::' . $controlName, function ($form, $name, $label = null, $namespace = null) {
 			return $form[$name] = new self($label, $namespace);
 		});
 	}

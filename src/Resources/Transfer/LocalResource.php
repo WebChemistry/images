@@ -22,7 +22,7 @@ class LocalResource extends TransferResource {
 	/**
 	 * @return Image
 	 */
-	public function toImage(IImageFactory $factory = NULL) {
+	public function toImage(IImageFactory $factory = null) {
 		if ($factory) {
 			return $factory->createFromFile($this->file);
 		}

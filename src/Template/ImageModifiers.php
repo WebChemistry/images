@@ -32,5 +32,4 @@ class ImageModifiers implements IImageModifiers {
 		return $resource;
 	}
 
-
 }

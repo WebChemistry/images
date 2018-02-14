@@ -35,7 +35,7 @@ class S3Facade {
 	private $client;
 
 	/** @var bool  */
-	private $backCompatibility = FALSE;
+	private $backCompatibility = false;
 
 	/**
 	 * @param array                                             $config
@@ -68,7 +68,7 @@ class S3Facade {
 	 * @return \WebChemistry\Images\Resources\FileResource
 	 * @throws \WebChemistry\Images\ImageStorageException
 	 */
-	public function save(ITransferResource $resource, $forceModify = FALSE) {
+	public function save(ITransferResource $resource, $forceModify = false) {
 		try {
 			$image = $resource->toImage($this->imageFactory);
 			$this->modifierContainer->modifyImage($resource, $image);
@@ -90,23 +90,23 @@ class S3Facade {
 	/**
 	 * @param \WebChemistry\Images\Resources\IFileResource $resource
 	 *
-	 * @return string|NULL
+	 * @return string|null
 	 * @throws \WebChemistry\Images\ImageStorageException
 	 */
 	public function link(IFileResource $resource) {
 		if (is_string($link = $this->getLink($resource))) {
 			return $link;
 		} elseif (!$resource->toModify() || !is_string($originalLink = $this->getLink($resource->getOriginal()))) {
-			return FALSE;
+			return false;
 		}
 
 		$image = $this->imageFactory->createFromFile($originalLink);
 		$tmpResource = new ImageObjectResource($image, $resource->getId());
 		$tmpResource->setAliases($resource->getAliases());
-		$this->save($tmpResource, TRUE);
+		$this->save($tmpResource, true);
 		unset($tmpResource);
 
-		return ($link = $this->getLink($resource)) ? $link : FALSE;
+		return ($link = $this->getLink($resource)) ? $link : false;
 	}
 
 	/**
@@ -161,7 +161,7 @@ class S3Facade {
 	/**
 	 * @param \WebChemistry\Images\Resources\IFileResource $resource
 	 *
-	 * @return NULL|string
+	 * @return null|string
 	 * @throws \WebChemistry\Images\ImageStorageException
 	 */
 	private function getLink(IFileResource $resource) {
@@ -169,12 +169,12 @@ class S3Facade {
 			$getLink = function ($id) {
 				return $this->client->doesObjectExist($this->bucket, $id)
 					? $this->client->getObjectUrl($this->bucket, $id)
-					: NULL;
+					: null;
 			};
 
 			$link = $getLink($this->getResourceId($resource));
-			if (NULL === $link && $this->backCompatibility) {
-				$link = $getLink($this->getResourceId($resource, FALSE, FALSE));
+			if (null === $link && $this->backCompatibility) {
+				$link = $getLink($this->getResourceId($resource, false, false));
 			}
 
 			return $link;
@@ -204,7 +204,7 @@ class S3Facade {
 	 *
 	 * @return string
 	 */
-	private function getResourceId(IResource $resource, $forceModify = FALSE, $includeOriginalNamespace = TRUE) {
+	private function getResourceId(IResource $resource, $forceModify = false, $includeOriginalNamespace = true) {
 		$basePath = $this->getResourceRoot($resource);
 		if (!$forceModify && ($resource instanceof ITransferResource || !$resource->toModify())) {
 			if (!$includeOriginalNamespace) {
@@ -218,4 +218,5 @@ class S3Facade {
 
 		return $basePath . $namespace . '/' . $resource->getName();
 	}
+
 }

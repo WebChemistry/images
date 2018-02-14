@@ -12,7 +12,7 @@ trait TUploadControl {
 	 * @param string|null $namespace
 	 * @return UploadControl
 	 */
-	public function addImageUpload($name, $label = NULL, $namespace = NULL) {
+	public function addImageUpload($name, $label = null, $namespace = null) {
 		return $this[$name] = new UploadControl($label, $namespace);
 	}
 

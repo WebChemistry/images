@@ -8,7 +8,7 @@ use WebChemistry\Images\Resources\ResourceException;
 abstract class TransferResource extends Resource implements ITransferResource {
 
 	/** @var bool */
-	private $saved = FALSE;
+	private $saved = false;
 
 	/**
 	 * Image name
@@ -56,7 +56,7 @@ abstract class TransferResource extends Resource implements ITransferResource {
 		if ($this->saved) {
 			throw new ResourceException('Cannot save same resource twice.');
 		}
-		$this->saved = TRUE;
+		$this->saved = true;
 	}
 
 }

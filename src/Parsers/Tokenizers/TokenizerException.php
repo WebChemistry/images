@@ -3,6 +3,4 @@
 namespace WebChemistry\Images\Parsers\Tokenizers;
 
 
-class TokenizerException extends \Exception {
-
-}
+class TokenizerException extends \Exception {}

@@ -51,14 +51,14 @@ abstract class Resource implements IResource {
 	 * @throws TypeException
 	 */
 	protected function setNamespace($namespace) {
-		if ($namespace !== NULL && !is_string($namespace)) {
+		if ($namespace !== null && !is_string($namespace)) {
 			throw new TypeException('nullable string', $namespace);
 		}
 		if ($namespace && !preg_match('#^[\w/]+$#', $namespace)) {
 			throw new ResourceException('Namespace is not valid.');
 		}
 
-		$this->namespace = $namespace ? trim($namespace, '/') : NULL;
+		$this->namespace = $namespace ? trim($namespace, '/') : null;
 	}
 
 	/**

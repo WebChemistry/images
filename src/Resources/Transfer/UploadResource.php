@@ -35,7 +35,7 @@ class UploadResource extends TransferResource {
 	 * @param IImageFactory $factory
 	 * @return Image
 	 */
-	public function toImage(IImageFactory $factory = NULL) {
+	public function toImage(IImageFactory $factory = null) {
 		if ($factory) {
 			return $factory->createFromFile($this->upload->getTemporaryFile());
 		}

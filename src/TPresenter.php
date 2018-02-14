@@ -19,7 +19,7 @@ trait TPresenter {
 	 * @param ITemplate $template
 	 * @return ITemplate
 	 */
-	public function createTemplate($template = NULL) {
+	public function createTemplate($template = null) {
 		$template = $template ? : parent::createTemplate();
 
 		$template->_imageFacade = $this->imageFacade;

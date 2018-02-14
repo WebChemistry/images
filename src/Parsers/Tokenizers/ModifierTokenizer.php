@@ -27,7 +27,7 @@ class ModifierTokenizer {
 
 	public function nextToken() {
 		if ($this->index >= $this->length) {
-			return NULL;
+			return null;
 		}
 
 		// spaces

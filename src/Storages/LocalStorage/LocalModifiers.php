@@ -13,7 +13,7 @@ class LocalModifiers implements ILoader {
 	 */
 	public function load(ModifierContainer $modifierContainer) {
 		$modifierContainer->addParameterModifier('baseUri', function (ImageParameters $imageParameters) {
-			$imageParameters->addParameter('baseUri', TRUE);
+			$imageParameters->addParameter('baseUri', true);
 		});
 	}
 }

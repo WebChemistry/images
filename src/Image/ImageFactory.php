@@ -10,7 +10,7 @@ class ImageFactory implements IImageFactory {
 	 * @param mixed $format
 	 * @return Image
 	 */
-	public function createFromFile($file, &$format = NULL) {
+	public function createFromFile($file, &$format = null) {
 		return Image::fromFile($file, $format);
 	}
 
@@ -20,7 +20,7 @@ class ImageFactory implements IImageFactory {
 	 * @param mixed $format
 	 * @return Image
 	 */
-	public function createFromString($string, &$format = NULL) {
+	public function createFromString($string, &$format = null) {
 		return Image::fromString($string, $format);
 	}
 

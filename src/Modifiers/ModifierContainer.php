@@ -23,7 +23,7 @@ class ModifierContainer {
 
 	/**
 	 * @param string $name
-	 * @param callable|NULL $callback
+	 * @param callable|null $callback
 	 * @throws TypeException
 	 */
 	public function addModifier($name, callable $callback) {
@@ -35,7 +35,7 @@ class ModifierContainer {
 
 	/**
 	 * @param string $name
-	 * @param callable|NULL $callback
+	 * @param callable|null $callback
 	 * @throws TypeException
 	 */
 	public function addParameterModifier($name, callable $callback)  {
@@ -125,7 +125,7 @@ class ModifierContainer {
 				}
 
 				$callback = $this->modifiers[$modifier];
-				if ($callback === NULL) {
+				if ($callback === null) {
 					continue;
 				}
 

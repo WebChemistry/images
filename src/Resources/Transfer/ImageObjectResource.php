@@ -26,8 +26,8 @@ class ImageObjectResource extends LocalResource {
 	/**
 	 * @return void
 	 */
-	public function __destruct()
-	{
+	public function __destruct() {
 		fclose($this->tmpFile);
 	}
+
 }

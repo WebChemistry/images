@@ -18,9 +18,9 @@ class ImageType extends Type {
 	}
 
 	public function convertToDatabaseValue($value, AbstractPlatform $platform) {
-		if (!$value instanceof IFileResource && $value !== NULL) {
+		if (!$value instanceof IFileResource && $value !== null) {
 			throw new ImageStorageException('Value must be instance of ' . IFileResource::class . ', ' . $this->debugType($value) . ' given.');
-		} else if ($value === NULL) {
+		} else if ($value === null) {
 			return $value;
 		}
 
@@ -36,8 +36,8 @@ class ImageType extends Type {
 	}
 
 	public function convertToPHPValue($value, AbstractPlatform $platform) {
-		if ($value === NULL) {
-			return NULL;
+		if ($value === null) {
+			return null;
 		}
 
 		return new FileResource($value);

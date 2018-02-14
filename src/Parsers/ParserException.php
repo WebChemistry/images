@@ -8,7 +8,7 @@ use WebChemistry\Images\Parsers\Tokenizers\Token;
 class ParserException extends \Exception {
 
 	public static function convertType($type) {
-		if ($type === NULL) {
+		if ($type === null) {
 			return 'NULL';
 		}
 		switch ($type) {

@@ -48,7 +48,7 @@ class LocalStorage extends Storage {
 	 * @param string|null $defaultImage
 	 */
 	public function __construct($wwwDir, $assetsDir, ModifierContainer $modifierContainer, IRequest $request,
-								IImageFactory $imageFactory, $defaultImage = NULL) {
+								IImageFactory $imageFactory, $defaultImage = null) {
 		$assetsDir = trim($assetsDir, '/\\');
 		$assetsDir = ($assetsDir ? $assetsDir . '/' : '');
 		$modifierContainer->addLoader(new BaseModifiers());
@@ -72,20 +72,20 @@ class LocalStorage extends Storage {
 
 		// Image not exists
 		$defaultImage = $parameters->getDefaultImage() ? : $this->defaultImage;
-		if ($location === FALSE && $defaultImage) {
-			if ($defaultImage && $location === FALSE) {
+		if ($location === false && $defaultImage) {
+			if ($defaultImage && $location === false) {
 				$default = $this->createResource($defaultImage);
 				$default->setAliases($resource->getAliases());
 				$location = $this->getLink($default);
 			}
 		}
 
-		return $location === FALSE ? NULL : ($parameters->getParameter('baseUri') ? $this->baseUri : $this->basePath). $location;
+		return $location === false ? null : ($parameters->getParameter('baseUri') ? $this->baseUri : $this->basePath). $location;
 	}
 
 	/**
 	 * @param IFileResource $resource
-	 * @return bool|string FALSE - not exists
+	 * @return bool|string false - not exists
 	 */
 	protected function getLink(IFileResource $resource) {
 		$location = $this->getResourceLocation($resource);
@@ -94,13 +94,13 @@ class LocalStorage extends Storage {
 			return $location;
 		}
 		if (!$resource->toModify()) {
-			return FALSE;
+			return false;
 		}
 
 		// resize image
 		$originalPath = $this->directory . $this->getResourceLocation($resource->getOriginal());
 		if (!file_exists($originalPath)) {
-			return FALSE;
+			return false;
 		}
 		$image = $this->imageFactory->createFromFile($originalPath);
 		$this->modifierContainer->modifyImage($resource, $image);
@@ -183,7 +183,7 @@ class LocalStorage extends Storage {
 	private function makeDir($dir) {
 		$dir = dirname($dir);
 		if (!is_dir($dir)) {
-			mkdir($dir, 0777, TRUE);
+			mkdir($dir, 0777, true);
 		}
 	}
 
@@ -201,7 +201,7 @@ class LocalStorage extends Storage {
 
 		$dir = dirname($this->directory . $location);
 		if (!file_exists($dir)) {
-			mkdir($dir, 0777, TRUE);
+			mkdir($dir, 0777, true);
 		}
 
 		$image->save($this->directory . $location);

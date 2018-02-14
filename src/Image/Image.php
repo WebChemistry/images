@@ -26,10 +26,10 @@ class Image extends \Nette\Utils\Image implements IImage {
 	 * @param  string  filename
 	 * @param  int  quality (0..100 for JPEG and WEBP, 0..9 for PNG)
 	 * @param  int  optional image type
-	 * @return bool TRUE on success or FALSE on failure.
+	 * @return bool true on success or false on failure.
 	 */
-	public function save($file = NULL, $quality = NULL, $type = NULL) {
-		return parent::save($file, $quality === NULL ? $this->quality : $quality, $type);
+	public function save($file = null, $quality = null, $type = null) {
+		return parent::save($file, $quality === null ? $this->quality : $quality, $type);
 	}
 
 	/**

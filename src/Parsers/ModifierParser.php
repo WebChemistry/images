@@ -34,8 +34,8 @@ class ModifierParser {
 	}
 
 	protected static function checkToken($token, $expected) {
-		if (($isNull = $token === NULL) || $token->type !== $expected) {
-			ParserException::typeError($expected, $isNull ? NULL : $token->type);
+		if (($isNull = $token === null) || $token->type !== $expected) {
+			ParserException::typeError($expected, $isNull ? null : $token->type);
 		}
 	}
 
@@ -52,7 +52,7 @@ class ModifierParser {
 			self::$values[$token->token] = [];
 			self::$active = &self::$values[$token->token];
 			$token = self::$tokenizer->nextToken();
-			if ($token === NULL) {
+			if ($token === null) {
 				break;
 			}
 			if ($token->type === Token::PIPE) { // next modifier
@@ -70,7 +70,7 @@ class ModifierParser {
 	 * €
 	 */
 	protected static function expression() {
-		$isFirst = TRUE;
+		$isFirst = true;
 		while ($token = self::$tokenizer->nextToken()) {
 			if (!$isFirst) {
 				if ($token->type === Token::PIPE) {
@@ -79,8 +79,8 @@ class ModifierParser {
 				self::checkToken($token, Token::COMMA);
 				$token = self::$tokenizer->nextToken();
 
-				if ($token === NULL) {
-					new ParserException('Expected left bracket or value, NULL given.');
+				if ($token === null) {
+					new ParserException('Expected left bracket or value, null given.');
 				}
 			}
 
@@ -88,7 +88,7 @@ class ModifierParser {
 				$store = &self::$active;
 				self::arr();
 				self::$active = &$store;
-				$isFirst = FALSE;
+				$isFirst = false;
 
 				continue;
 			}
@@ -98,7 +98,7 @@ class ModifierParser {
 			}
 
 			self::$active[] = self::convertValue($token->token);
-			$isFirst = FALSE;
+			$isFirst = false;
 		}
 	}
 
@@ -106,14 +106,14 @@ class ModifierParser {
 	 * [<id>: <paramOrArray>]
 	 */
 	protected static function arr() {
-		$isFirst = TRUE;
+		$isFirst = true;
 		while (($token = self::$tokenizer->nextToken()) && $token->type !== Token::BRACKET_RIGHT) {
 			if (!$isFirst) {
 				self::checkToken($token, Token::COMMA);
 				$token = self::$tokenizer->nextToken();
 
-				if ($token === NULL) {
-					new ParserException('Expected left bracket or value, NULL given.');
+				if ($token === null) {
+					new ParserException('Expected left bracket or value, null given.');
 				}
 			}
 			self::checkToken($token, Token::VALUE);
@@ -122,7 +122,7 @@ class ModifierParser {
 			self::checkToken(self::$tokenizer->nextToken(), Token::COLON);
 
 			$token = self::$tokenizer->nextToken();
-			if ($token === NULL) {
+			if ($token === null) {
 				throw new ParserException('Unexpected end.');
 			}
 
@@ -132,7 +132,7 @@ class ModifierParser {
 				self::$active = &self::$active[$key];
 				self::arr();
 				self::$active = &$store;
-				$isFirst = FALSE;
+				$isFirst = false;
 
 				continue;
 			}
@@ -141,7 +141,7 @@ class ModifierParser {
 			}
 
 			self::$active[$key] = self::convertValue($token->token);
-			$isFirst = FALSE;
+			$isFirst = false;
 		}
 	}
 
