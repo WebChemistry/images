@@ -51,4 +51,11 @@ class ImageType extends Type {
 		return self::TYPE;
 	}
 
+
+	public function requiresSQLCommentHint(AbstractPlatform $platform) {
+		$platform->markDoctrineTypeCommented(self::TYPE);
+
+		return parent::requiresSQLCommentHint($platform);
+	}
+
 }
