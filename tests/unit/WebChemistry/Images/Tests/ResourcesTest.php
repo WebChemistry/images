@@ -33,6 +33,9 @@ class ResourcesTest extends \Codeception\Test\Unit {
 		$resource = new ResourceMock('image.gif', 'namespace/namespace');
 		$this->assertSame('namespace/namespace', $resource->getNamespace());
 
+		$resource = new ResourceMock('image.gif', 'namespace/name-space');
+		$this->assertSame('namespace/name-space', $resource->getNamespace());
+
 		$this->assertThrownException(function () {
 			new ResourceMock('image.gif', 5);
 		}, TypeException::class);
