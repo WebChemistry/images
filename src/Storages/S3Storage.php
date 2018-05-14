@@ -3,6 +3,7 @@
 namespace WebChemistry\Images\Storages;
 
 
+use Nette\NotImplementedException;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\Modifiers\BaseModifiers;
 use WebChemistry\Images\Modifiers\ModifierContainer;
@@ -93,6 +94,10 @@ class S3Storage extends Storage {
 	 */
 	public function setBackCompatibility($backCompatibility = true) {
 		$this->facade->setBackCompatibility($backCompatibility);
+	}
+
+	public function getImageSize(IFileResource $resource) {
+		throw new NotImplementedException('Method is not implemented yet.');
 	}
 
 }

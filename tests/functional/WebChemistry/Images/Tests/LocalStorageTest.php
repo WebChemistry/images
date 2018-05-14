@@ -203,4 +203,12 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		$this->assertSame('/output/default/original/upload.gif', $this->storage->link($resource));
 	}
 
+	public function testImageSize() {
+		$result = $this->storage->save($this->createUploadResource());
+		$size = $this->storage->getImageSize($result);
+
+		$this->assertSame(14, $size->getWidth());
+		$this->assertSame(14, $size->getHeight());
+	}
+
 }

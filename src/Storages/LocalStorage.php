@@ -6,6 +6,7 @@ namespace WebChemistry\Images\Storages;
 use Nette\Http\IRequest;
 use Nette\Utils\Finder;
 use WebChemistry\Images\Image\IImageFactory;
+use WebChemistry\Images\Image\ImageSize;
 use WebChemistry\Images\ImageStorageException;
 use WebChemistry\Images\Modifiers\BaseModifiers;
 use WebChemistry\Images\Modifiers\ModifierContainer;
@@ -162,6 +163,12 @@ class LocalStorage extends Storage {
 		foreach (Finder::findDirectories('*')->in($location) as $dir) {
 			@rmdir($dir);
 		}
+	}
+
+	public function getImageSize(IFileResource $resource) {
+		list($width, $height) = getimagesize($this->directory . $this->getResourceLocation($resource));
+
+		return new ImageSize($width, $height);
 	}
 
 	/////////////////////////////////////////////////////////////////

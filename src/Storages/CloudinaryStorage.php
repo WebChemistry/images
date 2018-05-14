@@ -3,6 +3,7 @@
 namespace WebChemistry\Images\Storages;
 
 
+use Nette\NotImplementedException;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Resources\IFileResource;
 use WebChemistry\Images\Resources\IResource;
@@ -41,6 +42,10 @@ class CloudinaryStorage extends Storage {
 
 	public function delete(IFileResource $resource) {
 		$this->facade->delete($resource);
+	}
+
+	public function getImageSize(IFileResource $resource) {
+		throw new NotImplementedException('Method is not implemented yet.');
 	}
 
 }

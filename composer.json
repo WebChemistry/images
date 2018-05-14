@@ -28,10 +28,10 @@
 	},
 	"require-dev": {
 		"nette/di": "^2.3",
-		"latte/latte": "^2.3",
+		"latte/latte": "^2.4",
 		"codeception/codeception": "^2.1",
-		"nette/forms": "2.3",
-		"nette/application": "2.3",
+		"nette/forms": "^2.4",
+		"nette/application": "^2.4",
 		"webchemistry/testing-helpers": "dev-master",
 		"aws/aws-sdk-php": "^3.31"
 	},
