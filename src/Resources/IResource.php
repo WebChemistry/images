@@ -4,6 +4,8 @@ namespace WebChemistry\Images\Resources;
 
 interface IResource {
 
+	const ORIGINAL = 'original';
+
 	/**
 	 * @return bool
 	 */

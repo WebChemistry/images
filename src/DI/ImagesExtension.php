@@ -14,6 +14,8 @@ use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\Image\ImageFactory;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Parsers\ModifierParser;
+use WebChemistry\Images\Parsers\Values;
+use WebChemistry\Images\Parsers\Variable;
 use WebChemistry\Images\Storages\CloudinaryStorage;
 use WebChemistry\Images\Storages\LocalStorage;
 use WebChemistry\Images\Storages\S3Storage;
@@ -106,7 +108,10 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 				$modifiers->addSetup('addLoader', [$modifier]);
 			}
 			foreach ($config['local']['aliases'] as $alias => $configuration) {
-				$modifiers->addSetup('addAlias', [$alias, ModifierParser::parse($configuration)]);
+				$parsed = ModifierParser::parse($configuration);
+				$parsed = new Nette\DI\Statement(Values::class, [$parsed->getValues(), $parsed->getVariables()]);
+				
+				$modifiers->addSetup('addAlias', [$alias, $parsed]);
 			}
 
 			$def = $builder->addDefinition($this->prefix('storage.local'))
@@ -191,7 +196,8 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		$builder = $this->getContainerBuilder();
 
 		$builder->getDefinition('nette.latteFactory')
-			->addSetup(Macros::class . '::install(?->getCompiler())', ['@self']);
+			->addSetup(Macros::class . '::install(?->getCompiler())', ['@self'])
+			->addSetup('addProvider', ['imageStorageFacade', $builder->getDefinition($this->prefix('template.facade'))]);
 
 		if (class_exists(Connection::class)) {
 			foreach ($builder->findByTag(OrmExtension::TAG_CONNECTION) as $name => $_) {

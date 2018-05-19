@@ -37,6 +37,7 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 	private function fillAliases(ModifierContainer $modifierContainer) {
 		$modifierContainer->addAlias('resize', ModifierParser::parse('resize:5,5,exact'));
 		$modifierContainer->addAlias('resize2', ModifierParser::parse('resize:5,5'));
+		$modifierContainer->addAlias('resizeVar', ModifierParser::parse('resize:$1,$2,$3'));
 	}
 
 	private function createUploadResource() {
@@ -130,6 +131,7 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		$result = $this->storage->save($this->createUploadResource());
 		$result->setAlias('resize2');
 		$this->storage->save($result);
+
 		$this->assertFileExists(__DIR__ . '/output/resize2/upload.gif');
 		$size = getimagesize($this->getUploadPath('upload.gif', 'resize2'));
 		$this->assertSame(5, $size[0]);
@@ -209,6 +211,17 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 
 		$this->assertSame(14, $size->getWidth());
 		$this->assertSame(14, $size->getHeight());
+	}
+
+	public function testResizeWithVariables() {
+		$result = $this->storage->save($this->createUploadResource());
+		$result->setAlias('resizeVar', [20, 20, 'exact']);
+		$this->storage->save($result);
+
+		$this->assertFileExists(__DIR__ . '/output/resizeVar_20_20_exact/upload.gif');
+		$size = getimagesize($this->getUploadPath('upload.gif', 'resizeVar_20_20_exact'));
+		$this->assertSame(20, $size[0]);
+		$this->assertSame(20, $size[1]);
 	}
 
 }

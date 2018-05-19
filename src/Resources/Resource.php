@@ -2,7 +2,9 @@
 
 namespace WebChemistry\Images\Resources;
 
+use Nette\Utils\Image;
 use Nette\Utils\Random;
+use WebChemistry\Images\Helpers;
 use WebChemistry\Images\TypeException;
 
 abstract class Resource implements IResource {
@@ -24,7 +26,62 @@ abstract class Resource implements IResource {
 	/** @var array */
 	protected $aliases = [];
 
+	/** @var int|null */
+	protected $width;
+
+	/** @var int|null */
+	protected $height;
+
+	/** @var int */
+	protected $sizeFlag = Image::FIT;
+
 	/************************* Properties **************************/
+
+	/**
+	 * @param int|null $width
+	 */
+	public function setWidth($width) {
+		$this->width = $width;
+	}
+
+	/**
+	 * @param int|null $height
+	 */
+	public function setHeight($height) {
+		$this->height = $height;
+	}
+
+	/**
+	 * @param int|null $width
+	 * @param int|null $height
+	 * @param int $flag
+	 */
+	public function setSize($width, $height, $flag = Image::FIT) {
+		$this->width = $width;
+		$this->height = $height;
+		$this->sizeFlag = $flag;
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public function getHeight() {
+		return $this->height;
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public function getWidth() {
+		return $this->width;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getSize() {
+		return [$this->width, $this->height, $this->sizeFlag];
+	}
 
 	/**
 	 * @param string $suffix
@@ -87,8 +144,8 @@ abstract class Resource implements IResource {
 	/**
 	 * @param string $alias
 	 */
-	public function setAlias($alias) {
-		$this->aliases = [$alias];
+	public function setAlias($alias, array $args = []) {
+		$this->aliases[$alias] = $args;
 	}
 
 	/**

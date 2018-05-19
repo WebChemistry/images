@@ -51,6 +51,9 @@ class ModifierTokenizer {
 			$token->token .= $this->input[$this->index];
 			$this->index++;
 		}
+		if (substr($token->token, 0, 1) === '$') {
+			$token->type = Token::VARIABLE;
+		}
 
 		return $token;
 	}

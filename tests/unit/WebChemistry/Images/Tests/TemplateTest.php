@@ -9,6 +9,7 @@ use WebChemistry\Images\Image\ImageFactory;
 use WebChemistry\Images\Modifiers\Composite;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Parsers\ModifierParser;
+use WebChemistry\Images\Resources\FileResource;
 use WebChemistry\Images\Storage;
 use WebChemistry\Images\Storages\LocalStorage;
 use WebChemistry\Images\Template\ImageFacade;
@@ -39,7 +40,8 @@ class TemplateTest extends \Codeception\Test\Unit {
 		$latte = new Engine();
 		$this->latte = new TemplateMock($latte);
 		Macros::install($latte->getCompiler());
-		$this->latte->_imageFacade = new ImageFacade($storage, new ImageModifiers($request, $storage));
+		$this->latte->getEngine()->addProvider('imageStorageFacade',
+			new ImageFacade($storage, new ImageModifiers($request, $storage)));
 	}
 
 	private function createUploadResource() {
@@ -109,6 +111,13 @@ class TemplateMock {
 
 	public function __set($name, $value) {
 		$this->params[$name] = $value;
+	}
+
+	/**
+	 * @return Engine
+	 */
+	public function getEngine() {
+		return $this->engine;
 	}
 
 }

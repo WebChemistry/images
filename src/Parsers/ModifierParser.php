@@ -3,6 +3,7 @@
 namespace WebChemistry\Images\Parsers;
 
 
+use WebChemistry\Images\Helpers;
 use WebChemistry\Images\Parsers\Tokenizers\ModifierTokenizer;
 use WebChemistry\Images\Parsers\Tokenizers\Token;
 
@@ -13,24 +14,24 @@ class ModifierParser {
 	/** @var ModifierTokenizer */
 	private static $tokenizer;
 
-	/** @var array */
-	private static $values;
+	/** @var ValueBuilder */
+	private static $valueBuilder;
 
-	/** @var mixed reference to values */
-	private static $active;
+	protected static function convertValue(Token $token) {
+		if ($token->type === Token::VARIABLE) {
+			return new Variable($token->token);
+		}
 
-	protected static function convertValue($value) {
-		return array_key_exists($value, self::$convert) ? self::$convert[$value] : $value;
+		return array_key_exists($token->token, self::$convert) ? self::$convert[$token->token] : $token->token;
 	}
 
 	public static function parse($input) {
 		self::$tokenizer = new ModifierTokenizer($input);
 
-		self::$values = [];
-		self::$active = &self::$values;
+		self::$valueBuilder = new ValueBuilder();
 		self::modifier();
 
-		return self::$values;
+		return self::$valueBuilder->getResult();
 	}
 
 	protected static function checkToken($token, $expected) {
@@ -49,18 +50,21 @@ class ModifierParser {
 				ParserException::typeError($token::VALUE, $token->type);
 			}
 
-			self::$values[$token->token] = [];
-			self::$active = &self::$values[$token->token];
+			self::$valueBuilder->addKey($token->token)
+				->setActive($token->token);
 			$token = self::$tokenizer->nextToken();
 			if ($token === null) {
 				break;
 			}
 			if ($token->type === Token::PIPE) { // next modifier
+				self::$valueBuilder->pop();
 				continue;
 			}
 			self::checkToken($token, Token::COLON);
 
 			self::expression();
+
+			self::$valueBuilder->pop();
 		}
 	}
 
@@ -85,19 +89,25 @@ class ModifierParser {
 			}
 
 			if ($token->type === Token::BRACKET_LEFT) {
-				$store = &self::$active;
+				$key = self::$valueBuilder->addDefaultKey();
+				self::$valueBuilder->setActive($key);
+
 				self::arr();
-				self::$active = &$store;
+
+				self::$valueBuilder->pop();
+
 				$isFirst = false;
 
 				continue;
 			}
 
-			if ($token->type !== Token::VALUE) {
+			if ($token->type !== Token::VALUE && $token->type !== Token::VARIABLE) {
 				throw new ParserException('Expected left bracket or value, ' . ParserException::convertType($token->type) . ' given.');
 			}
 
-			self::$active[] = self::convertValue($token->token);
+			$key = self::$valueBuilder->addDefaultKey();
+			self::$valueBuilder->setValue($key, self::convertValue($token));
+
 			$isFirst = false;
 		}
 	}
@@ -118,6 +128,7 @@ class ModifierParser {
 			}
 			self::checkToken($token, Token::VALUE);
 			$key = $token->token;
+			self::$valueBuilder->addKey($key);
 
 			self::checkToken(self::$tokenizer->nextToken(), Token::COLON);
 
@@ -127,20 +138,21 @@ class ModifierParser {
 			}
 
 			if ($token->type === Token::BRACKET_LEFT) {
-				$store = &self::$active;
-				self::$active[$key] = [];
-				self::$active = &self::$active[$key];
+				self::$valueBuilder->setActive($key);
+
 				self::arr();
-				self::$active = &$store;
+
+				self::$valueBuilder->pop();
+
 				$isFirst = false;
 
 				continue;
 			}
-			if ($token->type !== Token::VALUE) {
+			if ($token->type !== Token::VALUE && $token->type !== Token::VARIABLE) {
 				throw new ParserException('Expected left bracket or value, ' . ParserException::convertType($token->type) . ' given.');
 			}
 
-			self::$active[$key] = self::convertValue($token->token);
+			self::$valueBuilder->setValue($key, self::convertValue($token));
 			$isFirst = false;
 		}
 	}

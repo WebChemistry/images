@@ -82,4 +82,5 @@ class BaseModifiers implements ILoader {
 
 		return $result;
 	}
+
 }

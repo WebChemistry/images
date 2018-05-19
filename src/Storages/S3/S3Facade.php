@@ -5,6 +5,7 @@ namespace WebChemistry\Images\Storages\S3;
 
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
+use WebChemistry\Images\Helpers;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\Image\Image;
 use WebChemistry\Images\ImageStorageException;
@@ -16,8 +17,6 @@ use WebChemistry\Images\Resources\Transfer\ImageObjectResource;
 use WebChemistry\Images\Resources\Transfer\ITransferResource;
 
 class S3Facade {
-
-	const ORIGINAL = 'original';
 
 	/** @var array */
 	private $config;
@@ -211,9 +210,9 @@ class S3Facade {
 
 				return $basePath . $resource->getName();
 			}
-			$namespace = self::ORIGINAL;
+			$namespace = IResource::ORIGINAL;
 		} else {
-			$namespace = implode('.', $resource->getAliases());
+			$namespace = Helpers::getNameByAliases($resource->getAliases());
 		}
 
 		return $basePath . $namespace . '/' . $resource->getName();

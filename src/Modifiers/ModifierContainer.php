@@ -4,6 +4,7 @@ namespace WebChemistry\Images\Modifiers;
 
 
 use Nette\Utils\Image;
+use WebChemistry\Images\Parsers\Values;
 use WebChemistry\Images\Resources\IResource;
 use WebChemistry\Images\TypeException;
 
@@ -18,7 +19,7 @@ class ModifierContainer {
 	/** @var ILoader[] */
 	private $loaders = [];
 
-	/** @var array */
+	/** @var Values[] */
 	private $aliases = [];
 
 	/**
@@ -54,11 +55,11 @@ class ModifierContainer {
 
 	/**
 	 * @param string $alias
-	 * @param array $modifiers
+	 * @param Values $modifiers
 	 * @throws ModifierException
 	 * @throws TypeException
 	 */
-	public function addAlias($alias, array $modifiers) {
+	public function addAlias($alias, Values $modifiers) {
 		if (!$alias || !is_string($alias)) {
 			throw new TypeException('string', $alias);
 		}
@@ -75,29 +76,64 @@ class ModifierContainer {
 		$this->loaders = [];
 	}
 
+	/**
+	 * @param IResource $resource
+	 * @return array
+	 * @throws ModifierException
+	 */
 	public function modifiersFromResource(IResource $resource) {
 		$modifiers = [];
-		foreach ($resource->getAliases() as $alias) {
+		foreach ($resource->getAliases() as $alias => $args) {
 			if (!isset($this->aliases[$alias])) {
 				throw new ModifierException("Configuration for alias '$alias' not exists.");
 			}
 
-			$modifiers = array_merge($this->aliases[$alias], $modifiers);
+			$modifiers = array_merge($this->aliases[$alias]->call($args), $modifiers);
 		}
 
 		return $modifiers;
 	}
 
+	public function extractActiveAliases(IResource $resource) {
+		$this->load();
+
+		$aliases = [];
+		foreach ($resource->getAliases() as $alias => $args) {
+			if (!isset($this->aliases[$alias])) {
+				throw new ModifierException("Configuration for alias '$alias' not exists.");
+			}
+			if ($args) {
+				$aliases[$alias] = $args;
+				continue;
+			}
+			$values = $this->aliases[$alias]->call($args);
+			foreach ($values as $name => $_) {
+				if (isset($this->modifiers[$name])) {
+					$aliases[$alias] = $args;
+
+					break;
+				}
+			}
+		}
+
+		return $aliases;
+	}
+
+	/**
+	 * @param IResource $resource
+	 * @return ImageParameters
+	 * @throws ModifierException
+	 */
 	public function getImageParameters(IResource $resource) {
 		$this->load();
 
 		$parameters = new ImageParameters();
-		foreach ($resource->getAliases() as $alias) {
+		foreach ($resource->getAliases() as $alias => $args) {
 			if (!isset($this->aliases[$alias])) {
 				throw new ModifierException("Configuration for alias '$alias' not exists.");
 			}
 
-			foreach ($this->aliases[$alias] as $modifier => $values) {
+			foreach ($this->aliases[$alias]->call($args) as $modifier => $values) {
 				if (!isset($this->parameterModifiers[$modifier])) {
 					continue;
 				}
@@ -115,11 +151,13 @@ class ModifierContainer {
 	public function modifyImage(IResource $resource, Image $image) {
 		$this->load();
 
-		foreach ($resource->getAliases() as $alias) {
+		foreach ($resource->getAliases() as $alias => $args) {
 			if (!isset($this->aliases[$alias])) {
 				throw new ModifierException("Configuration for alias '$alias' not exists.");
 			}
-			foreach ($this->aliases[$alias] as $modifier => $values) {
+
+			$values = $this->aliases[$alias]->call($args);
+			foreach ($values as $modifier => $values) {
 				if (!isset($this->modifiers[$modifier])) {
 					continue;
 				}

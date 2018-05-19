@@ -5,6 +5,7 @@ namespace WebChemistry\Images\Storages;
 
 use Nette\Http\IRequest;
 use Nette\Utils\Finder;
+use WebChemistry\Images\Helpers;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\Image\ImageSize;
 use WebChemistry\Images\ImageStorageException;
@@ -20,12 +21,10 @@ use WebChemistry\Images\Storages\LocalStorage\LocalModifiers;
 
 class LocalStorage extends Storage {
 
-	const ORIGINAL = 'original';
-
 	/** @var string */
 	private $directory;
 
-	/** @var ModifierContainer*/
+	/** @var ModifierContainer */
 	private $modifierContainer;
 
 	/** @var string|null */
@@ -174,17 +173,7 @@ class LocalStorage extends Storage {
 	/////////////////////////////////////////////////////////////////
 
 	private function getResourceLocation(IResource $resource) {
-		$basePath = $resource->getNamespace();
-		if ($basePath) {
-			$basePath .= '/';
-		}
-		if ($resource instanceof ITransferResource || !$resource->toModify()) {
-			$namespace = self::ORIGINAL;
-		} else {
-			$namespace = implode('.', $resource->getAliases());
-		}
-
-		return $basePath . $namespace . '/' . $resource->getName();
+		return Helpers::getResourceHash($resource, $this->modifierContainer->extractActiveAliases($resource));
 	}
 
 	private function makeDir($dir) {
