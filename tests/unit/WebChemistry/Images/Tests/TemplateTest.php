@@ -13,7 +13,6 @@ use WebChemistry\Images\Resources\FileResource;
 use WebChemistry\Images\Storage;
 use WebChemistry\Images\Storages\LocalStorage;
 use WebChemistry\Images\Template\ImageFacade;
-use WebChemistry\Images\Template\ImageModifiers;
 use WebChemistry\Images\Template\Macros;
 use WebChemistry\Test\Services;
 use WebChemistry\Testing\TUnitTest;
@@ -41,7 +40,7 @@ class TemplateTest extends \Codeception\Test\Unit {
 		$this->latte = new TemplateMock($latte);
 		Macros::install($latte->getCompiler());
 		$this->latte->getEngine()->addProvider('imageStorageFacade',
-			new ImageFacade($storage, new ImageModifiers($request, $storage)));
+			new ImageFacade($storage));
 	}
 
 	private function createUploadResource() {
