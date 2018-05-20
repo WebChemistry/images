@@ -15,17 +15,6 @@ extensions:
     images: WebChemistry\Images\DI\ImagesExtension
 ```
 
-Presenter trait:
-
-```php
-<?php
-
-class BasePresenter extends Nette\Application\UI\Presenter {
-    use WebChemistry\Images\TPresenter;
-}
-?>
-```
-
 ### Konfigurace
 
 ```yaml
@@ -81,6 +70,15 @@ local:
 cloudinary:
     aliases:
       myAlias: "border:[width: 4, color: #553311]"
+```
+
+**Použití proměnných**
+```yaml
+local:
+    aliases:
+      resizeExact: "resize:$1,$2,exact"
+      resize: "resize:$1,$2,$3"
+      resizeSquare: "resize:$1,$1,exact"
 ```
 
 ### Vlastní modifiery
@@ -231,22 +229,17 @@ Zobrazení obrázku
 <img n:img="'image.jpg'">
 ```
 
-Zobrazení obrázku s celou adresou
-```html
-{img 'image.jpg'|baseUri}
-<img n:img="'image.jpg'|baseUri">
-```
-
-Zvláštní výchozí obrázek
-```html
-{img 'image.jpg'|noImage:"noimage.jpg"}
-<img n:img="'image.jpg'|noImage:'noimage.jpg'">
-```
-
-Zobrazení modifikace obrázku
+Zobrazení s použitím modifikátorů obrázků
 ```html
 {img 'image.jpg', custom}
 <img n:img="'image.jpg', custom">
+
+{* Kombinace dvou aliasů *}
+{img image.jpg, custom, custom1}
+
+{* Použití proměnných v aliasu *}
+{img $resource, customVariables(15,15,exact)}
+
 ```
 
 ## Formuláře
