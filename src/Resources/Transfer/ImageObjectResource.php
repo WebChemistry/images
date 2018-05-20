@@ -7,12 +7,12 @@ use WebChemistry\Images\Image\Image as WImage;
 
 class ImageObjectResource extends LocalResource {
 
-	/** @var bool|string  */
+	/** @var bool|string */
 	private $tmpFile;
 
 	/**
-	 * @param \Nette\Utils\Image    $image
-	 * @param string                $id
+	 * @param \Nette\Utils\Image $image
+	 * @param string $id
 	 */
 	public function __construct(Image $image, $id) {
 		$this->tmpFile = $tmp = tmpfile();

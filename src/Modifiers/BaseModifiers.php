@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Images\Modifiers;
 
-
 use Nette\Utils\Image;
 use WebChemistry\Images\Image\IImage;
 use WebChemistry\Images\ImageStorageException;
@@ -40,12 +39,13 @@ class BaseModifiers implements ILoader {
 	}
 
 	/**
-	 * @param \Nette\Utils\Image    $image
-	 * @param int                   $width
-	 * @param int                   $height
-	 * @param int                   $flag
+	 * @param \Nette\Utils\Image $image
+	 * @param int $width
+	 * @param int $height
+	 * @param int $flag
 	 *
 	 * @return void
+	 * @throws ImageStorageException
 	 */
 	public function resize(Image $image, $width, $height, $flag = Image::FIT) {
 		if ($flag) {
@@ -56,7 +56,7 @@ class BaseModifiers implements ILoader {
 
 	/**
 	 * @param \WebChemistry\Images\Image\IImage $image
-	 * @param int                               $quality
+	 * @param int $quality
 	 *
 	 * @return void
 	 */

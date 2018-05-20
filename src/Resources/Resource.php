@@ -158,6 +158,7 @@ abstract class Resource implements IResource {
 	/**
 	 * @param string $id
 	 * @throws ResourceException
+	 * @throws TypeException
 	 */
 	protected function parseId($id) {
 		if ($id && !is_string($id)) {

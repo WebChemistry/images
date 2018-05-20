@@ -15,6 +15,7 @@ class UploadResource extends TransferResource {
 	/**
 	 * @param FileUpload $upload
 	 * @throws ResourceException
+	 * @throws \WebChemistry\Images\TypeException
 	 */
 	public function __construct(FileUpload $upload) {
 		if (!$upload->isOk() || !$upload->isImage()) {
@@ -34,6 +35,7 @@ class UploadResource extends TransferResource {
 	/**
 	 * @param IImageFactory $factory
 	 * @return Image
+	 * @throws \Nette\Utils\ImageException
 	 */
 	public function toImage(IImageFactory $factory = null) {
 		if ($factory) {

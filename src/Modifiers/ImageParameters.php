@@ -17,8 +17,12 @@ final class ImageParameters {
 		$this->defaultImage = $defaultImage;
 	}
 
-	public function addParameter($name, $values) {
-		$this->parameters[$name] = $values;
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 */
+	public function addParameter($name, $value) {
+		$this->parameters[$name] = $value;
 	}
 
 	/**
@@ -35,6 +39,10 @@ final class ImageParameters {
 		return $this->parameters;
 	}
 
+	/**
+	 * @param string $name
+	 * @return mixed|null
+	 */
 	public function getParameter($name) {
 		return isset($this->parameters[$name]) ? $this->parameters[$name] : null;
 	}

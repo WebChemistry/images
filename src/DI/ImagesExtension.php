@@ -12,6 +12,7 @@ use WebChemistry\Images\Doctrine\ImageType;
 use WebChemistry\Images\IImageStorage;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\Image\ImageFactory;
+use WebChemistry\Images\Modifiers\IModifiers;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Parsers\ModifierParser;
 use WebChemistry\Images\Parsers\Values;
@@ -81,6 +82,48 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		return $this->cfg;
 	}
 
+	/**
+	 * @param Nette\DI\ServiceDefinition $modifiers
+	 * @param array $services
+	 * @param string $prefix
+	 */
+	protected function addModifiersFromArray(Nette\DI\ServiceDefinition $modifiers, array $services, $prefix) {
+		$builder = $this->getContainerBuilder();
+
+		foreach ($services as $name => $modifier) {
+			if (!Nette\Utils\Strings::startsWith($modifier, '@')) {
+				$modifier = $builder->addDefinition($this->prefix($prefix . '.' . $name))
+					->setFactory($modifier);
+			}
+
+			$modifiers->addSetup('addLoader', [$modifier]);
+		}
+	}
+
+	/**
+	 * @param Nette\DI\ServiceDefinition $modifiers
+	 * @param array $aliases
+	 */
+	protected function addAliasesFromArray(Nette\DI\ServiceDefinition $modifiers, array $aliases) {
+		foreach ($aliases as $alias => $configuration) {
+			$parsed = ModifierParser::parse($configuration);
+			$parsed = new Nette\DI\Statement(Values::class, [$parsed->getValues(), $parsed->getVariables()]);
+
+			$modifiers->addSetup('addAlias', [$alias, $parsed]);
+		}
+	}
+
+	/**
+	 * @param string $suffix
+	 * @return Nette\DI\ServiceDefinition
+	 */
+	protected function createModifiers($suffix) {
+		return $this->getContainerBuilder()->addDefinition($this->prefix('modifiers.' . $suffix))
+			->setType(IModifiers::class)
+			->setFactory(ModifierContainer::class)
+			->setAutowired(false);
+	}
+
 	public function loadConfiguration() {
 		$builder = $this->getContainerBuilder();
 		$config = $this->parseConfig();
@@ -95,24 +138,11 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 		// local
 		if ($config['local']['enable']) {
-			$modifiers = $builder->addDefinition($this->prefix('modifiers.local'))
-				->setFactory(ModifierContainer::class)
-				->setAutowired(false);
+			$modifiers = $this->createModifiers('local');
 
-			foreach ($config['local']['modifiers'] as $name => $modifier) {
-				if (!Nette\Utils\Strings::startsWith($modifier, '@')) {
-					$modifier = $builder->addDefinition($this->prefix('modifier.' . $name))
-						->setFactory($modifier);
-				}
-
-				$modifiers->addSetup('addLoader', [$modifier]);
-			}
-			foreach ($config['local']['aliases'] as $alias => $configuration) {
-				$parsed = ModifierParser::parse($configuration);
-				$parsed = new Nette\DI\Statement(Values::class, [$parsed->getValues(), $parsed->getVariables()]);
-				
-				$modifiers->addSetup('addAlias', [$alias, $parsed]);
-			}
+			// Modifiers and aliases
+			$this->addModifiersFromArray($modifiers, $config['local']['modifiers'], 'modifier');
+			$this->addAliasesFromArray($modifiers, $config['local']['aliases']);
 
 			$def = $builder->addDefinition($this->prefix('storage.local'))
 				->setType(IImageStorage::class)
@@ -134,13 +164,10 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 		// cloudinary
 		if ($config['cloudinary']['enable']) {
-			$modifiers = $builder->addDefinition($this->prefix('modifiers.cloudinary'))
-				->setFactory(ModifierContainer::class)
-				->setAutowired(false);
+			$modifiers = $this->createModifiers('cloudinary');
 
-			foreach ($config['cloudinary']['aliases'] as $alias => $toParse) {
-				$modifiers->addSetup('addAlias', [$alias, ModifierParser::parse($toParse)]);
-			}
+			// Aliases
+			$this->addAliasesFromArray($modifiers, $config['cloudinary']['aliases']);
 
 			$def = $builder->addDefinition($this->prefix('storage.cloudinary'))
 				->setType(IImageStorage::class)
@@ -155,21 +182,11 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 		// AWS S3
 		if($config['s3']['enable']){
-			$modifiers = $builder->addDefinition($this->prefix('modifiers.s3'))
-				->setFactory(ModifierContainer::class)
-				->setAutowired(false);
+			$modifiers = $this->createModifiers('s3');
 
-			foreach ($config['s3']['modifiers'] as $name => $modifier) {
-				if (!Nette\Utils\Strings::startsWith($modifier, '@')) {
-					$modifier = $builder->addDefinition($this->prefix('s3.modifier.' . $name))
-						->setFactory($modifier);
-				}
-
-				$modifiers->addSetup('addLoader', [$modifier]);
-			}
-			foreach ($config['s3']['aliases'] as $alias => $toParse) {
-				$modifiers->addSetup('addAlias', [$alias, ModifierParser::parse($toParse)]);
-			}
+			// Modifiers and aliases
+			$this->addModifiersFromArray($modifiers, $config['s3']['modifiers'], 's3.modifier');
+			$this->addAliasesFromArray($modifiers, $config['s3']['aliases']);
 
 			$def = $builder->addDefinition($this->prefix('storage.s3'))
 				->setType(IImageStorage::class)

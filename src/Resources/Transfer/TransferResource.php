@@ -16,6 +16,7 @@ abstract class TransferResource extends Resource implements ITransferResource {
 	 * @example image.png
 	 * @param string $name
 	 * @return self
+	 * @throws \WebChemistry\Images\TypeException
 	 */
 	public function setName($name) {
 		parent::setName($name);
@@ -29,6 +30,8 @@ abstract class TransferResource extends Resource implements ITransferResource {
 	 * @example first/second
 	 * @param string $namespace
 	 * @return self
+	 * @throws ResourceException
+	 * @throws \WebChemistry\Images\TypeException
 	 */
 	public function setNamespace($namespace) {
 		parent::setNamespace($namespace);
@@ -42,6 +45,7 @@ abstract class TransferResource extends Resource implements ITransferResource {
 	 * @example namespace/image.png
 	 * @param string $id
 	 * @return self
+	 * @throws ResourceException
 	 */
 	public function setId($id) {
 		$this->parseId($id);
@@ -51,6 +55,7 @@ abstract class TransferResource extends Resource implements ITransferResource {
 
 	/**
 	 * @internal
+	 * @throws ResourceException
 	 */
 	public function setSaved() {
 		if ($this->saved) {

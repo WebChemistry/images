@@ -8,7 +8,7 @@ use WebChemistry\Images\Parsers\Values;
 use WebChemistry\Images\Resources\IResource;
 use WebChemistry\Images\TypeException;
 
-class ModifierContainer {
+class ModifierContainer implements IModifiers {
 
 	/** @var callable[] */
 	private $modifiers = [];
