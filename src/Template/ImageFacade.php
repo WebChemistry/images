@@ -11,12 +11,8 @@ class ImageFacade {
 	/** @var IImageStorage */
 	private $storage;
 
-	/** @var IImageModifiers @internal */
-	public $imageModifiers;
-
-	public function __construct(IImageStorage $storage, IImageModifiers $imageModifiers) {
+	public function __construct(IImageStorage $storage) {
 		$this->storage = $storage;
-		$this->imageModifiers = $imageModifiers;
 	}
 
 	/**

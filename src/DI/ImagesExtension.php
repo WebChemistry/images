@@ -16,13 +16,10 @@ use WebChemistry\Images\Modifiers\IModifiers;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Parsers\ModifierParser;
 use WebChemistry\Images\Parsers\Values;
-use WebChemistry\Images\Parsers\Variable;
 use WebChemistry\Images\Storages\CloudinaryStorage;
 use WebChemistry\Images\Storages\LocalStorage;
 use WebChemistry\Images\Storages\S3Storage;
-use WebChemistry\Images\Template\IImageModifiers;
 use WebChemistry\Images\Template\ImageFacade;
-use WebChemistry\Images\Template\ImageModifiers;
 use WebChemistry\Images\Template\Macros;
 
 class ImagesExtension extends Nette\DI\CompilerExtension {
@@ -131,10 +128,6 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		$builder->addDefinition($this->prefix('imageFactory'))
 			->setType(IImageFactory::class)
 			->setFactory(ImageFactory::class);
-
-		$builder->addDefinition($this->prefix('imageModifiers'))
-			->setType(IImageModifiers::class)
-			->setFactory(ImageModifiers::class);
 
 		// local
 		if ($config['local']['enable']) {
