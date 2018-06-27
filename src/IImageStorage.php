@@ -10,9 +10,9 @@ interface IImageStorage {
 
 	/**
 	 * @param IFileResource $resource
-	 * @return string
+	 * @return string|null
 	 */
-	public function link(IFileResource $resource);
+	public function link(IFileResource $resource): ?string;
 
 	/**
 	 * @param IResource $resource
@@ -41,6 +41,6 @@ interface IImageStorage {
 	 * @param string $id
 	 * @return IFileResource
 	 */
-	public function createResource($id);
+	public function createResource(string $id): IFileResource;
 
 }

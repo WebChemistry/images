@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Images;
 
-
 use Nette\Http\FileUpload;
 use WebChemistry\Images\Image\ImageSize;
 use WebChemistry\Images\Resources\FileResource;
@@ -16,6 +15,7 @@ abstract class Storage implements IImageStorage {
 	/**
 	 * @param FileUpload $fileUpload
 	 * @return UploadResource
+	 * @throws Resources\ResourceException
 	 */
 	public function createUploadResource(FileUpload $fileUpload) {
 		return new UploadResource($fileUpload);
@@ -32,8 +32,9 @@ abstract class Storage implements IImageStorage {
 	/**
 	 * @param string $id
 	 * @return FileResource
+	 * @throws Resources\ResourceException
 	 */
-	public function createResource($id) {
+	public function createResource(string $id): IFileResource {
 		return new FileResource($id);
 	}
 
@@ -45,9 +46,9 @@ abstract class Storage implements IImageStorage {
 
 	/**
 	 * @param IFileResource $resource
-	 * @return null|string
+	 * @return string
 	 */
-	abstract public function link(IFileResource $resource);
+	abstract public function link(IFileResource $resource): ?string;
 
 	/**
 	 * @param IResource $resource

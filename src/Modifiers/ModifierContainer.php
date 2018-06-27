@@ -1,7 +1,6 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Modifiers;
-
 
 use Nette\Utils\Image;
 use WebChemistry\Images\Parsers\Values;
@@ -22,34 +21,15 @@ class ModifierContainer implements IModifiers {
 	/** @var Values[] */
 	private $aliases = [];
 
-	/**
-	 * @param string $name
-	 * @param callable|null $callback
-	 * @throws TypeException
-	 */
-	public function addModifier($name, callable $callback) {
-		if (!$name || !is_string($name)) {
-			throw new TypeException('string', $name);
-		}
+	public function addModifier(string $name, ?callable $callback): void {
 		$this->modifiers[$name] = $callback;
 	}
 
-	/**
-	 * @param string $name
-	 * @param callable|null $callback
-	 * @throws TypeException
-	 */
-	public function addParameterModifier($name, callable $callback)  {
-		if (!$name || !is_string($name)) {
-			throw new TypeException('string', $name);
-		}
+	public function addParameterModifier(string $name, ?callable $callback): void {
 		$this->parameterModifiers[$name] = $callback;
 	}
 
-	/**
-	 * @param ILoader $modifier
-	 */
-	public function addLoader(ILoader $modifier) {
+	public function addLoader(ILoader $modifier): void {
 		$this->loaders[] = $modifier;
 	}
 
@@ -57,19 +37,15 @@ class ModifierContainer implements IModifiers {
 	 * @param string $alias
 	 * @param Values $modifiers
 	 * @throws ModifierException
-	 * @throws TypeException
 	 */
-	public function addAlias($alias, Values $modifiers) {
-		if (!$alias || !is_string($alias)) {
-			throw new TypeException('string', $alias);
-		}
+	public function addAlias(string $alias, Values $modifiers): void {
 		if (isset($this->aliases[$alias])) {
 			throw new ModifierException('Alias already exists.');
 		}
 		$this->aliases[$alias] = $modifiers;
 	}
 
-	private function load() {
+	private function load(): void {
 		foreach ($this->loaders as $loader) {
 			$loader->load($this);
 		}
@@ -81,7 +57,7 @@ class ModifierContainer implements IModifiers {
 	 * @return array
 	 * @throws ModifierException
 	 */
-	public function modifiersFromResource(IResource $resource) {
+	public function modifiersFromResource(IResource $resource): array {
 		$modifiers = [];
 		foreach ($resource->getAliases() as $alias => $args) {
 			if (!isset($this->aliases[$alias])) {
@@ -94,7 +70,7 @@ class ModifierContainer implements IModifiers {
 		return $modifiers;
 	}
 
-	public function extractActiveAliases(IResource $resource) {
+	public function extractActiveAliases(IResource $resource): array {
 		$this->load();
 
 		$aliases = [];
@@ -124,7 +100,7 @@ class ModifierContainer implements IModifiers {
 	 * @return ImageParameters
 	 * @throws ModifierException
 	 */
-	public function getImageParameters(IResource $resource) {
+	public function getImageParameters(IResource $resource): ImageParameters {
 		$this->load();
 
 		$parameters = new ImageParameters();
@@ -148,7 +124,7 @@ class ModifierContainer implements IModifiers {
 		return $parameters;
 	}
 
-	public function modifyImage(IResource $resource, Image $image) {
+	public function modifyImage(IResource $resource, Image $image): void {
 		$this->load();
 
 		foreach ($resource->getAliases() as $alias => $args) {

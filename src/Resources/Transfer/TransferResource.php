@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Resources\Transfer;
 
@@ -11,35 +11,6 @@ abstract class TransferResource extends Resource implements ITransferResource {
 	private $saved = false;
 
 	/**
-	 * Image name
-	 *
-	 * @example image.png
-	 * @param string $name
-	 * @return self
-	 * @throws \WebChemistry\Images\TypeException
-	 */
-	public function setName($name) {
-		parent::setName($name);
-
-		return $this;
-	}
-
-	/**
-	 * Namespace for better structure
-	 *
-	 * @example first/second
-	 * @param string $namespace
-	 * @return self
-	 * @throws ResourceException
-	 * @throws \WebChemistry\Images\TypeException
-	 */
-	public function setNamespace($namespace) {
-		parent::setNamespace($namespace);
-
-		return $this;
-	}
-
-	/**
 	 * Combination of name and namespace
 	 *
 	 * @example namespace/image.png
@@ -47,10 +18,18 @@ abstract class TransferResource extends Resource implements ITransferResource {
 	 * @return self
 	 * @throws ResourceException
 	 */
-	public function setId($id) {
+	public function setId(string $id) {
 		$this->parseId($id);
 
 		return $this;
+	}
+
+	public function setNamespace(?string $namespace) {
+		return parent::setNamespace($namespace);
+	}
+
+	public function setName(string $name): void {
+		parent::setName($name);
 	}
 
 	/**

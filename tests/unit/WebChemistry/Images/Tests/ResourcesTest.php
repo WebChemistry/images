@@ -21,10 +21,6 @@ class ResourcesTest extends \Codeception\Test\Unit {
 	public function testName() {
 		$resource = new ResourceMock('image.gif');
 		$this->assertSame('image.gif', $resource->getName());
-
-		$this->assertThrownException(function () {
-			new ResourceMock(5);
-		}, TypeException::class);
 	}
 
 	public function testNamespace() {
@@ -36,13 +32,6 @@ class ResourcesTest extends \Codeception\Test\Unit {
 
 		$resource = new ResourceMock('image.gif', 'namespace/name-space');
 		$this->assertSame('namespace/name-space', $resource->getNamespace());
-
-		$this->assertThrownException(function () {
-			new ResourceMock('image.gif', 5);
-		}, TypeException::class);
-		$this->assertThrownException(function () {
-			new ResourceMock('image.gif', 'namespace@');
-		}, ResourceException::class);
 	}
 
 	public function testId() {
@@ -54,10 +43,6 @@ class ResourcesTest extends \Codeception\Test\Unit {
 		$resource = new ResourceIdMock('image.gif');
 		$this->assertSame('image.gif', $resource->getName());
 		$this->assertNull($resource->getNamespace());
-
-		$this->assertThrownException(function () {
-			new ResourceIdMock(10);
-		}, ResourceException::class);
 	}
 
 	public function testPrefix() {

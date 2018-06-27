@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Modifiers;
 
@@ -10,10 +10,7 @@ final class ImageParameters {
 	/** @var string|null */
 	private $defaultImage;
 
-	/**
-	 * @param null|string $defaultImage
-	 */
-	public function setDefaultImage($defaultImage) {
+	public function setDefaultImage(?string $defaultImage): void {
 		$this->defaultImage = $defaultImage;
 	}
 
@@ -21,21 +18,15 @@ final class ImageParameters {
 	 * @param string $name
 	 * @param mixed $value
 	 */
-	public function addParameter($name, $value) {
+	public function addParameter(string $name, $value): void {
 		$this->parameters[$name] = $value;
 	}
 
-	/**
-	 * @return null|string
-	 */
-	public function getDefaultImage() {
+	public function getDefaultImage(): ?string {
 		return $this->defaultImage;
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getParameters() {
+	public function getParameters(): array {
 		return $this->parameters;
 	}
 
@@ -43,8 +34,8 @@ final class ImageParameters {
 	 * @param string $name
 	 * @return mixed|null
 	 */
-	public function getParameter($name) {
-		return isset($this->parameters[$name]) ? $this->parameters[$name] : null;
+	public function getParameter(string $name) {
+		return $this->parameters[$name] ?? null;
 	}
 
 }

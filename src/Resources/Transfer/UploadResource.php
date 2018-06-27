@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Resources\Transfer;
 
@@ -15,7 +15,6 @@ class UploadResource extends TransferResource {
 	/**
 	 * @param FileUpload $upload
 	 * @throws ResourceException
-	 * @throws \WebChemistry\Images\TypeException
 	 */
 	public function __construct(FileUpload $upload) {
 		if (!$upload->isOk() || !$upload->isImage()) {
@@ -28,7 +27,7 @@ class UploadResource extends TransferResource {
 	/**
 	 * @return FileUpload
 	 */
-	public function getUpload() {
+	public function getUpload(): FileUpload {
 		return $this->upload;
 	}
 
@@ -37,7 +36,7 @@ class UploadResource extends TransferResource {
 	 * @return Image
 	 * @throws \Nette\Utils\ImageException
 	 */
-	public function toImage(IImageFactory $factory = null) {
+	public function toImage(?IImageFactory $factory = null) {
 		if ($factory) {
 			return $factory->createFromFile($this->upload->getTemporaryFile());
 		}
@@ -48,7 +47,7 @@ class UploadResource extends TransferResource {
 	/**
 	 * @return string
 	 */
-	public function getLocation() {
+	public function getLocation(): string {
 		return $this->upload->getTemporaryFile();
 	}
 

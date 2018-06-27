@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Parsers;
 
@@ -15,25 +15,15 @@ class Values {
 		$this->variables = $variables;
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getValues() {
+	public function getValues(): array {
 		return $this->values;
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getVariables() {
+	public function getVariables(): array {
 		return $this->variables;
 	}
 
-	/**
-	 * @param array $args
-	 * @return array
-	 */
-	public function call(array $args) {
+	public function call(array $args): array {
 		if (count($args) !== count($this->variables)) {
 			throw new \LogicException('Argument count is not equal.');
 		}

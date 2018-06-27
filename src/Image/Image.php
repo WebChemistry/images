@@ -1,7 +1,6 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Image;
-
 
 use Nette\InvalidArgumentException;
 use WebChemistry\Images\Resources\IResource;
@@ -15,7 +14,7 @@ class Image extends \Nette\Utils\Image implements IImage {
 	 * @param int $quality
 	 * @return static
 	 */
-	public function setQuality($quality = 80) {
+	public function setQuality(int $quality = 80) {
 		$this->quality = $quality;
 
 		return $this;

@@ -1,14 +1,13 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Parsers;
 
-
-use WebChemistry\Images\Helpers;
 use WebChemistry\Images\Parsers\Tokenizers\ModifierTokenizer;
 use WebChemistry\Images\Parsers\Tokenizers\Token;
 
 class ModifierParser {
 
+	/** @var array */
 	private static $convert = ['null' => null, 'NULL' => null];
 
 	/** @var ModifierTokenizer */
@@ -25,7 +24,7 @@ class ModifierParser {
 		return array_key_exists($token->token, self::$convert) ? self::$convert[$token->token] : $token->token;
 	}
 
-	public static function parse($input) {
+	public static function parse(string $input): Values {
 		self::$tokenizer = new ModifierTokenizer($input);
 
 		self::$valueBuilder = new ValueBuilder();
@@ -34,7 +33,12 @@ class ModifierParser {
 		return self::$valueBuilder->getResult();
 	}
 
-	protected static function checkToken($token, $expected) {
+	/**
+	 * @param Token $token
+	 * @param int $expected
+	 * @throws ParserException
+	 */
+	protected static function checkToken(Token $token, int $expected): void {
 		if (($isNull = $token === null) || $token->type !== $expected) {
 			ParserException::typeError($expected, $isNull ? null : $token->type);
 		}
@@ -43,8 +47,9 @@ class ModifierParser {
 	/**
 	 * <id>: <expr>
 	 * €
+	 * @throws ParserException
 	 */
-	protected static function modifier() {
+	protected static function modifier(): void {
 		while ($token = self::$tokenizer->nextToken()) {
 			if ($token->type !== $token::VALUE) {
 				ParserException::typeError($token::VALUE, $token->type);
@@ -73,7 +78,7 @@ class ModifierParser {
 	 * [<id>: <expr>]
 	 * €
 	 */
-	protected static function expression() {
+	protected static function expression(): void {
 		$isFirst = true;
 		while ($token = self::$tokenizer->nextToken()) {
 			if (!$isFirst) {
@@ -115,7 +120,7 @@ class ModifierParser {
 	/**
 	 * [<id>: <paramOrArray>]
 	 */
-	protected static function arr() {
+	protected static function arr(): void {
 		$isFirst = true;
 		while (($token = self::$tokenizer->nextToken()) && $token->type !== Token::BRACKET_RIGHT) {
 			if (!$isFirst) {

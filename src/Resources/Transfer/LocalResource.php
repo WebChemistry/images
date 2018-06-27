@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Resources\Transfer;
 
@@ -10,11 +10,7 @@ class LocalResource extends TransferResource {
 	/** @var string */
 	private $file;
 
-	/**
-	 * @param string $file
-	 * @param string $id
-	 */
-	public function __construct($file, $id) {
+	public function __construct(string $file, ?string $id) {
 		$this->file = $file;
 		$this->setId($id);
 	}

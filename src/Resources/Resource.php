@@ -2,10 +2,7 @@
 
 namespace WebChemistry\Images\Resources;
 
-use Nette\Utils\Image;
 use Nette\Utils\Random;
-use WebChemistry\Images\Helpers;
-use WebChemistry\Images\TypeException;
 
 abstract class Resource implements IResource {
 
@@ -26,144 +23,61 @@ abstract class Resource implements IResource {
 	/** @var array */
 	protected $aliases = [];
 
-	/** @var int|null */
-	protected $width;
-
-	/** @var int|null */
-	protected $height;
-
-	/** @var int */
-	protected $sizeFlag = Image::FIT;
-
 	/************************* Properties **************************/
 
-	/**
-	 * @param int|null $width
-	 */
-	public function setWidth($width) {
-		$this->width = $width;
-	}
-
-	/**
-	 * @param int|null $height
-	 */
-	public function setHeight($height) {
-		$this->height = $height;
-	}
-
-	/**
-	 * @param int|null $width
-	 * @param int|null $height
-	 * @param int $flag
-	 */
-	public function setSize($width, $height, $flag = Image::FIT) {
-		$this->width = $width;
-		$this->height = $height;
-		$this->sizeFlag = $flag;
-	}
-
-	/**
-	 * @return int|null
-	 */
-	public function getHeight() {
-		return $this->height;
-	}
-
-	/**
-	 * @return int|null
-	 */
-	public function getWidth() {
-		return $this->width;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getSize() {
-		return [$this->width, $this->height, $this->sizeFlag];
-	}
-
-	/**
-	 * @param string $suffix
-	 */
-	public function setSuffix($suffix) {
+	public function setSuffix(string $suffix): void {
 		$this->name = pathinfo($this->name)['filename'] . '.' . $suffix;
 	}
 
-	/**
-	 * @param string $name
-	 * @throws TypeException
-	 */
-	protected function setName($name) {
-		if ($name && !is_string($name)) {
-			throw new TypeException('string', $name);
-		}
-
+	protected function setName(string $name): void {
 		$this->name = $name;
 	}
 
 	/**
-	 * @param string $namespace
+	 * @param null|string $namespace
 	 * @throws ResourceException
-	 * @throws TypeException
 	 */
-	protected function setNamespace($namespace) {
-		if ($namespace !== null && !is_string($namespace)) {
-			throw new TypeException('nullable string', $namespace);
+	protected function setNamespace(?string $namespace) {
+		if (!$namespace) {
+			$namespace = null;
+
+			return;
 		}
-		if ($namespace && !preg_match('#^[\w/-]+$#', $namespace)) {
+
+		if (!preg_match('#^[\w/-]+$#', $namespace)) {
 			throw new ResourceException('Namespace \'' . $namespace . '\' is not valid.');
 		}
 
-		$this->namespace = $namespace ? trim($namespace, '/') : null;
+		$this->namespace = trim($namespace, '/');
 	}
 
-	/**
-	 * @param int $length
-	 */
-	public function generatePrefix($length = 10) {
+	public function generatePrefix(int $length = 10): void {
 		$this->prefix = Random::generate($length);
 	}
 
 	/////////////////////////////////////////////////////////////////
 
-	/**
-	 * @return bool
-	 */
-	public function toModify() {
+	public function toModify(): bool {
 		return (bool) $this->aliases;
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getAliases() {
+	public function getAliases(): array {
 		return $this->aliases;
 	}
 
-	/**
-	 * @param string $alias
-	 */
-	public function setAlias($alias, array $args = []) {
+	public function setAlias(string $alias, array $args = []): void {
 		$this->aliases[$alias] = $args;
 	}
 
-	/**
-	 * @param array $aliases
-	 */
-	public function setAliases(array $aliases) {
+	public function setAliases(array $aliases): void {
 		$this->aliases = $aliases;
 	}
 
 	/**
 	 * @param string $id
 	 * @throws ResourceException
-	 * @throws TypeException
 	 */
-	protected function parseId($id) {
-		if ($id && !is_string($id)) {
-			throw new ResourceException('Identifier must be string.');
-		}
+	protected function parseId(string $id): void {
 		$explode = explode('/', $id);
 		$count = count($explode);
 
@@ -180,39 +94,27 @@ abstract class Resource implements IResource {
 	 *
 	 * @return string
 	 */
-	public function getId() {
+	public function getId(): string {
 		return ($this->namespace ? $this->namespace . '/' : '') . $this->getName();
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getName() {
+	public function getName(): string {
 		return ($this->prefix ? $this->prefix . self::PREFIX_SEP : '') . $this->name;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getRawName() {
+	public function getRawName(): string {
 		return $this->name;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getNamespace() {
+	public function getNamespace(): ?string {
 		return $this->namespace;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getPrefix() {
+	public function getPrefix(): ?string {
 		return $this->prefix;
 	}
 
-	public function __toString() {
+	public function __toString(): string {
 		return $this->getId();
 	}
 

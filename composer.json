@@ -5,36 +5,27 @@
 	"license": [
 		"GPL-3.0"
 	],
-	"support": {
-		"email": "antik494@gmail.com",
-		"issues": "https://github.com/AntikCz/WebChemistry/images/issues"
-	},
 	"keywords": [
 		"images",
 		"storage"
 	],
-	"authors": [
-		{
-			"name": "Antik",
-			"email": "antik494@gmail.com"
-		}
-	],
 	"require": {
-		"php": ">= 5.5",
-		"nette/http": "^2.3",
-		"nette/utils": "^2.3",
-		"nette/finder": "^2.3",
+		"php": ">= 7.1",
+		"nette/http": "^2.4",
+		"nette/utils": "^2.4",
+		"nette/finder": "^2.4",
 		"nette/tokenizer": "^2.2"
 	},
 	"require-dev": {
-		"nette/di": "^2.3",
+		"nette/di": "^2.4",
 		"latte/latte": "^2.4",
-		"codeception/codeception": "^2.1",
+		"codeception/codeception": "^2.4",
 		"nette/forms": "^2.4",
 		"nette/application": "^2.4",
 		"webchemistry/testing-helpers": "dev-master",
 		"aws/aws-sdk-php": "^3.31",
-		"cloudinary/cloudinary_php": "^1.10"
+		"cloudinary/cloudinary_php": "^1.10",
+		"kdyby/doctrine": "^3.3"
 	},
 	"suggest": {
 		"aws/aws-sdk-php": "To save an image on Amazon",

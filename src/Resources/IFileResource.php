@@ -1,12 +1,9 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Resources;
 
 interface IFileResource extends IResource {
 
-	/**
-	 * @return IFileResource
-	 */
-	public function getOriginal();
+	public function getOriginal(): IFileResource;
 
 }

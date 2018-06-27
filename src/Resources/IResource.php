@@ -9,53 +9,47 @@ interface IResource {
 	/**
 	 * @return bool
 	 */
-	public function toModify();
+	public function toModify(): bool;
 
 	/**
 	 * Name with prefix and namespace
 	 *
 	 * @return string
 	 */
-	public function getId();
+	public function getId(): string;
+
+	public function getPrefix(): ?string;
 
 	/**
 	 * @return string
 	 */
-	public function getPrefix();
-
-	/**
-	 * @return string
-	 */
-	public function getName();
+	public function getName(): string;
 
 	/**
 	 * @return string Name without prefix
 	 */
-	public function getRawName();
+	public function getRawName(): string;
 
-	/**
-	 * @return string
-	 */
-	public function getNamespace();
+	public function getNamespace(): ?string;
 
 	/**
 	 * @param int $length
 	 */
-	public function generatePrefix($length = 10);
+	public function generatePrefix(int $length = 10): void;
 
 	/**
 	 * @return array
 	 */
-	public function getAliases();
+	public function getAliases(): array;
 
 	/**
 	 * @param array $aliases
 	 */
-	public function setAliases(array $aliases);
+	public function setAliases(array $aliases): void;
 
 	/**
 	 * @param string $alias
 	 */
-	public function setAlias($alias);
+	public function setAlias(string $alias);
 
 }

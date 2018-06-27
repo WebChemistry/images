@@ -16,11 +16,11 @@ class ImageFacade {
 	}
 
 	/**
-	 * @param string $id
+	 * @param string|null $id
 	 * @param array $aliases
 	 * @return string
 	 */
-	public function create($id, array $aliases = []) {
+	public function create(?string $id, array $aliases = []) {
 		if (!$id instanceof IFileResource) {
 			$resource = $this->storage->createResource($id);
 		} else {

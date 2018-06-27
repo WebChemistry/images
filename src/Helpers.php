@@ -12,7 +12,7 @@ class Helpers {
 	const ALIAS_DEL = '.';
 	const PARAM_DEL = '_';
 
-	public static function getNameByAliases(array $aliases) {
+	public static function getNameByAliases(array $aliases): string {
 		uksort($aliases, function ($a, $b) {
 			return strcmp($a, $b);
 		});
@@ -42,7 +42,7 @@ class Helpers {
 		return $fullName;
 	}
 
-	public static function getResourceHash(IResource $resource, $aliases = null) {
+	public static function getResourceHash(IResource $resource, ?array $aliases = null): string {
 		if ($aliases === null) {
 			$aliases = $resource->getAliases();
 		}
@@ -57,7 +57,7 @@ class Helpers {
 		return $hash . $namespace . '/' . $resource->getName();
 	}
 
-	protected static function validateParameter($value) {
+	protected static function validateParameter(string $value): void {
 		if (!preg_match('#^[0-9a-zA-Z]+$#', $value)) {
 			throw new \LogicException("Parameter '$value' has disallowed characters.");
 		}

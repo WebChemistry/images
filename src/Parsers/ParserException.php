@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Parsers;
 
@@ -7,7 +7,7 @@ use WebChemistry\Images\Parsers\Tokenizers\Token;
 
 class ParserException extends \Exception {
 
-	public static function convertType($type) {
+	public static function convertType(?int $type): string {
 		if ($type === null) {
 			return 'NULL';
 		}

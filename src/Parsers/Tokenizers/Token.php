@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Parsers\Tokenizers;
 
@@ -13,11 +13,7 @@ class Token {
 	/** @var int */
 	public $type;
 
-	/**
-	 * @param string $token
-	 * @param int $type
-	 */
-	public function __construct($token, $type) {
+	public function __construct(string $token, int $type) {
 		$this->token = $token;
 		$this->type = $type;
 	}

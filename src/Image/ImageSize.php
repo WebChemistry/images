@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Image;
 
@@ -10,7 +10,7 @@ class ImageSize {
 	/** @var int */
 	protected $height;
 
-	public function __construct($width, $height) {
+	public function __construct(int $width, int $height) {
 		$this->width = $width;
 		$this->height = $height;
 	}
@@ -18,14 +18,14 @@ class ImageSize {
 	/**
 	 * @return int
 	 */
-	public function getHeight() {
+	public function getHeight(): int {
 		return $this->height;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getWidth() {
+	public function getWidth(): int {
 		return $this->width;
 	}
 

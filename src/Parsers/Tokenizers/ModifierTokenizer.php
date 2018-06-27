@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Parsers\Tokenizers;
 
@@ -20,12 +20,12 @@ class ModifierTokenizer {
 	/** @var int */
 	private $index = 0;
 
-	public function __construct($input) {
+	public function __construct(string $input) {
 		$this->input = $input;
 		$this->length = strlen($input);
 	}
 
-	public function nextToken() {
+	public function nextToken(): ?Token {
 		if ($this->index >= $this->length) {
 			return null;
 		}

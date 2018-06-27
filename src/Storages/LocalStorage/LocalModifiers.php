@@ -1,7 +1,6 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Storages\LocalStorage;
-
 
 use WebChemistry\Images\Modifiers\ILoader;
 use WebChemistry\Images\Modifiers\ImageParameters;

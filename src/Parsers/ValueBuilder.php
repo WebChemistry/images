@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Parsers;
 
@@ -27,7 +27,11 @@ class ValueBuilder {
 		$this->referenceStack = [&$this->values];
 	}
 
-	public function setValue($key, $value) {
+	/**
+	 * @param string|int $key
+	 * @param mixed $value
+	 */
+	public function setValue($key, $value): void {
 		if ($value instanceof Variable) {
 			$position = $value->getPosition() - 1;
 			$path = implode('.', $this->currentPath);
@@ -45,20 +49,24 @@ class ValueBuilder {
 		$this->referenceStack[$this->current][$key] = $value;
 	}
 
+	/**
+	 * @param int|string $key
+	 * @return static
+	 */
 	public function addKey($key) {
 		$this->referenceStack[$this->current][$key] = [];
 
 		return $this;
 	}
 
-	public function addDefaultKey() {
+	public function addDefaultKey(): int {
 		$this->referenceStack[$this->current][] = [];
 		end($this->referenceStack[$this->current]);
 
 		return key($this->referenceStack[$this->current]);
 	}
 
-	public function pop() {
+	public function pop(): void {
 		if (!$this->referenceStack) {
 			throw new \LogicException('Cannot pop.');
 		}
@@ -68,6 +76,10 @@ class ValueBuilder {
 		array_pop($this->currentPath);
 	}
 
+	/**
+	 * @param string|int $key
+	 * @return static
+	 */
 	public function setActive($key) {
 		if (!isset($this->referenceStack[$this->current][$key])) {
 			throw new \LogicException("Key '$key' not exists in array.");
@@ -80,7 +92,7 @@ class ValueBuilder {
 		return $this;
 	}
 
-	public function getResult() {
+	public function getResult(): Values {
 		return new Values($this->values, $this->variables);
 	}
 

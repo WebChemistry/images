@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Resources\Transfer;
 
@@ -11,10 +11,10 @@ class ImageObjectResource extends LocalResource {
 	private $tmpFile;
 
 	/**
-	 * @param \Nette\Utils\Image $image
+	 * @param Image $image
 	 * @param string $id
 	 */
-	public function __construct(Image $image, $id) {
+	public function __construct(Image $image, string $id) {
 		$this->tmpFile = $tmp = tmpfile();
 		fwrite($tmp, $image->toString(WImage::getImageType($id)));
 		fseek($tmp, 0);

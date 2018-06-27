@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Modifiers;
 
@@ -7,29 +7,12 @@ use WebChemistry\Images\Resources\IResource;
 
 interface IModifiers {
 
-	/**
-	 * @param IResource $resource
-	 * @return array
-	 */
-	public function modifiersFromResource(IResource $resource);
+	public function modifiersFromResource(IResource $resource): array;
 
-	/**
-	 * @param IResource $resource
-	 * @return array
-	 */
-	public function extractActiveAliases(IResource $resource);
+	public function extractActiveAliases(IResource $resource): array;
 
-	/**
-	 * @param IResource $resource
-	 * @return ImageParameters
-	 */
-	public function getImageParameters(IResource $resource);
+	public function getImageParameters(IResource $resource): ImageParameters;
 
-	/**
-	 * @param IResource $resource
-	 * @param Image $image
-	 * @return void
-	 */
-	public function modifyImage(IResource $resource, Image $image);
+	public function modifyImage(IResource $resource, Image $image): void;
 
 }

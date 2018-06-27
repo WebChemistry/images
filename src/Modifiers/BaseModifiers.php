@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Modifiers;
 
@@ -21,7 +21,7 @@ class BaseModifiers implements ILoader {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function load(ModifierContainer $modifierContainer) {
+	public function load(ModifierContainer $modifierContainer): void {
 		$modifierContainer->addModifier('crop', function (Image $image, $left, $top, $width, $height) {
 			$image->crop($left, $top, $width, $height);
 		});
@@ -43,11 +43,9 @@ class BaseModifiers implements ILoader {
 	 * @param int $width
 	 * @param int $height
 	 * @param int $flag
-	 *
-	 * @return void
 	 * @throws ImageStorageException
 	 */
-	public function resize(Image $image, $width, $height, $flag = Image::FIT) {
+	public function resize(Image $image, $width, $height, $flag = Image::FIT): void {
 		if ($flag) {
 			$flag = $this->converseFlags(array_slice(func_get_args(), 3));
 		}
@@ -55,22 +53,19 @@ class BaseModifiers implements ILoader {
 	}
 
 	/**
-	 * @param \WebChemistry\Images\Image\IImage $image
+	 * @param IImage $image
 	 * @param int $quality
-	 *
-	 * @return void
 	 */
-	public function quality(IImage $image, $quality) {
+	public function quality(IImage $image, $quality): void {
 		$image->setQuality($quality);
 	}
 
 	/**
 	 * @param array $flags
-	 *
-	 * @return int|mixed
-	 * @throws \WebChemistry\Images\ImageStorageException
+	 * @return int
+	 * @throws ImageStorageException
 	 */
-	protected function converseFlags(array $flags) {
+	protected function converseFlags(array $flags): int {
 		$result = 0b0000;
 		foreach ($flags as $flag) {
 			if (!isset(self::$flags[$flag])) {

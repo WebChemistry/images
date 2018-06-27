@@ -1,7 +1,6 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Storages;
-
 
 use Nette\Http\IRequest;
 use Nette\Utils\Finder;
@@ -39,16 +38,8 @@ class LocalStorage extends Storage {
 	/** @var IImageFactory */
 	private $imageFactory;
 
-	/**
-	 * @param string $wwwDir
-	 * @param string $assetsDir
-	 * @param ModifierContainer $modifierContainer
-	 * @param IRequest $request
-	 * @param IImageFactory $imageFactory
-	 * @param string|null $defaultImage
-	 */
-	public function __construct($wwwDir, $assetsDir, ModifierContainer $modifierContainer, IRequest $request,
-								IImageFactory $imageFactory, $defaultImage = null) {
+	public function __construct(string $wwwDir, string $assetsDir, ModifierContainer $modifierContainer, IRequest $request,
+								IImageFactory $imageFactory, ?string $defaultImage = null) {
 		$assetsDir = trim($assetsDir, '/\\');
 		$assetsDir = ($assetsDir ? $assetsDir . '/' : '');
 		$modifierContainer->addLoader(new BaseModifiers());
@@ -62,11 +53,7 @@ class LocalStorage extends Storage {
 		$this->imageFactory = $imageFactory;
 	}
 
-	/**
-	 * @param IFileResource $resource
-	 * @return null|string
-	 */
-	public function link(IFileResource $resource) {
+	public function link(IFileResource $resource): ?string {
 		$location = $this->getLink($resource);
 		$parameters = $this->modifierContainer->getImageParameters($resource);
 
@@ -86,6 +73,7 @@ class LocalStorage extends Storage {
 	/**
 	 * @param IFileResource $resource
 	 * @return bool|string false - not exists
+	 * @throws \WebChemistry\Images\Modifiers\ModifierException
 	 */
 	protected function getLink(IFileResource $resource) {
 		$location = $this->getResourceLocation($resource);
@@ -157,10 +145,10 @@ class LocalStorage extends Storage {
 		}
 		$location = $this->directory . $basePath;
 		foreach (Finder::findFiles($resource->getName())->from($location)->limitDepth(1) as $file) {
-			unlink($file);
+			unlink((string) $file);
 		}
 		foreach (Finder::findDirectories('*')->in($location) as $dir) {
-			@rmdir($dir);
+			@rmdir((string) $dir);
 		}
 	}
 
@@ -176,7 +164,7 @@ class LocalStorage extends Storage {
 		return Helpers::getResourceHash($resource, $this->modifierContainer->extractActiveAliases($resource));
 	}
 
-	private function makeDir($dir) {
+	private function makeDir(string $dir): void {
 		$dir = dirname($dir);
 		if (!is_dir($dir)) {
 			mkdir($dir, 0777, true);
@@ -203,7 +191,7 @@ class LocalStorage extends Storage {
 		$image->save($this->directory . $location);
 	}
 
-	private function generateUniqueLocation(IResource $resource) {
+	private function generateUniqueLocation(IResource $resource): string {
 		$location = $this->getResourceLocation($resource);
 
 		while (file_exists($this->directory . $location)) {

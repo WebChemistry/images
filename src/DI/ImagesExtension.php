@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\DI;
 
@@ -68,7 +68,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 	/** @var array */
 	private $cfg = [];
 
-	private function parseConfig() {
+	private function parseConfig(): array {
 		if (!$this->cfg) {
 			$this->cfg = $this->validateConfig($this->defaults);
 			if ($this->cfg['local']['wwwDir'] === null) {
@@ -79,12 +79,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		return $this->cfg;
 	}
 
-	/**
-	 * @param Nette\DI\ServiceDefinition $modifiers
-	 * @param array $services
-	 * @param string $prefix
-	 */
-	protected function addModifiersFromArray(Nette\DI\ServiceDefinition $modifiers, array $services, $prefix) {
+	protected function addModifiersFromArray(Nette\DI\ServiceDefinition $modifiers, array $services, string $prefix): void {
 		$builder = $this->getContainerBuilder();
 
 		foreach ($services as $name => $modifier) {
@@ -97,10 +92,6 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		}
 	}
 
-	/**
-	 * @param Nette\DI\ServiceDefinition $modifiers
-	 * @param array $aliases
-	 */
 	protected function addAliasesFromArray(Nette\DI\ServiceDefinition $modifiers, array $aliases) {
 		foreach ($aliases as $alias => $configuration) {
 			$parsed = ModifierParser::parse($configuration);
@@ -110,11 +101,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		}
 	}
 
-	/**
-	 * @param string $suffix
-	 * @return Nette\DI\ServiceDefinition
-	 */
-	protected function createModifiers($suffix) {
+	protected function createModifiers(string $suffix): Nette\DI\ServiceDefinition {
 		return $this->getContainerBuilder()->addDefinition($this->prefix('modifiers.' . $suffix))
 			->setType(IModifiers::class)
 			->setFactory(ModifierContainer::class)
