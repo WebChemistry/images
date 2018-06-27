@@ -114,7 +114,7 @@ local:
 
 **$upload** - Instance Nette\Utils\Upload
 **$location** - Cesta obrázku uložená v řetězci
-**$storage** - Instance WebChemistry\Images\IStorage
+**$storage** - Instance WebChemistry\Images\IImageStorage
 
 Nette upload
 ```php
