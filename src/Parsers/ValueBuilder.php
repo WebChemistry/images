@@ -13,7 +13,7 @@ class ValueBuilder {
 	/** @var array */
 	protected $variables = [];
 
-	/** @var array reference */
+	/** @var int */
 	protected $current;
 
 	/** @var array */

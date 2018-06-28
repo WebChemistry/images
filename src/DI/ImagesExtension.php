@@ -40,7 +40,6 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 				'apiKey' => null,
 				'apiSecret' => null,
 				'cloudName' => null,
-				'secure' => false,
 			],
 			'aliases' => [],
 		],

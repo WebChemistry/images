@@ -1,7 +1,6 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Storages\Cloudinary;
-
 
 use Cloudinary;
 use WebChemistry\Images\ImageStorageException;
@@ -21,9 +20,7 @@ class CloudinaryFacade {
 		foreach ($config as $name => $value) {
 			$result[strtolower(preg_replace('#(.)(?=[A-Z])#', '$1_', $name))] = $value;
 		}
-		if ($config['secure']) {
-			$this->urlKey = 'secure_url';
-		}
+
 		$this->modifierContainer = $modifierContainer;
 		Cloudinary::config($result);
 	}
@@ -54,7 +51,9 @@ class CloudinaryFacade {
 	}
 
 	public function link(IFileResource $resource) {
-		return Cloudinary::cloudinary_url($resource->getId(), $this->modifierContainer->modifiersFromResource($resource));
+		$options = $this->modifierContainer->modifiersFromResource($resource);
+
+		return Cloudinary::cloudinary_url($resource->getId(), $options);
 	}
 
 	public function move(IFileResource $src, IFileResource $dest) {

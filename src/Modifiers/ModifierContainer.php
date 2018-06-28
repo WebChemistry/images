@@ -138,6 +138,7 @@ class ModifierContainer implements IModifiers {
 					continue;
 				}
 
+				/** @var callable|null $callback */
 				$callback = $this->modifiers[$modifier];
 				if ($callback === null) {
 					continue;

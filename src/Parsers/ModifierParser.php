@@ -39,8 +39,8 @@ class ModifierParser {
 	 * @throws ParserException
 	 */
 	protected static function checkToken(Token $token, int $expected): void {
-		if (($isNull = $token === null) || $token->type !== $expected) {
-			ParserException::typeError($expected, $isNull ? null : $token->type);
+		if ($token->type !== $expected) {
+			ParserException::typeError($expected, $token->type);
 		}
 	}
 

@@ -7,7 +7,7 @@ use WebChemistry\Images\Image\Image as WImage;
 
 class ImageObjectResource extends LocalResource {
 
-	/** @var bool|string */
+	/** @var bool|resource */
 	private $tmpFile;
 
 	/**

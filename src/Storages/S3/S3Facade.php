@@ -1,7 +1,6 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Storages\S3;
-
 
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
@@ -24,23 +23,18 @@ class S3Facade {
 	/** @var string */
 	private $bucket;
 
-	/** @var \WebChemistry\Images\Modifiers\ModifierContainer  */
+	/** @var \WebChemistry\Images\Modifiers\ModifierContainer */
 	private $modifierContainer;
 
-	/** @var \WebChemistry\Images\Image\IImageFactory  */
+	/** @var \WebChemistry\Images\Image\IImageFactory */
 	private $imageFactory;
 
-	/** @var \Aws\S3\S3Client  */
+	/** @var \Aws\S3\S3Client */
 	private $client;
 
-	/** @var bool  */
+	/** @var bool */
 	private $backCompatibility = false;
 
-	/**
-	 * @param array                                             $config
-	 * @param \WebChemistry\Images\Modifiers\ModifierContainer  $modifierContainer
-	 * @param \WebChemistry\Images\Image\IImageFactory          $imageFactory
-	 */
 	public function __construct(array $config, ModifierContainer $modifierContainer, IImageFactory $imageFactory) {
 		$this->config = $config;
 		$this->modifierContainer = $modifierContainer;
@@ -51,23 +45,20 @@ class S3Facade {
 		$this->client = new S3Client($config);
 	}
 
-	/**
-	 * @param bool $backCompatibility
-	 *
-	 * @return void
-	 */
-	public function setBackCompatibility($backCompatibility) {
-		$this->backCompatibility = (bool) $backCompatibility;
+	public function setBackCompatibility(bool $backCompatibility): void {
+		$this->backCompatibility = $backCompatibility;
 	}
 
 	/**
-	 * @param \WebChemistry\Images\Resources\Transfer\ITransferResource $resource
-	 * @param bool                                                      $forceModify
+	 * @param ITransferResource $resource
+	 * @param bool $forceModify
 	 *
 	 * @return \WebChemistry\Images\Resources\FileResource
-	 * @throws \WebChemistry\Images\ImageStorageException
+	 * @throws ImageStorageException
+	 * @throws \WebChemistry\Images\Modifiers\ModifierException
+	 * @throws \WebChemistry\Images\Resources\ResourceException
 	 */
-	public function save(ITransferResource $resource, $forceModify = false) {
+	public function save(ITransferResource $resource, bool $forceModify = false): IFileResource {
 		try {
 			$image = $resource->toImage($this->imageFactory);
 			$this->modifierContainer->modifyImage($resource, $image);
@@ -90,13 +81,17 @@ class S3Facade {
 	 * @param \WebChemistry\Images\Resources\IFileResource $resource
 	 *
 	 * @return string|null
-	 * @throws \WebChemistry\Images\ImageStorageException
+	 * @throws ImageStorageException
+	 * @throws \WebChemistry\Images\Modifiers\ModifierException
+	 * @throws \WebChemistry\Images\Resources\ResourceException
 	 */
-	public function link(IFileResource $resource) {
+	public function link(IFileResource $resource): ?string {
 		if (is_string($link = $this->getLink($resource))) {
 			return $link;
-		} elseif (!$resource->toModify() || !is_string($originalLink = $this->getLink($resource->getOriginal()))) {
-			return false;
+		}
+		$originalLink = $this->getLink($resource->getOriginal());
+		if (!$resource->toModify() || !is_string($originalLink)) {
+			return null;
 		}
 
 		$image = $this->imageFactory->createFromFile($originalLink);
@@ -105,7 +100,7 @@ class S3Facade {
 		$this->save($tmpResource, true);
 		unset($tmpResource);
 
-		return ($link = $this->getLink($resource)) ? $link : false;
+		return ($link = $this->getLink($resource)) ? $link : null;
 	}
 
 	/**
@@ -113,8 +108,9 @@ class S3Facade {
 	 * @param \WebChemistry\Images\Resources\IFileResource $dest
 	 *
 	 * @return void
+	 * @throws ImageStorageException
 	 */
-	public function move(IFileResource $src, IFileResource $dest) {
+	public function move(IFileResource $src, IFileResource $dest): void {
 		$this->copy($src, $dest);
 		$this->delete($src);
 	}
@@ -126,7 +122,7 @@ class S3Facade {
 	 * @return void
 	 * @throws \WebChemistry\Images\ImageStorageException
 	 */
-	public function copy(IFileResource $src, IFileResource $dest) {
+	public function copy(IFileResource $src, IFileResource $dest): void {
 		try{
 			$this->client->copyObject([
 				'Bucket' => $this->bucket,
@@ -145,7 +141,7 @@ class S3Facade {
 	 * @return void
 	 * @throws \WebChemistry\Images\ImageStorageException
 	 */
-	public function delete(IFileResource $resource) {
+	public function delete(IFileResource $resource): void {
 		try{
 			$this->client->deleteMatchingObjects(
 				$this->bucket,
@@ -163,7 +159,7 @@ class S3Facade {
 	 * @return null|string
 	 * @throws \WebChemistry\Images\ImageStorageException
 	 */
-	private function getLink(IFileResource $resource) {
+	private function getLink(IFileResource $resource): ?string {
 		try {
 			$getLink = function ($id) {
 				return $this->client->doesObjectExist($this->bucket, $id)
@@ -187,7 +183,7 @@ class S3Facade {
 	 *
 	 * @return string
 	 */
-	private function getResourceRoot(IResource $resource) {
+	private function getResourceRoot(IResource $resource): string {
 		$basePath = $resource->getNamespace();
 		if ($basePath) {
 			$basePath .= '/';
@@ -197,13 +193,13 @@ class S3Facade {
 	}
 
 	/**
-	 * @param \WebChemistry\Images\Resources\IResource  $resource
-	 * @param bool                                      $forceModify
-	 * @param bool                                      $includeOriginalNamespace
+	 * @param \WebChemistry\Images\Resources\IResource $resource
+	 * @param bool $forceModify
+	 * @param bool $includeOriginalNamespace
 	 *
 	 * @return string
 	 */
-	private function getResourceId(IResource $resource, $forceModify = false, $includeOriginalNamespace = true) {
+	private function getResourceId(IResource $resource, bool $forceModify = false, bool $includeOriginalNamespace = true): string {
 		$basePath = $this->getResourceRoot($resource);
 		if (!$forceModify && ($resource instanceof ITransferResource || !$resource->toModify())) {
 			if (!$includeOriginalNamespace) {

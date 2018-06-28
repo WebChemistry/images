@@ -1,9 +1,9 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Storages;
 
-
 use Nette\NotImplementedException;
+use WebChemistry\Images\Image\ImageSize;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Resources\IFileResource;
 use WebChemistry\Images\Resources\IResource;
@@ -20,15 +20,15 @@ class CloudinaryStorage extends Storage {
 		$this->facade = new CloudinaryFacade($config, $modifierContainer);
 	}
 
-	public function link(IFileResource $resource) {
+	public function link(IFileResource $resource): ?string {
 		return $this->facade->link($resource);
 	}
 
-	public function save(IResource $resource) {
+	public function save(IResource $resource): IFileResource {
 		if (!$resource instanceof ITransferResource) {
-			return $resource; // or throw exception?
+			return $this->createResource($resource->getId());
 		}
-		$resource->setSaved();
+
 		return $this->facade->save($resource);
 	}
 
@@ -44,7 +44,7 @@ class CloudinaryStorage extends Storage {
 		$this->facade->delete($resource);
 	}
 
-	public function getImageSize(IFileResource $resource) {
+	public function getImageSize(IFileResource $resource): ImageSize {
 		throw new NotImplementedException('Method is not implemented yet.');
 	}
 

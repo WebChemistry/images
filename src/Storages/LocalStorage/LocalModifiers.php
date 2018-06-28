@@ -7,6 +7,7 @@ use WebChemistry\Images\Modifiers\ImageParameters;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 
 class LocalModifiers implements ILoader {
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -15,4 +16,5 @@ class LocalModifiers implements ILoader {
 			$imageParameters->addParameter('baseUri', true);
 		});
 	}
+
 }

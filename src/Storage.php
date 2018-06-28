@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images;
 
@@ -7,6 +7,7 @@ use WebChemistry\Images\Image\ImageSize;
 use WebChemistry\Images\Resources\FileResource;
 use WebChemistry\Images\Resources\IFileResource;
 use WebChemistry\Images\Resources\IResource;
+use WebChemistry\Images\Resources\Transfer\ITransferResource;
 use WebChemistry\Images\Resources\Transfer\LocalResource;
 use WebChemistry\Images\Resources\Transfer\UploadResource;
 
@@ -17,15 +18,15 @@ abstract class Storage implements IImageStorage {
 	 * @return UploadResource
 	 * @throws Resources\ResourceException
 	 */
-	public function createUploadResource(FileUpload $fileUpload) {
+	public function createUploadResource(FileUpload $fileUpload): ITransferResource {
 		return new UploadResource($fileUpload);
 	}
 
 	/**
-	 * @param $location
+	 * @param string $location
 	 * @return LocalResource
 	 */
-	public function createLocalResource($location) {
+	public function createLocalResource(string $location) {
 		return new LocalResource($location, basename($location));
 	}
 
@@ -42,19 +43,18 @@ abstract class Storage implements IImageStorage {
 	 * @param IFileResource $resource
 	 * @return ImageSize
 	 */
-	abstract function getImageSize(IFileResource $resource);
+	abstract function getImageSize(IFileResource $resource): ImageSize;
 
 	/**
 	 * @param IFileResource $resource
-	 * @return string
+	 * @return string|null
 	 */
 	abstract public function link(IFileResource $resource): ?string;
 
 	/**
-	 * @param IResource $resource
-	 * @return IFileResource
+	 * {@inheritdoc}
 	 */
-	abstract public function save(IResource $resource);
+	abstract public function save(IResource $resource): IFileResource;
 
 	/**
 	 * @param IFileResource $src

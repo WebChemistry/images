@@ -98,7 +98,7 @@ class LocalStorage extends Storage {
 		return $location;
 	}
 
-	public function save(IResource $resource) {
+	public function save(IResource $resource): IFileResource {
 		if ($resource instanceof UploadResource && !$resource->toModify()) {
 			$resource->setSaved();
 			$location = $this->directory . $this->generateUniqueLocation($resource);
@@ -152,7 +152,7 @@ class LocalStorage extends Storage {
 		}
 	}
 
-	public function getImageSize(IFileResource $resource) {
+	public function getImageSize(IFileResource $resource): ImageSize {
 		list($width, $height) = getimagesize($this->directory . $this->getResourceLocation($resource));
 
 		return new ImageSize($width, $height);

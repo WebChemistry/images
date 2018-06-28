@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Storages;
 
-
 use Nette\NotImplementedException;
 use WebChemistry\Images\Image\IImageFactory;
+use WebChemistry\Images\Image\ImageSize;
 use WebChemistry\Images\Modifiers\BaseModifiers;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Resources\IFileResource;
@@ -17,22 +17,16 @@ class S3Storage extends Storage {
 
 	const ORIGINAL = 'original';
 
-	/** @var \WebChemistry\Images\Modifiers\ModifierContainer  */
+	/** @var \WebChemistry\Images\Modifiers\ModifierContainer */
 	private $modifierContainer;
 
-	/** @var \WebChemistry\Images\Storages\S3\S3Facade  */
+	/** @var \WebChemistry\Images\Storages\S3\S3Facade */
 	private $facade;
 
 	/** @var null|string  */
 	private $defaultImage;
 
-	/**
-	 * @param array                                             $config
-	 * @param \WebChemistry\Images\Modifiers\ModifierContainer  $modifierContainer
-	 * @param \WebChemistry\Images\Image\IImageFactory          $imageFactory
-	 * @param string|null                                       $defaultImage
-	 */
-	public function __construct(array $config, ModifierContainer $modifierContainer, IImageFactory $imageFactory, $defaultImage = null) {
+	public function __construct(array $config, ModifierContainer $modifierContainer, IImageFactory $imageFactory, ?string $defaultImage = null) {
 		$modifierContainer->addLoader(new BaseModifiers());
 		$this->modifierContainer = $modifierContainer;
 		$this->facade = new S3Facade($config, $modifierContainer, $imageFactory);
@@ -42,10 +36,10 @@ class S3Storage extends Storage {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function link(IFileResource $resource) {
+	public function link(IFileResource $resource): ?string {
 		$parameters = $this->modifierContainer->getImageParameters($resource);
 		$defaultImage = $parameters->getDefaultImage() ? : $this->defaultImage;
-		if (($location = $this->facade->link($resource)) === false && $defaultImage) {
+		if (($location = $this->facade->link($resource)) === null && $defaultImage) {
 			$default = $this->createResource($defaultImage);
 			$default->setAliases($resource->getAliases());
 			$location = $this->facade->link($default);
@@ -57,9 +51,9 @@ class S3Storage extends Storage {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function save(IResource $resource) {
+	public function save(IResource $resource): IFileResource {
 		if (!$resource instanceof ITransferResource) {
-			return $resource; // or throw exception?
+			return $this->createResource($resource->getId());
 		}
 		$resource->setSaved();
 
@@ -96,7 +90,7 @@ class S3Storage extends Storage {
 		$this->facade->setBackCompatibility($backCompatibility);
 	}
 
-	public function getImageSize(IFileResource $resource) {
+	public function getImageSize(IFileResource $resource): ImageSize {
 		throw new NotImplementedException('Method is not implemented yet.');
 	}
 

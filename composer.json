@@ -25,7 +25,8 @@
 		"webchemistry/testing-helpers": "dev-master",
 		"aws/aws-sdk-php": "^3.31",
 		"cloudinary/cloudinary_php": "^1.10",
-		"kdyby/doctrine": "^3.3"
+		"kdyby/doctrine": "^3.3",
+		"phpstan/phpstan": "^0.10.0"
 	},
 	"suggest": {
 		"aws/aws-sdk-php": "To save an image on Amazon",

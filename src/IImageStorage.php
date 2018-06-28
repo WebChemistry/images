@@ -1,7 +1,6 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images;
-
 
 use WebChemistry\Images\Resources\IFileResource;
 use WebChemistry\Images\Resources\IResource;
@@ -16,9 +15,9 @@ interface IImageStorage {
 
 	/**
 	 * @param IResource $resource
-	 * @return mixed
+	 * @return IFileResource
 	 */
-	public function save(IResource $resource);
+	public function save(IResource $resource): IFileResource;
 
 	/**
 	 * @param IFileResource $src

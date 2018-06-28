@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Images\Template;
 
-
 use WebChemistry\Images\IImageStorage;
 use WebChemistry\Images\Resources\IFileResource;
 
@@ -15,12 +14,7 @@ class ImageFacade {
 		$this->storage = $storage;
 	}
 
-	/**
-	 * @param string|null $id
-	 * @param array $aliases
-	 * @return string
-	 */
-	public function create(?string $id, array $aliases = []) {
+	public function create($id, array $aliases = []): ?IFileResource {
 		if (!$id instanceof IFileResource) {
 			$resource = $this->storage->createResource($id);
 		} else {
@@ -33,9 +27,9 @@ class ImageFacade {
 
 	/**
 	 * @param IFileResource $resource
-	 * @return string
+	 * @return string|null
 	 */
-	public function link(IFileResource $resource) {
+	public function link(IFileResource $resource): ?string {
 		return $this->storage->link($resource);
 	}
 
