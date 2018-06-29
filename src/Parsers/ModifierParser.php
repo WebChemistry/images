@@ -89,7 +89,7 @@ class ModifierParser {
 				$token = self::$tokenizer->nextToken();
 
 				if ($token === null) {
-					new ParserException('Expected left bracket or value, null given.');
+					throw new ParserException('Expected left bracket or value, null given.');
 				}
 			}
 

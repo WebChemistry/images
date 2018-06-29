@@ -8,10 +8,10 @@ use WebChemistry\Images\Resources\IResource;
 interface IImageStorage {
 
 	/**
-	 * @param IFileResource $resource
+	 * @param IFileResource|null $resource
 	 * @return string|null
 	 */
-	public function link(IFileResource $resource): ?string;
+	public function link(?IFileResource $resource): ?string;
 
 	/**
 	 * @param IResource $resource

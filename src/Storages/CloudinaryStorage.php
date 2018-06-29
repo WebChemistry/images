@@ -20,7 +20,11 @@ class CloudinaryStorage extends Storage {
 		$this->facade = new CloudinaryFacade($config, $modifierContainer);
 	}
 
-	public function link(IFileResource $resource): ?string {
+	public function link(?IFileResource $resource): ?string {
+		if ($resource === null) {
+			return null;
+		}
+
 		return $this->facade->link($resource);
 	}
 

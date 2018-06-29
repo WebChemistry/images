@@ -9,10 +9,10 @@ use WebChemistry\Images\TypeException;
 
 class ModifierContainer implements IModifiers {
 
-	/** @var callable[] */
+	/** @var array<string, callable|null> */
 	private $modifiers = [];
 
-	/** @var callable[] */
+	/** @var array<string, callable|null> */
 	private $parameterModifiers = [];
 
 	/** @var ILoader[] */

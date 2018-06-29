@@ -53,42 +53,40 @@ class LocalStorage extends Storage {
 		$this->imageFactory = $imageFactory;
 	}
 
-	public function link(IFileResource $resource): ?string {
+	public function link(?IFileResource $resource): ?string {
 		$location = $this->getLink($resource);
 		$parameters = $this->modifierContainer->getImageParameters($resource);
 
 		// Image not exists
-		$defaultImage = $parameters->getDefaultImage() ? : $this->defaultImage;
-		if ($location === false && $defaultImage) {
-			if ($defaultImage && $location === false) {
-				$default = $this->createResource($defaultImage);
-				$default->setAliases($resource->getAliases());
-				$location = $this->getLink($default);
-			}
+		$defaultImage = $parameters->getDefaultImage() ?: $this->defaultImage;
+		if ($location === null && $defaultImage) {
+			$default = $this->createResource($defaultImage);
+			$default->setAliases($resource->getAliases());
+			$location = $this->getLink($default);
 		}
 
-		return $location === false ? null : ($parameters->getParameter('baseUri') ? $this->baseUri : $this->basePath). $location;
+		return $location === null ? null : ($parameters->getParameter('baseUri') ? $this->baseUri : $this->basePath). $location;
 	}
 
 	/**
 	 * @param IFileResource $resource
-	 * @return bool|string false - not exists
+	 * @return string|null - null not exists
 	 * @throws \WebChemistry\Images\Modifiers\ModifierException
 	 */
-	protected function getLink(IFileResource $resource) {
+	protected function getLink(IFileResource $resource): ?string {
 		$location = $this->getResourceLocation($resource);
 		$path = $this->directory . $location;
 		if (file_exists($path)) {
 			return $location;
 		}
 		if (!$resource->toModify()) {
-			return false;
+			return null;
 		}
 
 		// resize image
 		$originalPath = $this->directory . $this->getResourceLocation($resource->getOriginal());
 		if (!file_exists($originalPath)) {
-			return false;
+			return null;
 		}
 		$image = $this->imageFactory->createFromFile($originalPath);
 		$this->modifierContainer->modifyImage($resource, $image);

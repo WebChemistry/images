@@ -82,6 +82,38 @@ class TemplateTest extends \Codeception\Test\Unit {
 		$this->assertSame('<img src="/output/original/upload.gif">', trim($string));
 	}
 
+	public function testNull() {
+		$string = $this->latte->renderToString($this->getFile('null'));
+
+		$this->assertSame('<img src="">', trim($string));
+	}
+
+	public function testEmpty() {
+		$string = $this->latte->renderToString($this->getFile('empty'));
+
+		$this->assertSame('', trim($string));
+	}
+
+	public function testNullDefaultImage() {
+		$resource = $this->createUploadResource();
+		$resource->setId('default/upload.gif');
+		$this->storage->save($resource);
+
+		$string = $this->latte->renderToString($this->getFile('null'));
+
+		$this->assertSame('<img src="/output/default/original/upload.gif">', trim($string));
+	}
+
+	public function testNullDefaultImageResize() {
+		$resource = $this->createUploadResource();
+		$resource->setId('default/upload.gif');
+		$this->storage->save($resource);
+
+		$string = $this->latte->renderToString($this->getFile('null-resize'));
+
+		$this->assertSame('<img src="/output/default/resize/upload.gif">', trim($string));
+	}
+
 	private function getFile($name) {
 		return __DIR__ . '/data/template/' . $name . '.latte';
 	}

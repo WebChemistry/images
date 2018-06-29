@@ -46,10 +46,9 @@ abstract class Storage implements IImageStorage {
 	abstract function getImageSize(IFileResource $resource): ImageSize;
 
 	/**
-	 * @param IFileResource $resource
-	 * @return string|null
+	 * {@inheritdoc}
 	 */
-	abstract public function link(IFileResource $resource): ?string;
+	abstract public function link(?IFileResource $resource): ?string;
 
 	/**
 	 * {@inheritdoc}

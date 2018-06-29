@@ -2,7 +2,9 @@
 
 namespace WebChemistry\Images\Template;
 
+use InvalidArgumentException;
 use WebChemistry\Images\IImageStorage;
+use WebChemistry\Images\Resources\EmptyResource;
 use WebChemistry\Images\Resources\IFileResource;
 
 class ImageFacade {
@@ -15,10 +17,14 @@ class ImageFacade {
 	}
 
 	public function create($id, array $aliases = []): ?IFileResource {
-		if (!$id instanceof IFileResource) {
+		if (!$id) {
+			$resource = new EmptyResource();
+		} else if (is_string($id)) {
 			$resource = $this->storage->createResource($id);
-		} else {
+		} else if ($id instanceof IFileResource) {
 			$resource = $id;
+		} else {
+			throw new InvalidArgumentException('ID must be null, string or instance of IFileResource.');
 		}
 		$resource->setAliases($aliases);
 

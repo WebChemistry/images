@@ -36,7 +36,13 @@ class S3Storage extends Storage {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function link(IFileResource $resource): ?string {
+	public function link(?IFileResource $resource): ?string {
+		if ($resource === null && $this->defaultImage) {
+			$default = $this->createResource($this->defaultImage);
+
+			return $this->facade->link($default);
+		}
+
 		$parameters = $this->modifierContainer->getImageParameters($resource);
 		$defaultImage = $parameters->getDefaultImage() ? : $this->defaultImage;
 		if (($location = $this->facade->link($resource)) === null && $defaultImage) {

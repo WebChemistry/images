@@ -178,12 +178,7 @@ class S3Facade {
 		}
 	}
 
-	/**
-	 * @param \WebChemistry\Images\Resources\IResource $resource
-	 *
-	 * @return string
-	 */
-	private function getResourceRoot(IResource $resource): string {
+	private function getResourceRoot(IResource $resource): ?string {
 		$basePath = $resource->getNamespace();
 		if ($basePath) {
 			$basePath .= '/';

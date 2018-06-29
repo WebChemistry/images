@@ -10,15 +10,18 @@ class LocalResource extends TransferResource {
 	/** @var string */
 	private $file;
 
-	public function __construct(string $file, ?string $id) {
+	public function __construct(string $file, string $id) {
 		$this->file = $file;
+
 		$this->setId($id);
 	}
 
 	/**
+	 * @param IImageFactory|null $factory
 	 * @return Image
+	 * @throws \Nette\Utils\UnknownImageFileException
 	 */
-	public function toImage(IImageFactory $factory = null) {
+	public function toImage(?IImageFactory $factory = null) {
 		if ($factory) {
 			return $factory->createFromFile($this->file);
 		}
@@ -29,7 +32,7 @@ class LocalResource extends TransferResource {
 	/**
 	 * @return string
 	 */
-	public function getLocation() {
+	public function getLocation(): string {
 		return $this->file;
 	}
 
