@@ -13,7 +13,7 @@ class ImageFactory implements IImageFactory {
 	 * @return Image
 	 * @throws UnknownImageFileException
 	 */
-	public function createFromFile(string $file, &$format = null) {
+	public function createFromFile(string $file, &$format = null): Image {
 		return Image::fromFile($file, $format);
 	}
 
@@ -23,7 +23,7 @@ class ImageFactory implements IImageFactory {
 	 * @return Image
 	 * @throws ImageException
 	 */
-	public function createFromString(string $string, &$format = null) {
+	public function createFromString(string $string, &$format = null): Image {
 		return Image::fromString($string, $format);
 	}
 

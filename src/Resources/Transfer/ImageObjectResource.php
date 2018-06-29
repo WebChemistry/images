@@ -3,11 +3,12 @@
 namespace WebChemistry\Images\Resources\Transfer;
 
 use Nette\Utils\Image;
+use RuntimeException;
 use WebChemistry\Images\Image\Image as WImage;
 
 class ImageObjectResource extends LocalResource {
 
-	/** @var bool|resource */
+	/** @var resource */
 	private $tmpFile;
 
 	/**
@@ -15,7 +16,12 @@ class ImageObjectResource extends LocalResource {
 	 * @param string $id
 	 */
 	public function __construct(Image $image, string $id) {
-		$this->tmpFile = $tmp = tmpfile();
+		/** @var resource|false $tmp */
+		$tmp = tmpfile();
+		if ($tmp === false) {
+			throw new RuntimeException('Cannot create tmp file.');
+		}
+		$this->tmpFile = $tmp;
 		fwrite($tmp, $image->toString(WImage::getImageType($id)));
 		fseek($tmp, 0);
 		$metaData = stream_get_meta_data($tmp);

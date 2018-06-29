@@ -63,7 +63,7 @@ class ValueBuilder {
 		$this->referenceStack[$this->current][] = [];
 		end($this->referenceStack[$this->current]);
 
-		return key($this->referenceStack[$this->current]);
+		return (int) key($this->referenceStack[$this->current]);
 	}
 
 	public function pop(): void {

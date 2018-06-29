@@ -25,8 +25,13 @@ class CloudinaryFacade {
 		Cloudinary::config($result);
 	}
 
-	private function parseId(IResource $resource) {
-		return substr($resource->getId(), 0, strrpos($resource->getId(), '.'));
+	private function parseId(IResource $resource): string {
+		$pos = strrpos($resource->getId(), '.');
+		if (!$pos) {
+			return $resource->getId();
+		}
+
+		return substr($resource->getId(), 0, $pos);
 	}
 
 	public function save(ITransferResource $resource) {
