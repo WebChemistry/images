@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Images\Parsers;
 
-
 use WebChemistry\Images\Parsers\Tokenizers\Token;
 
 class ParserException extends \Exception {

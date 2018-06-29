@@ -5,7 +5,6 @@ namespace WebChemistry\Images\Modifiers;
 use Nette\Utils\Image;
 use WebChemistry\Images\Parsers\Values;
 use WebChemistry\Images\Resources\IResource;
-use WebChemistry\Images\TypeException;
 
 class ModifierContainer implements IModifiers {
 

@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Images\Parsers\Tokenizers;
 
-
 class ModifierTokenizer {
 
 	/** @var array */

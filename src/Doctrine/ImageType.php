@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Images\Doctrine;
 
-
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use WebChemistry\Images\ImageStorageException;

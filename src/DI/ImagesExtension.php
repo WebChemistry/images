@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Images\DI;
 
-
 use Doctrine\DBAL\Types\Type;
 use Kdyby\Doctrine\Connection;
 use Kdyby\Doctrine\DI\OrmExtension;

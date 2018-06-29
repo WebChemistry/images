@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Images\Resources;
 
-
 class FileResource extends Resource implements IFileResource {
 
 	/**

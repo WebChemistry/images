@@ -7,14 +7,14 @@ use WebChemistry\Images\Resources\IResource;
 
 class Image extends \Nette\Utils\Image implements IImage {
 
-	/** @var int */
-	private $quality = 80;
+	/** @var int|null */
+	private $quality;
 
 	/**
-	 * @param int $quality
+	 * @param int|null $quality
 	 * @return static
 	 */
-	public function setQuality(int $quality = 80) {
+	public function setQuality(?int $quality) {
 		$this->quality = $quality;
 
 		return $this;
@@ -32,13 +32,12 @@ class Image extends \Nette\Utils\Image implements IImage {
 	}
 
 	/**
-	 * @param \WebChemistry\Images\Resources\IResource|string $resource
+	 * @param IResource|string $resource
 	 *
 	 * @return int
 	 * @throws \Nette\InvalidArgumentException
 	 */
-	public static function getImageType($resource)
-	{
+	public static function getImageType($resource): int {
 		$resource = $resource instanceof IResource ? $resource->getName() : $resource;
 		$extensions = [
 			'jpeg'  => Image::JPEG,
@@ -53,4 +52,5 @@ class Image extends \Nette\Utils\Image implements IImage {
 
 		return $extensions[$extension];
 	}
+
 }

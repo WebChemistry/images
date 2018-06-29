@@ -2,13 +2,12 @@
 
 namespace WebChemistry\Images\Image;
 
-
 interface IImage {
 
 	/**
-	 * @param int $quality
+	 * @param int|null $quality
 	 * @return static
 	 */
-	public function setQuality(int $quality = 80);
+	public function setQuality(?int $quality);
 
 }

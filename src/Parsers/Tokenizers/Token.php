@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Images\Parsers\Tokenizers;
 
-
 class Token {
 
 	const VALUE = 0, PIPE = 1, COLON = 2, COMMA = 3, BRACKET_LEFT = 4, BRACKET_RIGHT = 5, VARIABLE = 6;

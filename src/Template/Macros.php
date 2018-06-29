@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Images\Template;
 
-
 use Latte;
 
 class Macros extends Latte\Macros\MacroSet {

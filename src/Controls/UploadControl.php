@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Images\Controls;
 
-
 use Nette\Application\UI\Form;
 use Nette\ComponentModel\Container;
 use Nette\Forms;
@@ -10,16 +9,16 @@ use WebChemistry\Images\Resources\Transfer\UploadResource;
 
 class UploadControl extends Forms\Controls\UploadControl {
 
-	/** @var string */
+	/** @var string|null */
 	private $namespace;
 
-	public function __construct($label = null, $namespace = null) {
+	public function __construct(?string $label = null, ?string $namespace = null) {
 		parent::__construct($label, false);
 
 		$this->namespace = $namespace;
 	}
 
-	public function loadHttpData() {
+	public function loadHttpData(): void {
 		parent::loadHttpData();
 
 		if ($this->value->isOk() && !$this->value->isImage()) {
@@ -28,9 +27,10 @@ class UploadControl extends Forms\Controls\UploadControl {
 	}
 
 	/**
-	 * @return UploadResource|null
+	 * @return null|UploadResource
+	 * @throws \WebChemistry\Images\Resources\ResourceException
 	 */
-	public function getValue() {
+	public function getValue(): ?UploadResource {
 		if (!$this->value->isOk()) {
 			return null;
 		}
@@ -41,16 +41,18 @@ class UploadControl extends Forms\Controls\UploadControl {
 	}
 
 	/**
-	 * @param string $namespace
+	 * @param string|null $namespace
 	 */
-	public function setNamespace($namespace) {
+	public function setNamespace(?string $namespace) {
 		$this->namespace = $namespace;
 	}
 
 	public static function register($controlName = 'addImageUpload') {
-		Forms\Container::extensionMethod(Container::class . '::' . $controlName, function ($form, $name, $label = null, $namespace = null) {
-			return $form[$name] = new self($label, $namespace);
-		});
+		Forms\Container::extensionMethod(Container::class . '::' . $controlName, self::class . '::addInput');
+	}
+
+	public static function addInput(Forms\Form $form, string $name, ?string $label = null, ?string $namespace = null) {
+		return $form[$name] = new self($label, $namespace);
 	}
 
 }
