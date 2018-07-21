@@ -49,7 +49,7 @@ class UploadControl extends Forms\Controls\UploadControl {
 	}
 
 	public static function register($controlName = 'addImageUpload') {
-        ObjectMixin::extensionMethod(Container::class . '::' . $controlName, function ($form, $name, $label = NULL, $namespace = NULL) {
+        ObjectMixin::setExtensionMethod(Container::class, $controlName, function ($form, $name, $label = NULL, $namespace = NULL) {
 			return $form[$name] = new self($label, $namespace);
 		});
 	}
