@@ -76,7 +76,7 @@ class LocalStorage extends Storage {
 	protected function getLink(IFileResource $resource): ?string {
 		$location = $this->getResourceLocation($resource);
 		$path = $this->directory . $location;
-		if (file_exists($path)) {
+		if (is_file($path)) {
 			return $location;
 		}
 		if (!$resource->toModify()) {
@@ -85,7 +85,7 @@ class LocalStorage extends Storage {
 
 		// resize image
 		$originalPath = $this->directory . $this->getResourceLocation($resource->getOriginal());
-		if (!file_exists($originalPath)) {
+		if (!is_file($originalPath)) {
 			return null;
 		}
 		$image = $this->imageFactory->createFromFile($originalPath);

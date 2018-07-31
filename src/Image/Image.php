@@ -27,8 +27,8 @@ class Image extends \Nette\Utils\Image implements IImage {
 	 * @param int $type  optional image type
 	 * @return bool true on success or false on failure.
 	 */
-	public function save($file = null, $quality = null, $type = null) {
-		return parent::save($file, $quality === null ? $this->quality : $quality, $type);
+	public function save(?string $file = null, ?int $quality = null, ?int $type = null): void {
+		parent::save($file, $quality === null ? $this->quality : $quality, $type);
 	}
 
 	/**
