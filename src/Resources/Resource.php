@@ -24,6 +24,13 @@ abstract class Resource implements IResource {
 	/** @var array */
 	protected $aliases = [];
 
+    /**
+     * @var string[]
+     */
+    private static $types = [
+        'ico', 'svg',
+    ];
+
 	/************************* Properties **************************/
 
 	/**
@@ -81,21 +88,19 @@ abstract class Resource implements IResource {
 	 * @param string $alias
 	 */
 	public function setAlias($alias) {
-		$isSvg = mb_strtolower(substr($this->name, -3)) === 'svg';
-	    	if (!$isSvg) {
-            		$this->aliases = [$alias];
-        	}
+        if (in_array(mb_strtolower(substr($this->name, -3)), self::$types) === false) {
+            $this->aliases = [$alias];
+        }
 	}
 
 	/**
 	 * @param array $aliases
 	 */
 	public function setAliases(array $aliases) {
-		$isSvg = mb_strtolower(substr($this->name, -3)) === 'svg';
-	    	if (!$isSvg) {
-            		$this->aliases = $aliases;
-        	}		
-	}
+        if (in_array(mb_strtolower(substr($this->name, -3)), self::$types) === false) {
+            $this->aliases = $aliases;
+        }
+    }
 
 	/**
 	 * @param string $id
