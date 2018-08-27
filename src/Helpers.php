@@ -48,7 +48,7 @@ class Helpers {
 		}
 		$hash = $resource->getNamespace() ? $resource->getNamespace() . '/' : '';
 
-		if ($resource instanceof ITransferResource || !$resource->toModify()) {
+		if (!$aliases) {
 			$namespace = IResource::ORIGINAL;
 		} else {
 			$namespace = self::getNameByAliases($aliases);
