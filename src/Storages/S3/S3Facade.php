@@ -179,7 +179,9 @@ class S3Facade {
 	}
 
 	private function getResourceRoot(IResource $resource): ?string {
-		$basePath = $resource->getNamespace();
+        $basePath = $this->config['root'] ? ($this->config['root'] . '/') : null;
+        $basePath .= $resource->getNamespace();
+
 		if ($basePath) {
 			$basePath .= '/';
 		}

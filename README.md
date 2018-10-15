@@ -41,6 +41,7 @@ s3:
         bucket: 'Your-Bucket'
         version: 'latest'
         region: 'eu-west-1'
+        root: 'userfiles'
         credentials:
           key: 'AWS_KEY'
           secret: 'AWS_SECRET'
