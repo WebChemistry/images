@@ -162,9 +162,13 @@ class S3Facade {
 	private function getLink(IFileResource $resource): ?string {
 		try {
 			$getLink = function ($id) {
-				return $this->client->doesObjectExist($this->bucket, $id)
-					? $this->client->getObjectUrl($this->bucket, $id)
-					: null;
+                if ($this->client->doesObjectExist($this->bucket, $id)) {
+                    return $this->config['cdnHostname']
+                        ? ($this->config['cdnHostname'] . '/' . $id)
+                        : $this->client->getObjectUrl($this->bucket, $id);
+                }
+
+                return null;
 			};
 
 			$link = $getLink($this->getResourceId($resource));

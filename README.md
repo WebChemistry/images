@@ -42,6 +42,7 @@ s3:
         version: 'latest'
         region: 'eu-west-1'
         root: 'userfiles'
+        cdnHostname: '//your.cdn.hostname.com'
         credentials:
           key: 'AWS_KEY'
           secret: 'AWS_SECRET'

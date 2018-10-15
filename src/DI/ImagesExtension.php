@@ -51,6 +51,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 				'version' => 'latest',
 				'region' => 'eu-west-1',
                 'root' => null,
+                'cdnHostname' => null,
 				'credentials' => [
 					'key' => null,
 					'secret' => null
