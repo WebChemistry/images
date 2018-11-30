@@ -190,8 +190,12 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 	public function beforeCompile() {
 		$builder = $this->getContainerBuilder();
 
-		$builder->getDefinition('nette.latteFactory')
-			->addSetup(Macros::class . '::install(?->getCompiler())', ['@self'])
+		$def = $builder->getDefinition('nette.latteFactory');
+		if ($def instanceof Nette\DI\Definitions\FactoryDefinition) {
+			$def = $def->getResultDefinition();
+		}
+
+		$def->addSetup(Macros::class . '::install(?->getCompiler())', ['@self'])
 			->addSetup('addProvider', ['imageStorageFacade', $builder->getDefinition($this->prefix('template.facade'))]);
 
 		if (class_exists(Connection::class)) {
