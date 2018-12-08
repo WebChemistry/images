@@ -52,8 +52,7 @@ class LocalStorage extends Storage {
 	}
 
 	public function link(?IFileResource $resource): ?string {
-		$served = $this->metaFactory->create($resource);
-		$location = $this->getLink($served);
+		$location = $this->getLink($resource);
 
 		// Image not exists
 		$defaultImage = $resource->getDefaultImage() ?: $this->defaultImage;
@@ -61,33 +60,34 @@ class LocalStorage extends Storage {
 			$default = $this->createResource($defaultImage);
 			$default->setAliases($resource->getAliases());
 
-			$location = $this->getLink($this->metaFactory->create($default));
+			$location = $this->getLink($default);
 		}
 
 		return $location === null ? null : ($resource->isBaseUrl() ? $this->baseUrl : $this->basePath). $location;
 	}
 
 	/**
-	 * @param IResourceMeta $resource
+	 * @param IFileResource $resource
 	 * @return string|null - null not exists
 	 */
-	protected function getLink(IResourceMeta $resource): ?string {
-		$location = $this->getResourceLocation($resource);
+	protected function getLink(IFileResource $resource): ?string {
+		$meta = $this->metaFactory->create($resource);
+		$location = $this->getResourceLocation($meta);
 		$path = $this->directory . $location;
 		if (is_file($path)) {
 			return $location;
 		}
-		if (!$resource->hasModifiers()) {
+		if (!$meta->hasModifiers()) {
 			return null;
 		}
 
 		// resize image
-		$originalPath = $this->getResourcePath($this->metaFactory->create($resource->getResource()->getOriginal()));
+		$originalPath = $this->getResourcePath($this->metaFactory->create($resource->getOriginal()));
 		if (!is_file($originalPath)) {
 			return null;
 		}
 		$image = $this->imageFactory->createFromFile($originalPath);
-		$resource->modify($image);
+		$meta->modify($image);
 		$this->makeDir($path);
 		$image->save($path);
 
@@ -101,10 +101,10 @@ class LocalStorage extends Storage {
 	 */
 	public function save(IResource $resource): IFileResource {
 		if ($resource instanceof UploadResource && !$resource->toModify()) {
-			$served = $this->metaFactory->create($resource);
+			$meta = $this->metaFactory->create($resource);
 
 			$resource->setSaved();
-			$location = $this->directory . $this->generateUniqueLocation($served);
+			$location = $this->directory . $this->generateUniqueLocation($meta);
 			$this->makeDir($location);
 			$resource->getUpload()->move($location);
 
@@ -166,9 +166,9 @@ class LocalStorage extends Storage {
 	}
 
 	public function getImageSize(IFileResource $resource): ImageSize {
-		$served = $this->metaFactory->create($resource);
+		$meta = $this->metaFactory->create($resource);
 
-		[$width, $height] = getimagesize($this->directory . $this->getResourceLocation($served));
+		[$width, $height] = getimagesize($this->directory . $this->getResourceLocation($meta));
 
 		return new ImageSize($width, $height);
 	}
@@ -214,31 +214,31 @@ class LocalStorage extends Storage {
 	 * @throws ImageStorageException
 	 */
 	private function saveResource(IResource $resource) {
-		$served = $this->metaFactory->create($resource);
+		$meta = $this->metaFactory->create($resource);
 
 		if ($resource instanceof ITransferResource) {
 			$image = $this->imageFactory->createFromFile($resource->getLocation());
 		} else if ($resource instanceof IFileResource) {
-			$originalServed = $this->metaFactory->create($resource->getOriginal());
-			$image = $this->imageFactory->createFromFile($this->directory . $this->getResourceLocation($originalServed));
+			$originalMeta = $this->metaFactory->create($resource->getOriginal());
+			$image = $this->imageFactory->createFromFile($this->directory . $this->getResourceLocation($originalMeta));
 		} else {
 			throw new ImageStorageException('Resource must be instance of ITransferResource or IFileResource.');
 		}
 
-		$served->modify($image);
-		$location = $this->generateUniqueLocation($served);
+		$meta->modify($image);
+		$location = $this->generateUniqueLocation($meta);
 
 		$this->makeDir($this->directory . $location);
 		$image->save($this->directory . $location);
 	}
 
-	private function generateUniqueLocation(IResourceMeta $served): string {
-		$resource = $served->getResource();
-		$location = $this->getResourceLocation($served);
+	private function generateUniqueLocation(IResourceMeta $meta): string {
+		$resource = $meta->getResource();
+		$location = $this->getResourceLocation($meta);
 
 		while (file_exists($this->directory . $location)) {
 			$resource->generatePrefix();
-			$location = $this->getResourceLocation($served);
+			$location = $this->getResourceLocation($meta);
 		}
 
 		return $location;
