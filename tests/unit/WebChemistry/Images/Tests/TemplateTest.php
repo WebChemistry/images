@@ -1,20 +1,13 @@
 <?php
+
 namespace WebChemistry\Images\Tests;
 
-use Latte\Engine;
 use Nette\Http\FileUpload;
-use Nette\Http\Request;
-use Nette\Http\UrlScript;
-use WebChemistry\Images\Image\ImageFactory;
-use WebChemistry\Images\Modifiers\Composite;
-use WebChemistry\Images\Modifiers\ModifierContainer;
+use Test\ObjectHelper;
+use Test\TemplateMock;
+use WebChemistry\Images\Modifiers\BaseModifiers;
 use WebChemistry\Images\Parsers\ModifierParser;
-use WebChemistry\Images\Resources\FileResource;
 use WebChemistry\Images\Storage;
-use WebChemistry\Images\Storages\LocalStorage;
-use WebChemistry\Images\Template\ImageFacade;
-use WebChemistry\Images\Template\Macros;
-use WebChemistry\Test\Services;
 use WebChemistry\Testing\TUnitTest;
 
 class TemplateTest extends \Codeception\Test\Unit {
@@ -29,18 +22,16 @@ class TemplateTest extends \Codeception\Test\Unit {
 
 	protected function _before() {
 		@mkdir(__DIR__ . '/output');
-		$modifierContainer = new ModifierContainer();
-		$modifierContainer->addAlias('resize', ModifierParser::parse('resize:5,5'));
-		$url = new UrlScript('http://example.com/');
-		$request = new Request($url);
-		$imageFactory = new ImageFactory();
-		$storage = $this->storage = new LocalStorage(__DIR__, 'output', $modifierContainer, $request, $imageFactory, 'default/upload.gif');
 
-		$latte = new Engine();
-		$this->latte = new TemplateMock($latte);
-		Macros::install($latte->getCompiler());
-		$this->latte->getEngine()->addProvider('imageStorageFacade',
-			new ImageFacade($storage));
+		$modifiers = ObjectHelper::createModifiers();
+		$modifiers->addLoader(new BaseModifiers());
+		$modifiers->addAlias('resize', ModifierParser::parse('resize:5,5'));
+		$serveFactory = ObjectHelper::createServeFactory($modifiers);
+		$this->storage = $storage = ObjectHelper::createLocalStorage(
+			__DIR__, 'output', $serveFactory, 'default/upload.gif'
+		);
+
+		$this->latte = ObjectHelper::createLatte($storage);
 	}
 
 	private function createUploadResource() {
@@ -116,39 +107,6 @@ class TemplateTest extends \Codeception\Test\Unit {
 
 	private function getFile($name) {
 		return __DIR__ . '/data/template/' . $name . '.latte';
-	}
-
-}
-
-class TemplateMock {
-
-	/** @var Engine */
-	private $engine;
-
-	/** @var array */
-	private $params = [];
-
-	public function __construct(Engine $engine) {
-		$this->engine = $engine;
-	}
-
-	public function compile($name) {
-		return $this->engine->compile($name);
-	}
-
-	public function renderToString($name, array $params = []) {
-		return $this->engine->renderToString($name, $this->params + $params);
-	}
-
-	public function __set($name, $value) {
-		$this->params[$name] = $value;
-	}
-
-	/**
-	 * @return Engine
-	 */
-	public function getEngine() {
-		return $this->engine;
 	}
 
 }

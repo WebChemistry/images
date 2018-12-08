@@ -2,17 +2,12 @@
 namespace WebChemistry\Images\Tests;
 
 use Nette\Http\FileUpload;
-use Nette\Http\Request;
-use Nette\Http\UrlScript;
-use Nette\Utils\Image;
-use WebChemistry\Images\Image\ImageFactory;
+use Test\ObjectHelper;
 use WebChemistry\Images\ImageStorageException;
-use WebChemistry\Images\Modifiers\Composite;
+use WebChemistry\Images\Modifiers\BaseModifiers;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Parsers\ModifierParser;
 use WebChemistry\Images\Resources\IFileResource;
-use WebChemistry\Images\Resources\ImageResource;
-use WebChemistry\Images\Resources\ITransferResource;
 use WebChemistry\Images\Resources\ResourceException;
 use WebChemistry\Images\Storages\LocalStorage;
 use WebChemistry\Testing\TUnitTest;
@@ -26,12 +21,13 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 
 	protected function _before() {
 		@mkdir(__DIR__ . '/output');
-		$modifierContainer = new ModifierContainer();
-		$url = new UrlScript('http://example.com/');
-		$request = new Request($url);
-		$imageFactory = new ImageFactory();
-		$this->fillAliases($modifierContainer);
-		$this->storage = new LocalStorage(__DIR__, 'output', $modifierContainer, $request, $imageFactory, 'default/upload.gif');
+		$modifiers = ObjectHelper::createModifiers();
+		$modifiers->addLoader(new BaseModifiers());
+		$this->fillAliases($modifiers);
+
+		$serveFactory = ObjectHelper::createServeFactory($modifiers);
+
+		$this->storage = ObjectHelper::createLocalStorage(__DIR__, 'output', $serveFactory, 'default/upload.gif');
 	}
 
 	private function fillAliases(ModifierContainer $modifierContainer) {

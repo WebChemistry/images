@@ -5,6 +5,7 @@ namespace WebChemistry\Images\Modifiers;
 use Nette\Utils\Image;
 use WebChemistry\Images\Image\IImage;
 use WebChemistry\Images\ImageStorageException;
+use WebChemistry\Images\Resources\IResource;
 
 class BaseModifiers implements ILoader {
 
@@ -33,9 +34,18 @@ class BaseModifiers implements ILoader {
 
 		/////////////////////////////////////////////////////////////////
 
-		$modifierContainer->addParameterModifier('defaultImage', function (ImageParameters $imageParameters, $image) {
-			$imageParameters->setDefaultImage($image);
-		});
+		$modifierContainer->addModifier('defaultImage', function (IResource $resource, $image) {
+			$resource->setDefaultImage($image);
+		}, false);
+
+		$modifierContainer->addModifier('baseUrl', function (IResource $resource, $baseUrl = true) {
+			$resource->setBaseUrl($baseUrl);
+		}, false);
+
+		// deprecated
+		$modifierContainer->addModifier('baseUri', function (IResource $resource, $baseUrl = true) {
+			$resource->setBaseUrl($baseUrl);
+		}, false);
 	}
 
 	/**

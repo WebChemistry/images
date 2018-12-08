@@ -17,6 +17,7 @@ class LocalResource extends TransferResource {
 	}
 
 	/**
+	 * @deprecated use getLocation() instead
 	 * @param IImageFactory|null $factory
 	 * @return Image
 	 * @throws \Nette\Utils\UnknownImageFileException

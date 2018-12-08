@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Images\Template;
 
@@ -24,7 +24,7 @@ class ImageFacade {
 		} else if ($id instanceof IFileResource) {
 			$resource = $id;
 		} else {
-			throw new InvalidArgumentException('ID must be null, string or instance of IFileResource.');
+			throw new InvalidArgumentException('ID must be null, string or instance of ' . IFileResource::class . '.');
 		}
 		$resource->setAliases($aliases);
 

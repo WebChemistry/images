@@ -4,12 +4,17 @@ namespace WebChemistry\Images\Resources;
 
 interface IResource {
 
+	const PREFIX_SEP = '_._';
+	// deprecated
 	const ORIGINAL = 'original';
 
 	/**
+	 * @deprecated use hasAliases() instead
 	 * @return bool
 	 */
 	public function toModify(): bool;
+
+	public function hasAliases(): bool;
 
 	/**
 	 * Name with prefix and namespace
@@ -20,36 +25,33 @@ interface IResource {
 
 	public function getPrefix(): ?string;
 
-	/**
-	 * @return string
-	 */
 	public function getName(): string;
 
+	public function getDefaultImage(): ?string;
+
+	public function isBaseUrl(): bool;
+
 	/**
-	 * @return string Name without prefix
+	 * Name without prefix
+	 *
+	 * @return string
 	 */
 	public function getRawName(): string;
 
 	public function getNamespace(): ?string;
 
-	/**
-	 * @param int $length
-	 */
 	public function generatePrefix(int $length = 10): void;
 
-	/**
-	 * @return array
-	 */
 	public function getAliases(): array;
 
-	/**
-	 * @param array $aliases
-	 */
-	public function setAliases(array $aliases): void;
+	public function setAliases(array $aliases);
 
-	/**
-	 * @param string $alias
-	 */
 	public function setAlias(string $alias);
+
+	public function setSuffix(string $suffix);
+
+	public function setDefaultImage(?string $defaultImage);
+
+	public function setBaseUrl(bool $baseUrl = true);
 
 }

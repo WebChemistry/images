@@ -2,7 +2,15 @@
 
 namespace WebChemistry\Images\Image;
 
+use Nette\SmartObject;
+
+/**
+ * @property-read int $height
+ * @property-read int $width
+ */
 class ImageSize {
+
+	use SmartObject;
 
 	/** @var int */
 	protected $width;

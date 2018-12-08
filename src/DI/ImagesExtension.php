@@ -11,10 +11,17 @@ use WebChemistry\Images\Doctrine\ImageType;
 use WebChemistry\Images\IImageStorage;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\Image\ImageFactory;
+use WebChemistry\Images\Modifiers\BaseModifiers;
 use WebChemistry\Images\Modifiers\IModifiers;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Parsers\ModifierParser;
 use WebChemistry\Images\Parsers\Values;
+use WebChemistry\Images\Resolvers\HashResolver;
+use WebChemistry\Images\Resolvers\IHashResolver;
+use WebChemistry\Images\Resolvers\INamespaceResolver;
+use WebChemistry\Images\Resolvers\NamespaceResolver;
+use WebChemistry\Images\Resources\Meta\IResourceMetaFactory;
+use WebChemistry\Images\Resources\Meta\ResourceMetaFactory;
 use WebChemistry\Images\Storages\CloudinaryStorage;
 use WebChemistry\Images\Storages\LocalStorage;
 use WebChemistry\Images\Storages\S3Storage;
@@ -58,6 +65,8 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			'aliases' => [],
 			'modifiers' => [],
 		],
+		'hashResolver' => HashResolver::class,
+		'namespaceResolver' => NamespaceResolver::class,
 		'default' => 'local',
 		'registerControl' => true,
 		'registerType' => true,
@@ -114,13 +123,27 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			->setType(IImageFactory::class)
 			->setFactory(ImageFactory::class);
 
+		$builder->addDefinition($this->prefix('hashResolver'))
+			->setType(IHashResolver::class)
+			->setFactory($config['hashResolver']);
+
+		$builder->addDefinition($this->prefix('namespaceResolver'))
+			->setType(INamespaceResolver::class)
+			->setFactory($config['namespaceResolver']);
+
 		// local
 		if ($config['local']['enable']) {
 			$modifiers = $this->createModifiers('local');
 
 			// Modifiers and aliases
+			$config['local']['modifiers'][] = BaseModifiers::class;
+
 			$this->addModifiersFromArray($modifiers, $config['local']['modifiers'], 'modifier');
 			$this->addAliasesFromArray($modifiers, $config['local']['aliases']);
+
+			$resourceMetaFactory = $builder->addDefinition($this->prefix('resourceMetaFactory.local'))
+				->setType(IResourceMetaFactory::class)
+				->setFactory(ResourceMetaFactory::class);
 
 			$def = $builder->addDefinition($this->prefix('storage.local'))
 				->setType(IImageStorage::class)
@@ -128,9 +151,9 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 					[
 						$config['local']['wwwDir'],
 						$config['local']['assetsDir'],
-						$modifiers,
 						'@' . Nette\Http\IRequest::class,
 						'@' . IImageFactory::class,
+						$resourceMetaFactory,
 						$config['local']['defaultImage'],
 					]
 				);
@@ -191,7 +214,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		$builder = $this->getContainerBuilder();
 
 		$def = $builder->getDefinition('nette.latteFactory');
-		if ($def instanceof Nette\DI\Definitions\FactoryDefinition) {
+		if (class_exists('Nette\DI\Definitions\FactoryDefinition')) {
 			$def = $def->getResultDefinition();
 		}
 

@@ -2,4 +2,4 @@
 
 namespace WebChemistry\Images\Resources;
 
-class ResourceException extends \Exception {}
+class ResourceException extends \RuntimeException {}

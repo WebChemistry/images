@@ -32,6 +32,7 @@ class UploadResource extends TransferResource {
 	}
 
 	/**
+	 * @deprecated use getLocation() instead
 	 * @param IImageFactory $factory
 	 * @return Image
 	 * @throws \Nette\Utils\ImageException

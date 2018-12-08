@@ -3,10 +3,11 @@
 namespace WebChemistry\Images\Resources;
 
 use Nette\Utils\Random;
+use WebChemistry\Images\Resources\Meta\TResourceMetaCache;
 
 abstract class Resource implements IResource {
 
-	const PREFIX_SEP = '_._';
+	use TResourceMetaCache;
 
 	/** @var array */
 	public $additional = [];
@@ -23,7 +24,24 @@ abstract class Resource implements IResource {
 	/** @var array */
 	protected $aliases = [];
 
+	/** @var bool */
+	protected $baseUrl = false;
+
+	/** @var string|null */
+	protected $defaultImage;
+
 	/************************* Properties **************************/
+
+	/**
+	 * @param string|null $defaultImage
+	 */
+	public function setDefaultImage(?string $defaultImage) {
+		$this->defaultImage = $defaultImage;
+	}
+
+	public function setBaseUrl(bool $baseUrl = true) {
+		$this->baseUrl = $baseUrl;
+	}
 
 	public function setSuffix(string $suffix): void {
 		$this->name = pathinfo($this->name)['filename'] . '.' . $suffix;
@@ -57,7 +75,15 @@ abstract class Resource implements IResource {
 
 	/////////////////////////////////////////////////////////////////
 
+	/**
+	 * @deprecated use hasAliases() instead
+	 * @return bool
+	 */
 	public function toModify(): bool {
+		return $this->hasAliases();
+	}
+
+	public function hasAliases(): bool {
 		return (bool) $this->aliases;
 	}
 
@@ -96,6 +122,14 @@ abstract class Resource implements IResource {
 	 */
 	public function getId(): string {
 		return ($this->namespace ? $this->namespace . '/' : '') . $this->getName();
+	}
+
+	public function getDefaultImage(): ?string {
+		return $this->defaultImage;
+	}
+
+	public function isBaseUrl(): bool {
+		return $this->baseUrl;
 	}
 
 	public function getName(): string {

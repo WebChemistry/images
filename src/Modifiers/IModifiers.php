@@ -2,17 +2,17 @@
 
 namespace WebChemistry\Images\Modifiers;
 
-use Nette\Utils\Image;
+use WebChemistry\Images\Parsers\Values;
 use WebChemistry\Images\Resources\IResource;
 
 interface IModifiers {
 
-	public function modifiersFromResource(IResource $resource): array;
+	public function addModifier(string $name, ?callable $callback, bool $changeSignature = true);
 
-	public function extractActiveAliases(IResource $resource): array;
+	public function addLoader(ILoader $modifier);
 
-	public function getImageParameters(IResource $resource): ImageParameters;
+	public function addAlias(string $alias, Values $modifiers);
 
-	public function modifyImage(IResource $resource, Image $image): void;
+	public function getModifiersByResource(IResource $resource): iterable;
 
 }

@@ -35,7 +35,12 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"WebChemistry\\Images\\": "src/"
+			"WebChemistry\\Images\\": ["src/"]
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Test\\": ["tests/classes/"]
 		}
 	}
 }

@@ -2,17 +2,13 @@
 
 namespace WebChemistry\Images\Modifiers;
 
-use Nette\Utils\Image;
 use WebChemistry\Images\Parsers\Values;
 use WebChemistry\Images\Resources\IResource;
 
 class ModifierContainer implements IModifiers {
 
-	/** @var array<string, callable|null> */
+	/** @var array */
 	private $modifiers = [];
-
-	/** @var array<string, callable|null> */
-	private $parameterModifiers = [];
 
 	/** @var ILoader[] */
 	private $loaders = [];
@@ -20,12 +16,8 @@ class ModifierContainer implements IModifiers {
 	/** @var Values[] */
 	private $aliases = [];
 
-	public function addModifier(string $name, ?callable $callback): void {
-		$this->modifiers[$name] = $callback;
-	}
-
-	public function addParameterModifier(string $name, ?callable $callback): void {
-		$this->parameterModifiers[$name] = $callback;
+	public function addModifier(string $name, ?callable $callback, bool $changeSignature = true): void {
+		$this->modifiers[$name] = [$callback, $changeSignature];
 	}
 
 	public function addLoader(ILoader $modifier): void {
@@ -53,100 +45,33 @@ class ModifierContainer implements IModifiers {
 
 	/**
 	 * @param IResource $resource
-	 * @return array
-	 * @throws ModifierException
+	 * @return iterable [callback, values, changeSignature, alias]
 	 */
-	public function modifiersFromResource(IResource $resource): array {
-		$modifiers = [];
-		foreach ($resource->getAliases() as $alias => $args) {
-			if (!isset($this->aliases[$alias])) {
-				throw new ModifierException("Configuration for alias '$alias' not exists.");
-			}
-
-			$modifiers = array_merge($this->aliases[$alias]->call($args), $modifiers);
-		}
-
-		return $modifiers;
-	}
-
-	public function extractActiveAliases(IResource $resource): array {
+	public function getModifiersByResource(IResource $resource): iterable {
 		$this->load();
 
-		$aliases = [];
-		foreach ($resource->getAliases() as $alias => $args) {
-			if (!isset($this->aliases[$alias])) {
-				throw new ModifierException("Configuration for alias '$alias' not exists.");
-			}
-			if ($args) {
-				$aliases[$alias] = $args;
-				continue;
-			}
-			$values = $this->aliases[$alias]->call($args);
-			foreach ($values as $name => $_) {
-				if (isset($this->modifiers[$name])) {
-					$aliases[$alias] = $args;
-
-					break;
-				}
-			}
-		}
-
-		return $aliases;
-	}
-
-	/**
-	 * @param IResource $resource
-	 * @return ImageParameters
-	 * @throws ModifierException
-	 */
-	public function getImageParameters(IResource $resource): ImageParameters {
-		$this->load();
-
-		$parameters = new ImageParameters();
+		$array = [];
 		foreach ($resource->getAliases() as $alias => $args) {
 			if (!isset($this->aliases[$alias])) {
 				throw new ModifierException("Configuration for alias '$alias' not exists.");
 			}
 
 			foreach ($this->aliases[$alias]->call($args) as $modifier => $values) {
-				if (!isset($this->parameterModifiers[$modifier])) {
-					continue;
-				}
-
-				$callback = $this->parameterModifiers[$modifier];
-
-				array_unshift($values, $parameters);
-				call_user_func_array($callback, $values);
-			}
-		}
-
-		return $parameters;
-	}
-
-	public function modifyImage(IResource $resource, Image $image): void {
-		$this->load();
-
-		foreach ($resource->getAliases() as $alias => $args) {
-			if (!isset($this->aliases[$alias])) {
-				throw new ModifierException("Configuration for alias '$alias' not exists.");
-			}
-
-			$values = $this->aliases[$alias]->call($args);
-			foreach ($values as $modifier => $values) {
 				if (!isset($this->modifiers[$modifier])) {
-					continue;
+					throw new ModifierException("Modifier '$modifier' not exists.");
 				}
 
 				/** @var callable|null $callback */
-				$callback = $this->modifiers[$modifier];
+				[$callback, $changeSignature] = $this->modifiers[$modifier];
 				if ($callback === null) {
 					continue;
 				}
 
-				array_unshift($values, $image);
-				call_user_func_array($callback, $values);
+				$array[] = [$callback, $values, $changeSignature, $alias];
 			}
 		}
+
+		return $array;
 	}
 
 }

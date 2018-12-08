@@ -2,13 +2,11 @@
 
 namespace WebChemistry\Images;
 
-use WebChemistry\Images\Resources\IResource;
-use WebChemistry\Images\Resources\Transfer\ITransferResource;
-
 class Helpers {
 
-	const FOLDER_SIZE = 247;
-	const FOLDER_WITH_MD5_SIZE = 215; // 247 - 32
+	private const FOLDER_SIZE = 247;
+	private const FOLDER_WITH_MD5_SIZE = 215; // 247 - 32
+
 	const ALIAS_DEL = '.';
 	const PARAM_DEL = '_';
 
@@ -42,19 +40,17 @@ class Helpers {
 		return $fullName;
 	}
 
-	public static function getResourceHash(IResource $resource, ?array $aliases = null): string {
-		if ($aliases === null) {
-			$aliases = $resource->getAliases();
-		}
-		$hash = $resource->getNamespace() ? $resource->getNamespace() . '/' : '';
+	/**
+	 * Removes / from left and right side
+	 *
+	 * @param string|null $path
+	 * @param bool $appendSlash
+	 * @return string
+	 */
+	public static function normalizePath(?string $path, bool $appendSlash = true): string {
+		$path = trim((string) $path, '/\\');
 
-		if (!$aliases) {
-			$namespace = IResource::ORIGINAL;
-		} else {
-			$namespace = self::getNameByAliases($aliases);
-		}
-
-		return $hash . $namespace . '/' . $resource->getName();
+		return ($appendSlash && $path ? $path . '/' : $path);
 	}
 
 	protected static function validateParameter(string $value): void {

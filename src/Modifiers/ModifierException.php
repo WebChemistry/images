@@ -2,4 +2,4 @@
 
 namespace WebChemistry\Images\Modifiers;
 
-class ModifierException extends \Exception {}
+class ModifierException extends \RuntimeException {}
