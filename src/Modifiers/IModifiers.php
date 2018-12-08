@@ -13,6 +13,6 @@ interface IModifiers {
 
 	public function addAlias(string $alias, Values $modifiers);
 
-	public function getModifiersByResource(IResource $resource): iterable;
+	public function getModifiersByResource(IResource $resource): array;
 
 }

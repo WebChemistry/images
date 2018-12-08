@@ -45,9 +45,9 @@ class ModifierContainer implements IModifiers {
 
 	/**
 	 * @param IResource $resource
-	 * @return iterable [callback, values, changeSignature, alias]
+	 * @return array [callback, values, changeSignature, alias]
 	 */
-	public function getModifiersByResource(IResource $resource): iterable {
+	public function getModifiersByResource(IResource $resource): array {
 		$this->load();
 
 		$array = [];

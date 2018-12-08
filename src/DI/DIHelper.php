@@ -2,6 +2,7 @@
 
 namespace WebChemistry\Images\DI;
 
+use Nette\DI\Definitions\FactoryDefinition;
 use Nette\DI\ServiceDefinition;
 use Nette\DI\Statement;
 use Nette\StaticClass;
@@ -11,6 +12,18 @@ use WebChemistry\Images\Parsers\Values;
 class DIHelper {
 
 	use StaticClass;
+
+	/**
+	 * @param FactoryDefinition|ServiceDefinition $definition
+	 * @return ServiceDefinition
+	 */
+	public static function fixFactoryDefinition($definition) {
+		if ($definition instanceof FactoryDefinition) {
+			return $definition->getResultDefinition();
+		}
+
+		return $definition;
+	}
 
 	public static function addModifiersFromArray(ServiceDefinition $modifiers, array $services): void {
 		foreach ($services as $modifier) {

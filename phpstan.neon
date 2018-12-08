@@ -1,0 +1,8 @@
+parameters:
+	ignoreErrors:
+		- '#Parameter \$definition of method WebChemistry\\Images\\DI\\DIHelper::fixFactoryDefinition#'
+		- '#Class Nette\\DI\\Definitions\\FactoryDefinition not found#'
+		- '#Call to method getResultDefinition\(\) on an unknown class Nette\\DI\\Definitions\\FactoryDefinition#'
+		- '#Access to an undefined property WebChemistry\\Images\\Resources\\IResource::\$__meta#'
+		- '#Property WebChemistry\\Images\\Resources\\Meta\\ResourceMeta::\$hashFolder \(string|null\) does not accept default value of type false#'
+		- '#Strict comparison using === between string|null and false will always evaluate to false#'

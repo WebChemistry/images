@@ -112,9 +112,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		$builder = $this->getContainerBuilder();
 
 		$def = $builder->getDefinition('nette.latteFactory');
-		if (class_exists('Nette\DI\Definitions\FactoryDefinition')) {
-			$def = $def->getResultDefinition();
-		}
+		$def = DIHelper::fixFactoryDefinition($def);
 
 		$def->addSetup(Macros::class . '::install(?->getCompiler())', ['@self'])
 			->addSetup('addProvider', ['imageStorageFacade', $builder->getDefinition($this->prefix('template.facade'))]);
