@@ -4,6 +4,7 @@ namespace WebChemistry\Images\Storages;
 
 use Nette\Http\IRequest;
 use Nette\Utils\Finder;
+use Nette\Utils\UnknownImageFileException;
 use WebChemistry\Images\Helpers;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\Image\ImageSize;
