@@ -31,7 +31,13 @@ class UploadControl extends Forms\Controls\UploadControl {
 	 * @throws \WebChemistry\Images\Resources\ResourceException
 	 */
 	public function getValue(): ?UploadResource {
+		if (!$this->value) {
+			return null;
+		}
 		if (!$this->value->isOk()) {
+			return null;
+		}
+		if (!$this->value->isImage()) {
 			return null;
 		}
 		$value = new UploadResource($this->value);
