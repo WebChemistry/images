@@ -86,7 +86,13 @@ class LocalStorage extends Storage {
 		if (!is_file($originalPath)) {
 			return null;
 		}
-		$image = $this->imageFactory->createFromFile($originalPath);
+
+		try {
+			$image = $this->imageFactory->createFromFile($originalPath);
+		} catch (UnknownImageFileException $e) {
+			return null;
+		}
+
 		$meta->modify($image);
 		$this->makeDir($path);
 		$image->save($path);
