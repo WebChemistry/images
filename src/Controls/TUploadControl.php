@@ -8,4 +8,8 @@ trait TUploadControl {
 		return $this[$name] = new UploadControl($label, $namespace);
 	}
 
+	public function addImagePreviewUpload(string $name, ?string $label = null, ?string $namespace = null): AdvancedUploadControl {
+		return $this[$name] = new AdvancedUploadControl($label, $namespace);
+	}
+
 }

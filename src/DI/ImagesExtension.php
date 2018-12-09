@@ -6,6 +6,7 @@ use Doctrine\DBAL\Types\Type;
 use Kdyby\Doctrine\Connection;
 use Kdyby\Doctrine\DI\OrmExtension;
 use Nette;
+use WebChemistry\Images\Controls\AdvancedUploadControl;
 use WebChemistry\Images\Controls\UploadControl;
 use WebChemistry\Images\Doctrine\ImageType;
 use WebChemistry\Images\IImageStorage;
@@ -133,6 +134,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 		if ($config['registerControl']) {
 			$init->addBody(UploadControl::class . '::register();');
+			$init->addBody(AdvancedUploadControl::class . '::register();');
 		}
 		if ($config['registerType'] && class_exists(Type::class)) {
 			$init->addBody(Type::class . '::addType(?, ?);', [ImageType::TYPE, ImageType::class]);

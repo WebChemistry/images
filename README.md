@@ -244,6 +244,23 @@ $form->onSuccess[] = function ($form, array $values) use ($storage) {
 };    
 ```
 
+Pro náhledový obrázek a input pro odstranění obrázků:
+```php
+$form->addImageUpload('image', 'Obrázek')
+    ->setDelete('Odstranit obrázek')
+    ->setNamespace('namespace');
+    
+$form->onSuccess[] = function ($form, array $values) use ($storage) {
+	$image = $values['image'];
+	if ($image->getUpload()) {
+    	$storage->save($image->getUpload());
+	}
+	if ($image->getDelete()) {
+		$storage->delete($image->getDelete());
+	}
+};
+```
+
 ## Doctrine typ
 
 Automatickou registraci provede extenze.

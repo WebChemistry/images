@@ -10,7 +10,7 @@ use WebChemistry\Images\Resources\Transfer\UploadResource;
 class UploadControl extends Forms\Controls\UploadControl {
 
 	/** @var string|null */
-	private $namespace;
+	protected $namespace;
 
 	public function __construct(?string $label = null, ?string $namespace = null) {
 		parent::__construct($label, false);
@@ -54,11 +54,11 @@ class UploadControl extends Forms\Controls\UploadControl {
 	}
 
 	public static function register($controlName = 'addImageUpload') {
-		Forms\Container::extensionMethod(Container::class . '::' . $controlName, self::class . '::addInput');
+		Forms\Container::extensionMethod(Container::class . '::' . $controlName, static::class . '::addInput');
 	}
 
 	public static function addInput(Forms\Form $form, string $name, ?string $label = null, ?string $namespace = null) {
-		return $form[$name] = new self($label, $namespace);
+		return $form[$name] = new static($label, $namespace);
 	}
 
 }
