@@ -12,6 +12,7 @@ use WebChemistry\Images\Image\ImageFactory;
 use WebChemistry\Images\Modifiers\IModifiers;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Resolvers\HashResolver;
+use WebChemistry\Images\Resolvers\IHashResolver;
 use WebChemistry\Images\Resolvers\NamespaceResolver;
 use WebChemistry\Images\Resources\Meta\IResourceMetaFactory;
 use WebChemistry\Images\Resources\Meta\ResourceMetaFactory;
@@ -28,16 +29,16 @@ class ObjectHelper {
 	}
 
 	public static function createHashResolver(): HashResolver {
-		return new HashResolver();
+		return new CustomHashResolver();
 	}
 
 	public static function createNamespaceResolver(): NamespaceResolver {
 		return new NamespaceResolver();
 	}
 
-	public static function createServeFactory(?IModifiers $modifiers = null): IResourceMetaFactory {
+	public static function createServeFactory(?IModifiers $modifiers = null, ?IHashResolver $hashResolver = null): IResourceMetaFactory {
 		return new ResourceMetaFactory(
-			$modifiers ?: self::createModifiers(), self::createImageFactory(), self::createHashResolver(), self::createNamespaceResolver()
+			$modifiers ?: self::createModifiers(), self::createImageFactory(), $hashResolver ?: self::createHashResolver(), self::createNamespaceResolver()
 		);
 	}
 

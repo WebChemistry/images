@@ -2,6 +2,7 @@
 namespace WebChemistry\Images\Tests;
 
 use Nette\Http\FileUpload;
+use Test\CustomHashResolver;
 use Test\ObjectHelper;
 use WebChemistry\Images\ImageStorageException;
 use WebChemistry\Images\Modifiers\BaseModifiers;
@@ -19,13 +20,17 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 	/** @var LocalStorage */
 	private $storage;
 
+	/** @var CustomHashResolver */
+	private $hashResolver;
+
 	protected function _before() {
 		@mkdir(__DIR__ . '/output');
 		$modifiers = ObjectHelper::createModifiers();
 		$modifiers->addLoader(new BaseModifiers());
 		$this->fillAliases($modifiers);
 
-		$serveFactory = ObjectHelper::createServeFactory($modifiers);
+		$this->hashResolver = ObjectHelper::createHashResolver();
+		$serveFactory = ObjectHelper::createServeFactory($modifiers, $this->hashResolver);
 
 		$this->storage = ObjectHelper::createLocalStorage(__DIR__, 'output', $serveFactory, 'default/upload.gif');
 	}
@@ -219,6 +224,21 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		$size = getimagesize($this->getUploadPath('upload.gif', 'resizeVar_20_20_exact'));
 		$this->assertSame(20, $size[0]);
 		$this->assertSame(20, $size[1]);
+	}
+
+	public function testCustomHashResolver() {
+		$this->hashResolver->useCustom = true;
+		$upload = $this->createUploadResource();
+		$upload->setNamespace('namespace');
+		$this->storage->save($upload);
+
+		$this->assertFileExists(__DIR__ . '/output/namespace/upload.gif');
+
+		// test 2
+		$upload = $this->createUploadResource();
+		$this->storage->save($upload);
+
+		$this->assertFileExists(__DIR__ . '/output/upload.gif');
 	}
 
 }
