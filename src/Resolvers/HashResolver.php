@@ -19,11 +19,11 @@ class HashResolver implements IHashResolver {
 	/**
 	 * Returns alias hash or 'original'
 	 *
-	 * @param IResourceMeta $resourceServed
+	 * @param IResourceMeta $meta
 	 * @return string|null
 	 */
-	public function resolve(IResourceMeta $resourceServed): ?string {
-		$aliases = $resourceServed->getSignature();
+	public function resolve(IResourceMeta $meta): ?string {
+		$aliases = $meta->getSignature();
 		if (!$aliases) {
 			return $this->original;
 		}

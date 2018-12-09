@@ -10,15 +10,15 @@ class CustomHashResolver extends HashResolver {
 	/** @var bool */
 	public $useCustom = false;
 
-	public function resolve(IResourceMeta $resourceServed): ?string {
+	public function resolve(IResourceMeta $meta): ?string {
 		if ($this->useCustom) {
-			$aliases = $resourceServed->getSignature();
+			$aliases = $meta->getSignature();
 			if (!$aliases) {
 				return null;
 			}
 		}
 
-		return parent::resolve($resourceServed);
+		return parent::resolve($meta);
 	}
 
 }
