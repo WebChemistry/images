@@ -114,9 +114,12 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 
 	private function getImageStorage(): ?IImageStorage {
 		if ($this->imageStorage === false) {
+			/** @var \Nette\Application\UI\Presenter|null $presenter */
 			$presenter = $this->lookup(IPresenter::class, false);
 			if ($presenter) {
-				$this->imageStorage = $presenter->getContext()->getByType(IImageStorage::class, false);
+				/** @var IImageStorage $storage */
+				$storage = $presenter->getContext()->getByType(IImageStorage::class, false);
+				$this->imageStorage = $storage;
 			} else {
 				$this->imageStorage = null;
 			}
