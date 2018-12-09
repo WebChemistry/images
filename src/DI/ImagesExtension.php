@@ -49,7 +49,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			throw new Nette\DeprecatedException('ImageStorage: "local" section is deprecated.');
 		}
 		if ($config['wwwDir'] === null) {
-			$config['local']['wwwDir'] = $this->getContainerBuilder()->parameters['wwwDir'];
+			$config['wwwDir'] = $this->getContainerBuilder()->parameters['wwwDir'];
 		}
 
 		return $config;
@@ -84,7 +84,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			return;
 		}
 
-		$modifiers = $builder->addDefinition($this->prefix('modifiers.local'))
+		$modifiers = $builder->addDefinition($this->prefix('modifiers'))
 			->setType(IModifiers::class)
 			->setFactory(ModifierContainer::class)
 			->setAutowired(false);
@@ -94,16 +94,16 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		DIHelper::addModifiersFromArray($modifiers, $config['modifiers']);
 		DIHelper::addAliasesFromArray($modifiers, $config['aliases']);
 
-		$builder->addDefinition($this->prefix('storage.local'))
+		$builder->addDefinition($this->prefix('storage'))
 			->setType(IImageStorage::class)
 			->setFactory(LocalStorage::class,
 				[
-					$config['local']['wwwDir'],
-					$config['local']['assetsDir'],
+					$config['wwwDir'],
+					$config['assetsDir'],
 					'@' . Nette\Http\IRequest::class,
 					$imageFactory,
 					$resourceMetaFactory,
-					$config['local']['defaultImage'],
+					$config['defaultImage'],
 				]
 			);
 	}
