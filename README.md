@@ -1,7 +1,5 @@
 [![Build Status](https://travis-ci.org/WebChemistry/images.svg?branch=master)](https://travis-ci.org/WebChemistry/images)
 
-[Starší verze 2](https://github.com/WebChemistry/images/tree/v2.2)
-
 ## Instalace
 
 Composer:
@@ -18,35 +16,25 @@ extensions:
 ### Konfigurace
 
 ```yaml
-local: ## Nastavení pro lokalni uloziste
-    enable: yes
-    defaultImage: null
-    wwwDir: %wwwDir%
-    assetsDir: assets
-    modifiers: []
-    aliases: []
-cloudinary:
-    enable: yes
-    config:
-      apiKey: null
-      apiSecret: null
-      cloudName: null
-      secure: no
-    aliases: []
-s3:
-    enable: yes
-    defaultImage: null
-    namespaceBC: no # Back Compatibility. Pokud je nastaveno na TRUE, soubory budou hledány také bez prefixu `/original/`
-    config:
-        bucket: 'Your-Bucket'
-        version: 'latest'
-        region: 'eu-west-1'
-        credentials:
-          key: 'AWS_KEY'
-          secret: 'AWS_SECRET'
-    aliases: []
-default: local ## Výchozí uložiště [cloudinary, local, s3]
+enable: yes
+defaultImage: null
+wwwDir: %wwwDir%
+assetsDir: assets
+modifiers: []
+aliases: []
+hashResolver: WebChemistry\Images\Resolvers\HashResolver ## Vysvětleno níže
+namespaceResolver: WebChemistry\Images\Resolvers\NamespaceResolver ## Vysvětleno níže
+registerControl: yes ## Zaregistruje UploadControl
+registerType: yes ## Zaregistruje doctrine typ 'image' 
 ```
+
+### Skladba cesty k obrázků
+
+%wwwDir%/%assetsDir%/namespace/resize/image.png
+%wwwDir%/%assetsDir%/namespace/original/image.png
+
+namespace/ - Má na starosti třída namespaceResolver
+resize/ - Má na starosti třída hashResolver 
 
 ### Tvorba aliasů
 Aliasy umožnují snadnou modifikací obrazků
