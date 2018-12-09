@@ -72,10 +72,6 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			->setType(INamespaceResolver::class)
 			->setFactory($config['namespaceResolver']);
 
-		$resourceMetaFactory = $builder->addDefinition($this->prefix('resourceMetaFactory'))
-			->setType(IResourceMetaFactory::class)
-			->setFactory(ResourceMetaFactory::class);
-
 		$builder->addDefinition($this->prefix('template.facade'))
 			->setFactory(ImageFacade::class);
 
@@ -89,6 +85,11 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			->setFactory(ModifierContainer::class)
 			->setAutowired(false);
 
+		$resourceMetaFactory = $builder->addDefinition($this->prefix('resourceMetaFactory'))
+			->setType(IResourceMetaFactory::class)
+			->setFactory(ResourceMetaFactory::class, [$modifiers])
+			->setAutowired(false);
+
 		$config['modifiers'][] = BaseModifiers::class;
 
 		DIHelper::addModifiersFromArray($modifiers, $config['modifiers']);
@@ -100,9 +101,9 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 				[
 					$config['wwwDir'],
 					$config['assetsDir'],
+					$resourceMetaFactory,
 					'@' . Nette\Http\IRequest::class,
 					$imageFactory,
-					$resourceMetaFactory,
 					$config['defaultImage'],
 				]
 			);
