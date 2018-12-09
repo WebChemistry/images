@@ -82,6 +82,10 @@ class ResourceMeta implements IResourceMeta {
 		return (bool) $this->getModifiers();
 	}
 
+	public function toModify(): bool {
+		return (bool) $this->getSignature();
+	}
+
 	protected function prepare(): void {
 		foreach ($this->getModifiers() as [$callback, $values, $changeSignature]) {
 			if (!$changeSignature) {

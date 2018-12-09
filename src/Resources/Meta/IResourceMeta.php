@@ -15,6 +15,8 @@ interface IResourceMeta {
 
 	public function modify(Image $image);
 
+	public function toModify(): bool;
+
 	public function getSignature(): array;
 
 	public function hasModifiers(): bool;

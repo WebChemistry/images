@@ -78,7 +78,7 @@ class LocalStorage extends Storage {
 		if (is_file($path)) {
 			return $location;
 		}
-		if (!$meta->hasModifiers()) {
+		if (!$meta->toModify()) {
 			return null;
 		}
 
