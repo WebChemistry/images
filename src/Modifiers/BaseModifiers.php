@@ -5,6 +5,8 @@ namespace WebChemistry\Images\Modifiers;
 use Nette\Utils\Image;
 use WebChemistry\Images\Image\IImage;
 use WebChemistry\Images\ImageStorageException;
+use WebChemistry\Images\Modifiers\Params\ModifierParam;
+use WebChemistry\Images\Modifiers\Params\ResourceModifierParam;
 use WebChemistry\Images\Resources\IResource;
 
 class BaseModifiers implements ILoader {
@@ -23,39 +25,51 @@ class BaseModifiers implements ILoader {
 	 * {@inheritdoc}
 	 */
 	public function load(ModifierContainer $modifierContainer): void {
-		$modifierContainer->addModifier('crop', function (Image $image, $left, $top, $width, $height) {
+		$modifierContainer->addModifier('crop', function (ModifierParam $param, $left, $top, $width, $height) {
+			$image = $param->getImage();
+
 			$image->crop($left, $top, $width, $height);
 		});
 		$modifierContainer->addModifier('resize', [$this, 'resize']);
 		$modifierContainer->addModifier('quality', [$this, 'quality']);
-		$modifierContainer->addModifier('sharpen', function (Image $image) {
+		$modifierContainer->addModifier('sharpen', function (ModifierParam $param) {
+			$image = $param->getImage();
+
 			$image->sharpen();
 		});
 
 		/////////////////////////////////////////////////////////////////
 
-		$modifierContainer->addResourceModifier('defaultImage', function (IResource $resource, $image) {
+		$modifierContainer->addResourceModifier('defaultImage', function (ResourceModifierParam $param, $image) {
+			$resource = $param->getResource();
+
 			$resource->setDefaultImage($image);
 		});
 
-		$modifierContainer->addResourceModifier('baseUrl', function (IResource $resource, $baseUrl = true) {
+		$modifierContainer->addResourceModifier('baseUrl', function (ResourceModifierParam $param, $baseUrl = true) {
+			$resource = $param->getResource();
+
 			$resource->setBaseUrl($baseUrl);
 		});
 
 		// deprecated
-		$modifierContainer->addResourceModifier('baseUri', function (IResource $resource, $baseUrl = true) {
+		$modifierContainer->addResourceModifier('baseUri', function (ResourceModifierParam $param, $baseUrl = true) {
+			$resource = $param->getResource();
+
 			$resource->setBaseUrl($baseUrl);
 		});
 	}
 
 	/**
-	 * @param \Nette\Utils\Image $image
+	 * @param ModifierParam $param
 	 * @param int $width
 	 * @param int $height
 	 * @param int $flag
 	 * @throws ImageStorageException
 	 */
-	public function resize(Image $image, $width, $height, $flag = Image::FIT): void {
+	public function resize(ModifierParam $param, $width, $height, $flag = Image::FIT): void {
+		$image = $param->getImage();
+
 		if ($flag) {
 			$flag = $this->converseFlags(array_slice(func_get_args(), 3));
 		}
@@ -63,10 +77,12 @@ class BaseModifiers implements ILoader {
 	}
 
 	/**
-	 * @param IImage $image
+	 * @param ModifierParam $param
 	 * @param int $quality
 	 */
-	public function quality(IImage $image, $quality): void {
+	public function quality(ModifierParam $param, $quality): void {
+		$image = $param->getImage();
+
 		$image->setQuality($quality);
 	}
 

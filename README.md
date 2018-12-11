@@ -83,8 +83,8 @@ vytvořit třídu a přidávat modifiery
 class ModifiersLoader implements WebChemistry\Images\Modifiers\ILoader {
     
     public function load(WebChemistry\Images\Modifiers\ModifierContainer $modifierContainer) {
-        $modifierContainer->addModifiers('custom', function (Nette\Utils\Image $image, $param) {
-            // zpracovani obrazku $image
+        $modifierContainer->addModifier('custom', function (ModifierParam $param, $foo) {
+            // zpracovani obrazku $param->getImage()
         });
     }
 

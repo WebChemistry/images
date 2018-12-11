@@ -5,6 +5,8 @@ namespace WebChemistry\Images\Resources\Meta;
 use Nette\SmartObject;
 use Nette\Utils\Image;
 use WebChemistry\Images\Modifiers\IModifiers;
+use WebChemistry\Images\Modifiers\Params\ModifierParam;
+use WebChemistry\Images\Modifiers\Params\ResourceModifierParam;
 use WebChemistry\Images\Resolvers\IHashResolver;
 use WebChemistry\Images\Resolvers\INamespaceResolver;
 use WebChemistry\Images\Resources\IResource;
@@ -95,14 +97,15 @@ class ResourceMeta implements IResourceMeta {
 
 	protected function prepare(): void {
 		foreach ($this->getResourceModifiers() as [$callback, $values]) {
-			array_unshift($values, $this->resource);
+			array_unshift($values, new ResourceModifierParam($this));
 			$callback(...$values);
 		}
 	}
 
 	public function modify(Image $image) {
+		$param = new ModifierParam($image, $this);
 		foreach ($this->getModifiers() as [$callback, $values]) {
-			array_unshift($values, $image);
+			array_unshift($values, $param);
 			$callback(...$values);
 		}
 	}
