@@ -9,6 +9,8 @@ interface IResourceMeta {
 
 	public function getNamespaceFolder(): ?string;
 
+	public function getOriginalHashFolder(): ?string;
+
 	public function getHashFolder(): ?string;
 
 	public function getResource(): IResource;

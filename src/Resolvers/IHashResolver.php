@@ -6,6 +6,8 @@ use WebChemistry\Images\Resources\Meta\IResourceMeta;
 
 interface IHashResolver {
 
-	public function resolve(IResourceMeta $resource): ?string;
+	public function getOriginal(IResourceMeta $meta): ?string;
+
+	public function resolve(IResourceMeta $meta): ?string;
 
 }

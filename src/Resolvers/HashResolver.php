@@ -16,6 +16,10 @@ class HashResolver implements IHashResolver {
 		$this->original = $original;
 	}
 
+	public function getOriginal(IResourceMeta $meta): ?string {
+		return $this->original;
+	}
+
 	/**
 	 * Returns alias hash or 'original'
 	 *
@@ -25,7 +29,7 @@ class HashResolver implements IHashResolver {
 	public function resolve(IResourceMeta $meta): ?string {
 		$aliases = $meta->getSignature();
 		if (!$aliases) {
-			return $this->original;
+			return $this->getOriginal($meta);
 		}
 
 		return Helpers::getNameByAliases($aliases);

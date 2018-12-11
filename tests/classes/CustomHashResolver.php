@@ -10,6 +10,14 @@ class CustomHashResolver extends HashResolver {
 	/** @var bool */
 	public $useCustom = false;
 
+	public function getOriginal(IResourceMeta $meta): ?string {
+		if ($this->useCustom) {
+			return null;
+		}
+
+		return parent::getOriginal($meta);
+	}
+
 	public function resolve(IResourceMeta $meta): ?string {
 		if ($this->useCustom) {
 			$aliases = $meta->getSignature();

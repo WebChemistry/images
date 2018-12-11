@@ -48,6 +48,10 @@ class ResourceMeta implements IResourceMeta {
 		return $this->resource;
 	}
 
+	public function getOriginalHashFolder(): ?string {
+		return $this->hashResolver->getOriginal($this);
+	}
+
 	public function getNamespaceFolder(): ?string {
 		return $this->namespaceResolver->resolve($this);
 	}

@@ -121,7 +121,10 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 	public function testModifiers() {
 		$resource = $this->createUploadResource();
 		$resource->setAlias('resize');
+		$resource = $this->storage->save($resource);
+		$resource->setAlias('resize');
 		$this->storage->save($resource);
+
 		$this->assertFileExists($this->getUploadPath('upload.gif', 'resize'));
 
 		$size = getimagesize($this->getUploadPath('upload.gif', 'resize'));
@@ -159,9 +162,9 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		$need->setAlias('resize');
 
 		$this->storage->copy($result, $need);
-		$this->assertFileExists($this->getUploadPath('copy.gif', 'resize'));
+		$this->assertFileExists($this->getUploadPath('copy.gif'));
 
-		$size = getimagesize($this->getUploadPath('copy.gif', 'resize'));
+		$size = getimagesize($this->getUploadPath('copy.gif'));
 		$this->assertSame(5, $size[0]);
 		$this->assertSame(5, $size[1]);
 	}
@@ -182,8 +185,8 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		$need->setAlias('resize');
 
 		$this->storage->move($result, $need);
-		$this->assertFileExists($this->getUploadPath('copy.gif', 'resize'));
-		$this->assertFileNotExists($this->getUploadPath());
+		$this->assertFileNotExists($this->getUploadPath('upload.gif'));
+		$this->assertFileExists($this->getUploadPath('copy.gif'));
 	}
 
 	public function testLink() {
@@ -239,6 +242,15 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		$this->storage->save($upload);
 
 		$this->assertFileExists(__DIR__ . '/output/upload.gif');
+	}
+
+	public function testUploadModify() {
+		$upload = $this->createUploadResource();
+		$upload->setAlias('resize');
+		$this->storage->save($upload);
+
+		$this->assertFileNotExists(__DIR__ . '/output/resize/upload.gif');
+		$this->assertFileExists(__DIR__ . '/output/original/upload.gif');
 	}
 
 }

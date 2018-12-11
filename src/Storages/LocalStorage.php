@@ -199,7 +199,7 @@ class LocalStorage extends Storage {
 	 */
 	private function getResourceLocation(IResourceMeta $resource): string {
 		$namespace = $resource->getNamespaceFolder();
-		$hash = $resource->getHashFolder();
+		$hash = $resource->getResource() instanceof ITransferResource ? $resource->getOriginalHashFolder() : $resource->getHashFolder();
 
 		return $this->folder($namespace) . $this->folder($hash) . $resource->getResource()->getName();
 	}
