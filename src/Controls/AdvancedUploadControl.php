@@ -143,7 +143,7 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 				'class' => 'wch-upload-preview-container',
 			]);
 
-			if ($this->preview) {
+			if ($this->preview && $this->defaultValue) {
 				if ($this->previewAlias) {
 					$this->defaultValue->setAlias($this->previewAlias);
 				}
