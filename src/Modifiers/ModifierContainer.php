@@ -115,7 +115,7 @@ class ModifierContainer implements IModifiers {
 				}
 
 				/** @var callable $callback */
-				$callback = $this->modifiers[$modifier];
+				$callback = $this->resourceModifiers[$modifier];
 
 				$array[] = [$callback, $values];
 			}
