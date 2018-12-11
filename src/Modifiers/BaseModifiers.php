@@ -3,11 +3,9 @@
 namespace WebChemistry\Images\Modifiers;
 
 use Nette\Utils\Image;
-use WebChemistry\Images\Image\IImage;
 use WebChemistry\Images\ImageStorageException;
 use WebChemistry\Images\Modifiers\Params\ModifierParam;
 use WebChemistry\Images\Modifiers\Params\ResourceModifierParam;
-use WebChemistry\Images\Resources\IResource;
 
 class BaseModifiers implements ILoader {
 
@@ -24,15 +22,15 @@ class BaseModifiers implements ILoader {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function load(ModifierContainer $modifierContainer): void {
-		$modifierContainer->addModifier('crop', function (ModifierParam $param, $left, $top, $width, $height) {
+	public function load(IModifiers $modifiers): void {
+		$modifiers->addModifier('crop', function (ModifierParam $param, $left, $top, $width, $height) {
 			$image = $param->getImage();
 
 			$image->crop($left, $top, $width, $height);
 		});
-		$modifierContainer->addModifier('resize', [$this, 'resize']);
-		$modifierContainer->addModifier('quality', [$this, 'quality']);
-		$modifierContainer->addModifier('sharpen', function (ModifierParam $param) {
+		$modifiers->addModifier('resize', [$this, 'resize']);
+		$modifiers->addModifier('quality', [$this, 'quality']);
+		$modifiers->addModifier('sharpen', function (ModifierParam $param) {
 			$image = $param->getImage();
 
 			$image->sharpen();
@@ -40,20 +38,20 @@ class BaseModifiers implements ILoader {
 
 		/////////////////////////////////////////////////////////////////
 
-		$modifierContainer->addResourceModifier('defaultImage', function (ResourceModifierParam $param, $image) {
+		$modifiers->addResourceModifier('defaultImage', function (ResourceModifierParam $param, $image) {
 			$resource = $param->getResource();
 
 			$resource->setDefaultImage($image);
 		});
 
-		$modifierContainer->addResourceModifier('baseUrl', function (ResourceModifierParam $param, $baseUrl = true) {
+		$modifiers->addResourceModifier('baseUrl', function (ResourceModifierParam $param, $baseUrl = true) {
 			$resource = $param->getResource();
 
 			$resource->setBaseUrl($baseUrl);
 		});
 
 		// deprecated
-		$modifierContainer->addResourceModifier('baseUri', function (ResourceModifierParam $param, $baseUrl = true) {
+		$modifiers->addResourceModifier('baseUri', function (ResourceModifierParam $param, $baseUrl = true) {
 			$resource = $param->getResource();
 
 			$resource->setBaseUrl($baseUrl);

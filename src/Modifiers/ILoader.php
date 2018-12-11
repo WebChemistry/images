@@ -4,9 +4,6 @@ namespace WebChemistry\Images\Modifiers;
 
 interface ILoader {
 
-	/**
-	 * @param ModifierContainer $modifierContainer
-	 */
-	public function load(ModifierContainer $modifierContainer);
+	public function load(IModifiers $modifiers): void;
 
 }
