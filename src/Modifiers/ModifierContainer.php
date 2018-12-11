@@ -10,14 +10,29 @@ class ModifierContainer implements IModifiers {
 	/** @var array */
 	private $modifiers = [];
 
+	/** @var callable[] */
+	private $resourceModifiers = [];
+
 	/** @var ILoader[] */
 	private $loaders = [];
 
 	/** @var Values[] */
 	private $aliases = [];
 
+	public function addResourceModifier(string $name, ?callable $callback): void {
+		if ($callback === null) {
+			unset($this->resourceModifiers[$name]);
+		} else {
+			$this->resourceModifiers[$name] = $callback;
+		}
+	}
+
 	public function addModifier(string $name, ?callable $callback, bool $changeSignature = true): void {
-		$this->modifiers[$name] = [$callback, $changeSignature];
+		if ($callback === null) {
+			unset($this->modifiers[$name]);
+		} else {
+			$this->modifiers[$name] = [$callback, $changeSignature];
+		}
 	}
 
 	public function addLoader(ILoader $modifier): void {
@@ -43,6 +58,12 @@ class ModifierContainer implements IModifiers {
 		$this->loaders = [];
 	}
 
+	protected function checkModifierName(string $name) {
+		if (!isset($this->modifiers[$name]) && !isset($this->resourceModifiers[$name])) {
+			throw new ModifierException("Modifier or resource modifier '$name' not exists.");
+		}
+	}
+
 	/**
 	 * @param IResource $resource
 	 * @return array [callback, values, changeSignature, alias]
@@ -58,16 +79,45 @@ class ModifierContainer implements IModifiers {
 
 			foreach ($this->aliases[$alias]->call($args) as $modifier => $values) {
 				if (!isset($this->modifiers[$modifier])) {
-					throw new ModifierException("Modifier '$modifier' not exists.");
-				}
+					$this->checkModifierName($modifier);
 
-				/** @var callable|null $callback */
-				[$callback, $changeSignature] = $this->modifiers[$modifier];
-				if ($callback === null) {
 					continue;
 				}
 
+				/** @var callable $callback */
+				[$callback, $changeSignature] = $this->modifiers[$modifier];
+
 				$array[] = [$callback, $values, $changeSignature, $alias];
+			}
+		}
+
+		return $array;
+	}
+
+	/**
+	 * @param IResource $resource
+	 * @return array [callback, values]
+	 */
+	public function getResourceModifiersByResource(IResource $resource): array {
+		$this->load();
+
+		$array = [];
+		foreach ($resource->getAliases() as $alias => $args) {
+			if (!isset($this->aliases[$alias])) {
+				throw new ModifierException("Configuration for alias '$alias' not exists.");
+			}
+
+			foreach ($this->aliases[$alias]->call($args) as $modifier => $values) {
+				if (!isset($this->resourceModifiers[$modifier])) {
+					$this->checkModifierName($modifier);
+
+					continue;
+				}
+
+				/** @var callable $callback */
+				$callback = $this->modifiers[$modifier];
+
+				$array[] = [$callback, $values];
 			}
 		}
 

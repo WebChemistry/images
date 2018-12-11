@@ -34,18 +34,18 @@ class BaseModifiers implements ILoader {
 
 		/////////////////////////////////////////////////////////////////
 
-		$modifierContainer->addModifier('defaultImage', function (IResource $resource, $image) {
+		$modifierContainer->addResourceModifier('defaultImage', function (IResource $resource, $image) {
 			$resource->setDefaultImage($image);
-		}, false);
+		});
 
-		$modifierContainer->addModifier('baseUrl', function (IResource $resource, $baseUrl = true) {
+		$modifierContainer->addResourceModifier('baseUrl', function (IResource $resource, $baseUrl = true) {
 			$resource->setBaseUrl($baseUrl);
-		}, false);
+		});
 
 		// deprecated
-		$modifierContainer->addModifier('baseUri', function (IResource $resource, $baseUrl = true) {
+		$modifierContainer->addResourceModifier('baseUri', function (IResource $resource, $baseUrl = true) {
 			$resource->setBaseUrl($baseUrl);
-		}, false);
+		});
 	}
 
 	/**

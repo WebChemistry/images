@@ -28,6 +28,9 @@ class ResourceMeta implements IResourceMeta {
 	/** @var array [callback, values, changeSignature, alias] */
 	private $modifiers;
 
+	/** @var array [callback, values] */
+	private $resourceModifiers;
+
 	/** @var array|null */
 	private $signature = null;
 
@@ -91,29 +94,33 @@ class ResourceMeta implements IResourceMeta {
 	}
 
 	protected function prepare(): void {
-		foreach ($this->getModifiers() as [$callback, $values, $changeSignature]) {
-			if (!$changeSignature) {
-				array_unshift($values, $this->resource);
-				$callback(...$values);
-			}
+		foreach ($this->getResourceModifiers() as [$callback, $values]) {
+			array_unshift($values, $this->resource);
+			$callback(...$values);
 		}
 	}
 
 	public function modify(Image $image) {
-		foreach ($this->getModifiers() as [$callback, $values, $changeSignature]) {
-			if ($changeSignature) {
-				array_unshift($values, $image);
-				$callback(...$values);
-			}
+		foreach ($this->getModifiers() as [$callback, $values]) {
+			array_unshift($values, $image);
+			$callback(...$values);
 		}
 	}
 
 	protected function getModifiers() {
-		if (!$this->modifiers) {
+		if ($this->modifiers === null) {
 			$this->modifiers = $this->modifierContainer->getModifiersByResource($this->resource);
 		}
 
 		return $this->modifiers;
+	}
+
+	protected function getResourceModifiers() {
+		if ($this->resourceModifiers === null) {
+			$this->resourceModifiers = $this->modifierContainer->getResourceModifiersByResource($this->resource);
+		}
+
+		return $this->resourceModifiers;
 	}
 
 }

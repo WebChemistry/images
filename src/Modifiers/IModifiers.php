@@ -7,6 +7,8 @@ use WebChemistry\Images\Resources\IResource;
 
 interface IModifiers {
 
+	public function addResourceModifier(string $name, ?callable $callback);
+
 	public function addModifier(string $name, ?callable $callback, bool $changeSignature = true);
 
 	public function addLoader(ILoader $modifier);
@@ -14,5 +16,7 @@ interface IModifiers {
 	public function addAlias(string $alias, Values $modifiers);
 
 	public function getModifiersByResource(IResource $resource): array;
+
+	public function getResourceModifiersByResource(IResource $resource): array;
 
 }
