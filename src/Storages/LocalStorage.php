@@ -53,10 +53,15 @@ class LocalStorage extends Storage {
 	}
 
 	public function link(?IFileResource $resource): ?string {
-		$location = $this->getLink($resource);
+		if ($resource) {
+			$location = $this->getLink($resource);
+			$defaultImage = $resource->getDefaultImage() ?: $this->defaultImage;
+		} else {
+			$location = null;
+			$defaultImage = $this->defaultImage;
+		}
 
 		// Image not exists
-		$defaultImage = $resource->getDefaultImage() ?: $this->defaultImage;
 		if ($location === null && $defaultImage) {
 			$default = $this->createResource($defaultImage);
 			$default->setAliases($resource->getAliases());
