@@ -158,7 +158,7 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 				]);
 			}
 
-			if ($this->delete && !$this->required) {
+			if ($this->delete && !$this->required && $this->defaultValue) {
 				$wrapper = Html::el('');
 				$wrapper->create('input', [
 					'type' => 'checkbox',
