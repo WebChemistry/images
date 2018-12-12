@@ -252,11 +252,13 @@ $form->addImageUpload('image', 'Obrázek')
     
 $form->onSuccess[] = function ($form, array $values) use ($storage) {
 	$image = $values['image'];
-	if ($image->getUpload()) {
-    	$storage->save($image->getUpload());
-	}
 	if ($image->getDelete()) {
 		$storage->delete($image->getDelete());
+	}
+	if ($image->getUpload()) {
+    	$resource = $storage->save($image->getUpload());
+	} else {
+		$resource = $image->getDefaultValue();
 	}
 };
 ```

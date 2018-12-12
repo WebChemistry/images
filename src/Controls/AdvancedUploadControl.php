@@ -102,14 +102,18 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 		return $this;
 	}
 
-	public function getValue(): StateResource {
-		if (!$this->value || !$this->value->isOk() || !$this->value->isImage()) {
-			return new StateResource($this->defaultValue, null, $this->toDelete);
-		}
-		$value = new UploadResource($this->value);
-		$value->setNamespace($this->namespace);
+	protected function isValueOk(): bool {
+		return $this->value && $this->value->isOk() && $this->value->isImage();
+	}
 
-		return new StateResource($this->defaultValue, $value, $this->toDelete);
+	public function getValue(): StateResource {
+		$upload = null;
+		if ($this->isValueOk()) {
+			$upload = new UploadResource($this->value);
+			$upload->setNamespace($this->namespace);
+		}
+
+		return new StateResource($this->defaultValue, $upload, $this->toDelete);
 	}
 
 	private function getImageStorage(): ?IImageStorage {

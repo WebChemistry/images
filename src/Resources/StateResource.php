@@ -37,4 +37,12 @@ class StateResource {
 		return $this->upload;
 	}
 
+	public function getDefaultValue(): ?IFileResource {
+		if ($this->toDelete()) {
+			return null;
+		}
+
+		return $this->resource;
+	}
+
 }
