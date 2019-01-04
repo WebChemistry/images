@@ -274,9 +274,7 @@ class LocalStorage extends Storage {
 		$image->save($this->directory . $location);
 
 		// clean
-		if ($image->getImageResource()) {
-			imagedestroy($image->getImageResource());
-		}
+		imagedestroy($image->getImageResource());
 	}
 
 	private function generateUniqueLocation(IResourceMeta $meta): string {
