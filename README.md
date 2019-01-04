@@ -26,6 +26,7 @@ hashResolver: WebChemistry\Images\Resolvers\HashResolver ## Vysvětleno níže
 namespaceResolver: WebChemistry\Images\Resolvers\NamespaceResolver ## Vysvětleno níže
 registerControl: yes ## Zaregistruje UploadControl
 registerType: yes ## Zaregistruje doctrine typ 'image' 
+safeLink: %productionMode% ## metoda link() se zotavuje z chyb a loguje tyto chyby do tracy, web nespadne do 500 kvůli chybnému obrázku
 ```
 
 ### Skladba cesty k obrázků

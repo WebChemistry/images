@@ -2,9 +2,12 @@
 
 namespace WebChemistry\Images\Storages;
 
+use i;
 use Nette\Http\IRequest;
 use Nette\Utils\Finder;
+use Nette\Utils\ImageException;
 use Nette\Utils\UnknownImageFileException;
+use Tracy\ILogger;
 use WebChemistry\Images\Helpers;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\Image\ImageSize;
@@ -38,8 +41,14 @@ class LocalStorage extends Storage {
 	/** @var IImageFactory */
 	private $imageFactory;
 
-	public function __construct(string $wwwDir, string $assetsDir, IResourceMetaFactory $metaFactory, IRequest $request,
-								IImageFactory $imageFactory, ?string $defaultImage = null) {
+	/** @var ILogger|null */
+	private $logger;
+
+	/** @var bool */
+	private $safeLink;
+
+	public function __construct(string $wwwDir, string $assetsDir, ?ILogger $logger, IResourceMetaFactory $metaFactory, IRequest $request,
+								IImageFactory $imageFactory, bool $safeLink = false, ?string $defaultImage = null) {
 		$this->metaFactory = $metaFactory;
 		$this->defaultImage = $defaultImage;
 
@@ -50,23 +59,45 @@ class LocalStorage extends Storage {
 		$this->basePath = $request->getUrl()->getBasePath() . $assetsDir;
 		$this->baseUrl = $request->getUrl()->getBaseUrl() . $assetsDir;
 		$this->imageFactory = $imageFactory;
+		$this->logger = $logger;
+		$this->safeLink = $safeLink;
+	}
+
+	private function getDefaultImage(IFileResource $resource): ?string {
+		$defaultImage = $resource->getDefaultImage() ?: $this->defaultImage;
+		if (!$defaultImage) {
+			return null;
+		}
+
+		$default = $this->createResource($defaultImage);
+		$default->setAliases($resource->getAliases());
+
+		return $this->getLink($default);
 	}
 
 	public function link(?IFileResource $resource): ?string {
-		if ($resource) {
-			$location = $this->getLink($resource);
-			$defaultImage = $resource->getDefaultImage() ?: $this->defaultImage;
-		} else {
+		try {
 			$location = null;
-			$defaultImage = $this->defaultImage;
-		}
+			if ($resource) {
+				$location = $this->getLink($resource);
+			}
 
-		// Image not exists
-		if ($location === null && $defaultImage) {
-			$default = $this->createResource($defaultImage);
-			$default->setAliases($resource->getAliases());
+			if ($location === null) {
+				$location = $this->getDefaultImage($resource);
+			}
+		} catch (\Throwable $e) {
+			if ($this->safeLink && $e instanceof ImageException) {
+				$this->logger->log($e);
 
-			$location = $this->getLink($default);
+				// try default image
+				try {
+					$location = $this->getDefaultImage($resource);
+				} catch (\Throwable $e) {
+					$location = null;
+				}
+			} else {
+				throw $e;
+			}
 		}
 
 		return $location === null ? null : ($resource->isBaseUrl() ? $this->baseUrl : $this->basePath). $location;
@@ -112,9 +143,8 @@ class LocalStorage extends Storage {
 	 * @throws ImageStorageException
 	 */
 	public function save(IResource $resource): IFileResource {
-		if ($resource instanceof UploadResource && !$resource->toModify()) {
-			$meta = $this->metaFactory->create($resource);
-
+		$meta = $this->metaFactory->create($resource);
+		if ($resource instanceof UploadResource && !$meta->toModify()) {
 			$resource->setSaved();
 			$location = $this->directory . $this->generateUniqueLocation($meta);
 			$this->makeDir($location);
@@ -242,6 +272,11 @@ class LocalStorage extends Storage {
 
 		$this->makeDir($this->directory . $location);
 		$image->save($this->directory . $location);
+
+		// clean
+		if ($image->getImageResource()) {
+			imagedestroy($image->getImageResource());
+		}
 	}
 
 	private function generateUniqueLocation(IResourceMeta $meta): string {

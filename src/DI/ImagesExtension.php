@@ -42,6 +42,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		'default' => null, // deprecated
 		'registerControl' => true,
 		'registerType' => true,
+		'safeLink' => null,
 	];
 
 	private function parseConfig(): array {
@@ -52,6 +53,9 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		if ($config['wwwDir'] === null) {
 			$config['wwwDir'] = $this->getContainerBuilder()->parameters['wwwDir'];
 		}
+		if ($config['safeLink'] === null) {
+			$config['safeLink'] = !$this->getContainerBuilder()->parameters['debugMode'];
+		}
 
 		return $config;
 	}
@@ -61,7 +65,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		$config = $this->parseConfig();
 
 		// global
-		$imageFactory = $builder->addDefinition($this->prefix('imageFactory'))
+		$builder->addDefinition($this->prefix('imageFactory'))
 			->setType(IImageFactory::class)
 			->setFactory(ImageFactory::class);
 
@@ -100,12 +104,11 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			->setType(IImageStorage::class)
 			->setFactory(LocalStorage::class,
 				[
-					$config['wwwDir'],
-					$config['assetsDir'],
-					$resourceMetaFactory,
-					'@' . Nette\Http\IRequest::class,
-					$imageFactory,
-					$config['defaultImage'],
+					'wwwDir' => $config['wwwDir'],
+					'assetsDir' => $config['assetsDir'],
+					'metaFactory' => $resourceMetaFactory,
+					'defaultImage' => $config['defaultImage'],
+					'safeLink' => $config['safeLink'],
 				]
 			);
 	}

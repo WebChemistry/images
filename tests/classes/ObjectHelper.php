@@ -51,7 +51,7 @@ class ObjectHelper {
 		$request = new Request($url);
 
 		return new LocalStorage(
-			$wwwDir, $assetsDir, $serveFactory ?: self::createServeFactory(), $request, self::createImageFactory(), $defualtImage
+			$wwwDir, $assetsDir, null, $serveFactory ?: self::createServeFactory(), $request, self::createImageFactory(), false, $defualtImage
 		);
 	}
 
