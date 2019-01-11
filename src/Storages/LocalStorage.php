@@ -259,7 +259,7 @@ class LocalStorage extends Storage {
 		$meta = $this->metaFactory->create($resource);
 
 		if ($resource instanceof ITransferResource) {
-			$image = $this->imageFactory->createFromFile($resource->getLocation());
+			$image = $resource->getProvider()->toImage($this->imageFactory);
 		} else if ($resource instanceof IFileResource) {
 			$originalMeta = $this->metaFactory->create($resource->getOriginal());
 			$image = $this->imageFactory->createFromFile($this->directory . $this->getResourceLocation($originalMeta));

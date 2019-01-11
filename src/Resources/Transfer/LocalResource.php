@@ -4,6 +4,8 @@ namespace WebChemistry\Images\Resources\Transfer;
 
 use Nette\Utils\Image;
 use WebChemistry\Images\Image\IImageFactory;
+use WebChemistry\Images\Resources\Providers\IImageProvider;
+use WebChemistry\Images\Resources\Providers\ImageProvider;
 
 class LocalResource extends TransferResource {
 
@@ -17,7 +19,7 @@ class LocalResource extends TransferResource {
 	}
 
 	/**
-	 * @deprecated use getLocation() instead
+	 * @deprecated use getProvider() instead
 	 * @param IImageFactory|null $factory
 	 * @return Image
 	 * @throws \Nette\Utils\UnknownImageFileException
@@ -31,10 +33,15 @@ class LocalResource extends TransferResource {
 	}
 
 	/**
+	 * @deprecated use getProvider() instead
 	 * @return string
 	 */
 	public function getLocation(): string {
 		return $this->file;
+	}
+
+	public function getProvider(): IImageProvider {
+		return ImageProvider::createFromLocation($this->file);
 	}
 
 }

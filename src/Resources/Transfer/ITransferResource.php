@@ -5,10 +5,12 @@ namespace WebChemistry\Images\Resources\Transfer;
 use Nette\Utils\Image;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\Resources\IResource;
+use WebChemistry\Images\Resources\Providers\IImageProvider;
 
 interface ITransferResource extends IResource {
 
 	/**
+	 * @deprecated use getProvider() instead
 	 * @param IImageFactory $factory
 	 * @return Image
 	 */
@@ -20,8 +22,14 @@ interface ITransferResource extends IResource {
 	public function setSaved();
 
 	/**
+	 * @deprecated use getProvider() instead
 	 * @return string|null
 	 */
 	public function getLocation();
+
+	/**
+	 * @return IImageProvider
+	 */
+	public function getProvider(): IImageProvider;
 
 }

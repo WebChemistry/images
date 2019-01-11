@@ -10,6 +10,7 @@ use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Parsers\ModifierParser;
 use WebChemistry\Images\Resources\IFileResource;
 use WebChemistry\Images\Resources\ResourceException;
+use WebChemistry\Images\Resources\Transfer\StringResource;
 use WebChemistry\Images\Storages\LocalStorage;
 use WebChemistry\Testing\TUnitTest;
 
@@ -54,6 +55,13 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		]);
 
 		return $this->storage->createUploadResource($upload);
+	}
+
+	private function createStringResource() {
+		if (!file_exists(UPLOAD_GIF)) {
+			copy(IMAGE_GIF, UPLOAD_GIF);
+		}
+		return new StringResource(file_get_contents(UPLOAD_GIF), 'string.gif');
 	}
 
 	private function sameOriginal($path) {
@@ -251,6 +259,14 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 
 		$this->assertFileNotExists(__DIR__ . '/output/resize/upload.gif');
 		$this->assertFileExists(__DIR__ . '/output/original/upload.gif');
+	}
+
+	public function testUploadFromString() {
+		$upload = $this->createStringResource();
+		$this->storage->save($upload);
+
+		$this->assertFileExists(__DIR__ . '/output/original/string.gif');
+		$this->assertSame(getimagesize(IMAGE_GIF), getimagesize(__DIR__ . '/output/original/string.gif'));
 	}
 
 }

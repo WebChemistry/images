@@ -5,6 +5,8 @@ namespace WebChemistry\Images\Resources\Transfer;
 use Nette\Http\FileUpload;
 use Nette\Utils\Image;
 use WebChemistry\Images\Image\IImageFactory;
+use WebChemistry\Images\Resources\Providers\IImageProvider;
+use WebChemistry\Images\Resources\Providers\ImageProvider;
 use WebChemistry\Images\Resources\ResourceException;
 
 class UploadResource extends TransferResource {
@@ -32,7 +34,7 @@ class UploadResource extends TransferResource {
 	}
 
 	/**
-	 * @deprecated use getLocation() instead
+	 * @deprecated use getProvider() instead
 	 * @param IImageFactory $factory
 	 * @return Image
 	 * @throws \Nette\Utils\ImageException
@@ -46,10 +48,15 @@ class UploadResource extends TransferResource {
 	}
 
 	/**
+	 * @deprecated use getProvider() instead
 	 * @return string
 	 */
 	public function getLocation(): string {
 		return $this->upload->getTemporaryFile();
+	}
+
+	public function getProvider(): IImageProvider {
+		return ImageProvider::createFromLocation($this->upload->getTemporaryFile());
 	}
 
 }
