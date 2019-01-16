@@ -10,6 +10,11 @@ use WebChemistry\Images\Resources\Providers\IImageProvider;
 interface ITransferResource extends IResource {
 
 	/**
+	 * @param string $name
+	 */
+	public function setName(string $name);
+
+	/**
 	 * @deprecated use getProvider() instead
 	 * @param IImageFactory $factory
 	 * @return Image

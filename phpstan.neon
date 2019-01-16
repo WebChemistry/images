@@ -7,3 +7,4 @@ parameters:
 		- '#Property WebChemistry\\Images\\Resources\\Meta\\ResourceMeta::\$hashFolder \(string|null\) does not accept default value of type false#'
 		- '#Strict comparison using === between string|null and false will always evaluate to false#'
 		- '#Call to an undefined method Nette\\Utils\\Image\:\:setQuality\(\)#'
+		- '#Call to an undefined method WebChemistry\\Images\\Resources\\IFileResource|WebChemistry\\Images\\Resources\\Transfer\\ITransferResource::setName()#'
