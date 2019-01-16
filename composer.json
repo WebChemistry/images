@@ -25,7 +25,8 @@
 		"nette/application": "^2.4",
 		"webchemistry/testing-helpers": "dev-master",
 		"kdyby/doctrine": "^3.3",
-		"phpstan/phpstan": "^0.10.0"
+		"phpstan/phpstan": "^0.10.0",
+		"webchemistry/doctrine-hydration": "dev-master"
 	},
 	"suggest": {
 		"webchemistry/images-s3": "To save an image on Amazon"
