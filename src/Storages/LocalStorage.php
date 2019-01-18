@@ -63,8 +63,11 @@ class LocalStorage extends Storage {
 		$this->safeLink = $safeLink;
 	}
 
-	private function getDefaultImage(IFileResource $resource): ?string {
-		$defaultImage = $resource->getDefaultImage() ?: $this->defaultImage;
+	private function getDefaultImage(?IFileResource $resource): ?string {
+		$defaultImage = $this->defaultImage;
+		if ($resource && $resource->getDefaultImage()) {
+			$defaultImage = $resource->getDefaultImage();
+		}
 		if (!$defaultImage) {
 			return null;
 		}
