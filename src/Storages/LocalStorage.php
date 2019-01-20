@@ -12,6 +12,7 @@ use WebChemistry\Images\Helpers;
 use WebChemistry\Images\Image\IImageFactory;
 use WebChemistry\Images\Image\ImageSize;
 use WebChemistry\Images\ImageStorageException;
+use WebChemistry\Images\Resources\EmptyResource;
 use WebChemistry\Images\Resources\IFileResource;
 use WebChemistry\Images\Resources\IResource;
 use WebChemistry\Images\Resources\Transfer\LocalResource;
@@ -81,7 +82,7 @@ class LocalStorage extends Storage {
 	public function link(?IFileResource $resource): ?string {
 		try {
 			$location = null;
-			if ($resource) {
+			if ($resource && !$resource instanceof EmptyResource) {
 				$location = $this->getLink($resource);
 			}
 
