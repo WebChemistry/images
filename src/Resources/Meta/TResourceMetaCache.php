@@ -10,4 +10,8 @@ trait TResourceMetaCache {
 	 */
 	public $__meta;
 
+	public function __clone() {
+		$this->__meta = null;
+	}
+
 }
