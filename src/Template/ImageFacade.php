@@ -22,7 +22,7 @@ class ImageFacade {
 		} else if (is_string($id)) {
 			$resource = $this->storage->createResource($id);
 		} else if ($id instanceof IFileResource) {
-			$resource = $id;
+			$resource = clone $id;
 		} else {
 			throw new InvalidArgumentException('ID must be null, string or instance of ' . IFileResource::class . '.');
 		}
