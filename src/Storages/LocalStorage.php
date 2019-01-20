@@ -65,6 +65,9 @@ class LocalStorage extends Storage {
 	}
 
 	private function getDefaultImage(?IFileResource $resource): ?string {
+		// "fill method" getDefaultImage()
+		$this->metaFactory->create($resource);
+
 		$defaultImage = $this->defaultImage;
 		if ($resource && $resource->getDefaultImage()) {
 			$defaultImage = $resource->getDefaultImage();
