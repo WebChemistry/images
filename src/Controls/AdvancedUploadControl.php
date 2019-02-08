@@ -44,6 +44,26 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 		$this->namespace = $namespace;
 	}
 
+	public function setMaxFileSize(int $size, string $message = null) {
+		$this->addRule(function ($control, $limit) {
+			/** @var UploadResource|null $value */
+			$value = $control->getValue()->getUpload();
+
+			if ($value === null) {
+				return true;
+			}
+
+			$file = $value->getUpload();
+			if (!$file->isOk() || $file->getSize() > $limit || $file->getError() === UPLOAD_ERR_INI_SIZE) {
+				return false;
+			}
+
+			return true;
+		}, $message ?: Forms\Validator::$messages[Forms\Form::MAX_FILE_SIZE], $size);
+
+		return $this;
+	}
+
 	public function loadHttpData(): void {
 		parent::loadHttpData();
 
