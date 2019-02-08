@@ -231,6 +231,21 @@ Zobrazení s použitím modifikátorů obrázků
 
 ```
 
+## Dávkování obrázků
+
+```php
+$batch = $storage->createBatch();
+
+$entity->image = $batch->save($resource);
+$this->em->persist($entity);
+
+$entity2->image = $batch->save($resource2);
+$this->em->persist($entity2);
+
+$batch->flush();
+$this->em->flush();
+```
+
 ## Formuláře
 
 Automatickou registraci provede extenze.

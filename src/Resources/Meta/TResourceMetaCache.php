@@ -5,7 +5,7 @@ namespace WebChemistry\Images\Resources\Meta;
 trait TResourceMetaCache {
 
 	/**
-	 * @var IResourceMeta
+	 * @var IResourceMeta|null
 	 * @internal do not change manually, only for caching
 	 */
 	public $__meta;

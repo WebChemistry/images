@@ -3,6 +3,8 @@
 namespace WebChemistry\Images;
 
 use Nette\Http\FileUpload;
+use WebChemistry\Images\Batches\IBatch;
+use WebChemistry\Images\Batches\ImageBatch;
 use WebChemistry\Images\Image\ImageSize;
 use WebChemistry\Images\Resources\FileResource;
 use WebChemistry\Images\Resources\IFileResource;
@@ -39,6 +41,12 @@ abstract class Storage implements IImageStorage {
 		return new FileResource($id);
 	}
 
+	public function createBatch(): IBatch {
+		return new ImageBatch($this);
+	}
+
+	// abstracts
+
 	/**
 	 * @param IFileResource $resource
 	 * @return ImageSize
@@ -58,21 +66,21 @@ abstract class Storage implements IImageStorage {
 	/**
 	 * @param IFileResource $src
 	 * @param IFileResource $dest
-	 * @return void
+	 * @return IFileResource
 	 */
-	abstract public function copy(IFileResource $src, IFileResource $dest);
+	abstract public function copy(IFileResource $src, IFileResource $dest): IFileResource;
 
 	/**
 	 * @param IFileResource $src
 	 * @param IFileResource $dest
-	 * @return void
+	 * @return IFileResource
 	 */
-	abstract public function move(IFileResource $src, IFileResource $dest);
+	abstract public function move(IFileResource $src, IFileResource $dest): IFileResource;
 
 	/**
 	 * @param IFileResource $resource
-	 * @return void
+	 * @return IFileResource
 	 */
-	abstract public function delete(IFileResource $resource);
+	abstract public function delete(IFileResource $resource): IFileResource;
 
 }

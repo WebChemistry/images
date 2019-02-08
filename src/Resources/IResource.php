@@ -31,6 +31,8 @@ interface IResource {
 
 	public function isBaseUrl(): bool;
 
+	public function isEmpty(): bool;
+
 	/**
 	 * Name without prefix
 	 *

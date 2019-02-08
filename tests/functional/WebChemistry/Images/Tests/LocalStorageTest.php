@@ -9,6 +9,7 @@ use WebChemistry\Images\Modifiers\BaseModifiers;
 use WebChemistry\Images\Modifiers\ModifierContainer;
 use WebChemistry\Images\Parsers\ModifierParser;
 use WebChemistry\Images\Resources\IFileResource;
+use WebChemistry\Images\Resources\PromiseFileResource;
 use WebChemistry\Images\Resources\ResourceException;
 use WebChemistry\Images\Resources\Transfer\StringResource;
 use WebChemistry\Images\Storages\LocalStorage;
@@ -267,6 +268,32 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 
 		$this->assertFileExists(__DIR__ . '/output/original/string.gif');
 		$this->assertSame(getimagesize(IMAGE_GIF), getimagesize(__DIR__ . '/output/original/string.gif'));
+	}
+
+	public function testBatch() {
+		$batch = $this->storage->createBatch();
+
+		$promise = $batch->save($this->createStringResource());
+		$promise2 = $batch->save($this->createUploadResource());
+
+		$called = false;
+		$promise->then(function () use (&$called) {
+			$called = true;
+		});
+
+		$this->assertTrue($promise->isEmpty());
+		$this->assertInstanceOf(PromiseFileResource::class, $promise);
+
+		$batch->flush();
+
+		$this->assertTrue($called);
+		$this->assertFalse($promise->isEmpty());
+
+		$this->assertEquals('/output/original/string.gif', $this->storage->link($promise));
+		$this->assertFileExists(__DIR__ . '/output/original/string.gif');
+
+		$this->assertEquals('/output/original/upload.gif', $this->storage->link($promise2));
+		$this->assertFileExists(__DIR__ . '/output/original/upload.gif');
 	}
 
 }

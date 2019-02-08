@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Images\Storages;
 
-use i;
 use Nette\Http\IRequest;
 use Nette\Utils\Finder;
 use Nette\Utils\ImageException;
@@ -85,7 +84,7 @@ class LocalStorage extends Storage {
 	public function link(?IFileResource $resource): ?string {
 		try {
 			$location = null;
-			if ($resource && !$resource instanceof EmptyResource) {
+			if ($resource && !$resource->isEmpty()) {
 				$location = $this->getLink($resource);
 			}
 
@@ -141,6 +140,9 @@ class LocalStorage extends Storage {
 		$this->makeDir($path);
 		$image->save($path);
 
+		// clean
+		imagedestroy($image->getImageResource());
+
 		return $location;
 	}
 
@@ -176,9 +178,10 @@ class LocalStorage extends Storage {
 	/**
 	 * @param IFileResource $src
 	 * @param IFileResource $dest
+	 * @return IFileResource
 	 * @throws ImageStorageException
 	 */
-	public function copy(IFileResource $src, IFileResource $dest) {
+	public function copy(IFileResource $src, IFileResource $dest): IFileResource {
 		if ($src->getId() === $dest->getId()) {
 			throw new ImageStorageException('Cannot copy to same destination.');
 		}
@@ -188,19 +191,24 @@ class LocalStorage extends Storage {
 
 		$resource->setAliases($dest->getAliases());
 		$this->save($resource);
+
+		return $dest;
 	}
 
 	/**
 	 * @param IFileResource $src
 	 * @param IFileResource $dest
+	 * @return IFileResource
 	 * @throws ImageStorageException
 	 */
-	public function move(IFileResource $src, IFileResource $dest) {
+	public function move(IFileResource $src, IFileResource $dest): IFileResource {
 		$this->copy($src, $dest);
 		$this->delete($src);
+
+		return $dest;
 	}
 
-	public function delete(IFileResource $resource) {
+	public function delete(IFileResource $resource): IFileResource {
 		$basePath = $resource->getNamespace();
 		if ($basePath) {
 			$basePath .= '/';
@@ -212,6 +220,8 @@ class LocalStorage extends Storage {
 		foreach (Finder::findDirectories('*')->in($location) as $dir) {
 			@rmdir((string) $dir);
 		}
+
+		return new EmptyResource();
 	}
 
 	public function getImageSize(IFileResource $resource): ImageSize {

@@ -1,4 +1,6 @@
 parameters:
+	excludes_analyse:
+		- %rootDir%/../../../src/Batches/ImageBatch.php
 	ignoreErrors:
 		- '#Parameter \$definition of method WebChemistry\\Images\\DI\\DIHelper::fixFactoryDefinition#'
 		- '#Class Nette\\DI\\Definitions\\FactoryDefinition not found#'

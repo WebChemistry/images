@@ -115,6 +115,10 @@ abstract class Resource implements IResource {
 
 	/////////////////////////////////////////////////////////////////
 
+	public function isEmpty(): bool {
+		return !$this->name;
+	}
+
 	/**
 	 * Combination of namespace and name
 	 *

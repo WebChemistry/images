@@ -19,7 +19,7 @@ class ImageType extends Type {
 	public function convertToDatabaseValue($value, AbstractPlatform $platform) {
 		if (!$value instanceof IFileResource && $value !== null) {
 			throw new ImageStorageException('Value must be instance of ' . IFileResource::class . ', ' . $this->debugType($value) . ' given.');
-		} else if ($value === null) {
+		} else if ($value === null || $value->isEmpty()) {
 			return $value;
 		}
 
