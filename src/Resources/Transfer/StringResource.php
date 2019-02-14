@@ -12,8 +12,12 @@ class StringResource extends TransferResource {
 	/** @var string */
 	private $content;
 
-	public function __construct(string $content, string $id) {
+	/** @var int|null */
+	private $format;
+
+	public function __construct(string $content, string $id, ?int &$format = null) {
 		$this->content = $content;
+		$this->format = $format;
 		$this->setId($id);
 	}
 
@@ -27,7 +31,7 @@ class StringResource extends TransferResource {
 	}
 
 	public function getProvider(): IImageProvider {
-		return ImageProvider::createFromString($this->content);
+		return ImageProvider::createFromString($this->content, $this->format);
 	}
 
 	/**

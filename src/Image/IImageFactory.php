@@ -6,16 +6,16 @@ interface IImageFactory {
 
 	/**
 	 * @param string $file
-	 * @param mixed $format
+	 * @param int|null $format
 	 * @return Image
 	 */
-	public function createFromFile(string $file, &$format = null);
+	public function createFromFile(string $file, int &$format = null);
 
 	/**
 	 * @param string $string
-	 * @param mixed $format
+	 * @param int|null $format
 	 * @return Image
 	 */
-	public function createFromString(string $string, &$format = null);
+	public function createFromString(string $string, int &$format = null);
 
 }

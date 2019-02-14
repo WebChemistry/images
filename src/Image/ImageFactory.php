@@ -9,21 +9,21 @@ class ImageFactory implements IImageFactory {
 
 	/**
 	 * @param string $file
-	 * @param mixed $format
+	 * @param int|null $format
 	 * @return Image
 	 * @throws UnknownImageFileException
 	 */
-	public function createFromFile(string $file, &$format = null): Image {
+	public function createFromFile(string $file, int &$format = null): Image {
 		return Image::fromFile($file, $format);
 	}
 
 	/**
 	 * @param string $string
-	 * @param mixed $format
+	 * @param int|null $format
 	 * @return Image
 	 * @throws ImageException
 	 */
-	public function createFromString(string $string, &$format = null): Image {
+	public function createFromString(string $string, int &$format = null): Image {
 		return Image::fromString($string, $format);
 	}
 
