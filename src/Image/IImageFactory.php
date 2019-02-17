@@ -18,4 +18,10 @@ interface IImageFactory {
 	 */
 	public function createFromString(string $string, int &$format = null);
 
+	/**
+	 * @param resource $resource
+	 * @return Image
+	 */
+	public function createFromResource($resource);
+
 }

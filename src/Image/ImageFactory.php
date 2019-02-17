@@ -27,4 +27,12 @@ class ImageFactory implements IImageFactory {
 		return Image::fromString($string, $format);
 	}
 
+	/**
+	 * @param resource $resource
+	 * @return Image
+	 */
+	public function createFromResource($resource): Image {
+		return new Image($resource);
+	}
+
 }
