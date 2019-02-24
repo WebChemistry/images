@@ -206,7 +206,7 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 		$this->namespace = $namespace;
 	}
 
-	public static function register($controlName = 'addImagePreviewUpload') {
+	public static function register(string $controlName = 'addImagePreviewUpload') {
 		Forms\Container::extensionMethod(Container::class . '::' . $controlName, static::class . '::addInput');
 	}
 

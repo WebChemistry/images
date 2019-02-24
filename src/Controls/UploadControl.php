@@ -73,7 +73,7 @@ class UploadControl extends Forms\Controls\UploadControl {
 		$this->namespace = $namespace;
 	}
 
-	public static function register($controlName = 'addImageUpload') {
+	public static function register(string $controlName = 'addImageUpload') {
 		Forms\Container::extensionMethod(Container::class . '::' . $controlName, static::class . '::addInput');
 	}
 
