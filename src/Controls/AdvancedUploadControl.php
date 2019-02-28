@@ -180,14 +180,13 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 
 			if ($this->delete && !$this->required && $this->defaultValue) {
 				$wrapper = Html::el('');
-				$wrapper->create('input', [
+				$label = $wrapper->create('label');
+				$label->create('input', [
 					'type' => 'checkbox',
 					'id' => $this->getHtmlId() . '_check',
 					'name' => $this->getName() . '_check',
 				]);
-				$wrapper->create('label', [
-					'for' => $this->getHtmlId() . '_check',
-				])->setText($this->delete);
+				$label->create('')->setText($this->delete);
 
 				$container->insert(null, $wrapper);
 			}
