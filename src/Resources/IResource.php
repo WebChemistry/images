@@ -56,4 +56,31 @@ interface IResource {
 
 	public function setBaseUrl(bool $baseUrl = true);
 
+	// immutables -- clones object
+
+	/**
+	 * @return static
+	 */
+	public function withAliases(array $aliases);
+
+	/**
+	 * @return static
+	 */
+	public function withAlias(string $alias);
+
+	/**
+	 * @return static
+	 */
+	public function withSuffix(string $suffix);
+
+	/**
+	 * @return static
+	 */
+	public function withDefaultImage(?string $defaultImage);
+
+	/**
+	 * @return static
+	 */
+	public function withBaseUrl(bool $baseUrl);
+
 }

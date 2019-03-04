@@ -30,6 +30,58 @@ abstract class Resource implements IResource {
 	/** @var string|null */
 	protected $defaultImage;
 
+	// immutables -- clones object
+
+	/**
+	 * @return static
+	 */
+	public function withAliases(array $aliases) {
+		$static = clone $this;
+		$static->setAliases($aliases);
+
+		return $static;
+	}
+
+	/**
+	 * @return static
+	 */
+	public function withAlias(string $alias) {
+		$static = clone $this;
+		$static->setAlias($alias);
+
+		return $static;
+	}
+
+	/**
+	 * @return static
+	 */
+	public function withSuffix(string $suffix) {
+		$static = clone $this;
+		$static->setSuffix($suffix);
+
+		return $static;
+	}
+
+	/**
+	 * @return static
+	 */
+	public function withDefaultImage(?string $defaultImage) {
+		$static = clone $this;
+		$static->setDefaultImage($defaultImage);
+
+		return $static;
+	}
+
+	/**
+	 * @return static
+	 */
+	public function withBaseUrl(bool $baseUrl) {
+		$static = clone $this;
+		$static->setBaseUrl($baseUrl);
+
+		return $static;
+	}
+
 	/************************* Properties **************************/
 
 	/**
