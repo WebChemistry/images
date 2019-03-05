@@ -43,6 +43,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		'registerControl' => true,
 		'registerType' => true,
 		'safeLink' => null,
+		'storageClass' => LocalStorage::class,
 	];
 
 	private function parseConfig(): array {
@@ -102,7 +103,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 		$builder->addDefinition($this->prefix('storage'))
 			->setType(IImageStorage::class)
-			->setFactory(LocalStorage::class,
+			->setFactory($config['storageClass'],
 				[
 					'wwwDir' => $config['wwwDir'],
 					'assetsDir' => $config['assetsDir'],
