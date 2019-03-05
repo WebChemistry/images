@@ -94,18 +94,18 @@ class LocalStorage extends Storage {
 			if ($location === null) {
 				$location = $this->getDefaultImage($resource);
 			}
-		} catch (\Throwable $e) {
-			if ($this->safeLink && $e instanceof ImageException) {
-				$this->logger->log($e);
-
-				// try default image
-				try {
-					$location = $this->getDefaultImage($resource);
-				} catch (\Throwable $e) {
-					$location = null;
-				}
-			} else {
+		} catch (ImageException $e) {
+			if (!$this->safeLink) {
 				throw $e;
+			}
+
+			$this->logger->log($e);
+
+			// try default image
+			try {
+				$location = $this->getDefaultImage($resource);
+			} catch (\Throwable $e) {
+				$location = null;
 			}
 		}
 
@@ -113,30 +113,64 @@ class LocalStorage extends Storage {
 	}
 
 	/**
-	 * @param IFileResource $resource
-	 * @return string|null - null not exists
+	 * @param IResource $resource
+	 * @return IFileResource
+	 * @throws ImageStorageException
 	 */
-	protected function getLink(IFileResource $resource): ?string {
+	public function save(IResource $resource): IFileResource {
+		$this->getLink($resource);
+		if ($resource instanceof IFileResource) {
+			return $resource;
+		}
+
+		return $this->createResource($resource->getId());
+	}
+
+	/**
+	 * @param IResource $resource
+	 * @throws ImageStorageException
+	 */
+	protected function getLink(IResource $resource): ?string {
 		$meta = $this->metaFactory->create($resource);
-		$location = $this->getResourceLocation($meta);
-		$path = $this->directory . $location;
-		if (is_file($path)) {
-			return $location;
-		}
-		if (!$meta->toModify()) {
-			return null;
-		}
 
-		// resize image
-		$originalPath = $this->getResourcePath($this->metaFactory->create($resource->getOriginal()));
-		if (!is_file($originalPath)) {
-			return null;
-		}
+		if ($resource instanceof ITransferResource) {
+			$resource->setSaved();
 
-		try {
-			$image = $this->imageFactory->createFromFile($originalPath);
-		} catch (UnknownImageFileException $e) {
-			return null;
+			$location = $this->generateUniqueLocation($meta);
+			$this->makeDir($this->directory . $location);
+
+			// gif animation
+			if ($resource instanceof UploadResource && !$meta->toModify()) {
+				$resource->getUpload()->move($this->directory . $location);
+
+				return $location;
+			}
+
+			$image = $resource->getProvider()->toImage($this->imageFactory);
+			$path = $this->directory . $location;
+		} else if ($resource instanceof IFileResource) {
+			$location = $this->getResourceLocation($meta);
+			$path = $this->directory . $location;
+			if (is_file($path)) {
+				return $location;
+			}
+			if (!$meta->toModify()) {
+				return null;
+			}
+
+			// resize image
+			$originalPath = $this->getResourcePath($this->metaFactory->create($resource->getOriginal()));
+			if (!is_file($originalPath)) {
+				return null;
+			}
+
+			try {
+				$image = $this->imageFactory->createFromFile($originalPath);
+			} catch (UnknownImageFileException $e) {
+				return null;
+			}
+		} else {
+			throw new ImageStorageException('Resource must be instance of ITransferResource or IFileResource.');
 		}
 
 		$meta->modify($image);
@@ -147,35 +181,6 @@ class LocalStorage extends Storage {
 		imagedestroy($image->getImageResource());
 
 		return $location;
-	}
-
-	/**
-	 * @param IResource $resource
-	 * @return IFileResource
-	 * @throws ImageStorageException
-	 */
-	public function save(IResource $resource): IFileResource {
-		$meta = $this->metaFactory->create($resource);
-		if ($resource instanceof UploadResource && !$meta->toModify()) {
-			$resource->setSaved();
-			$location = $this->directory . $this->generateUniqueLocation($meta);
-			$this->makeDir($location);
-			$resource->getUpload()->move($location);
-
-			return $this->createResource($resource->getId());
-		}
-		if ($resource instanceof ITransferResource) {
-			$resource->setSaved();
-		} else if (!$resource->hasAliases()) {
-			throw new ImageStorageException('Nothing to modify.');
-		}
-
-		$this->saveResource($resource);
-		/*if ($resource instanceof ITransferResource) {
-			return $this->createResource($resource->getId());
-		}*/
-
-		return $this->createResource($resource->getId());
 	}
 
 	/**
@@ -269,32 +274,6 @@ class LocalStorage extends Storage {
 		if (!is_dir($dir)) {
 			mkdir($dir, 0777, true);
 		}
-	}
-
-	/**
-	 * @param IResource $resource
-	 * @throws ImageStorageException
-	 */
-	private function saveResource(IResource $resource) {
-		$meta = $this->metaFactory->create($resource);
-
-		if ($resource instanceof ITransferResource) {
-			$image = $resource->getProvider()->toImage($this->imageFactory);
-		} else if ($resource instanceof IFileResource) {
-			$originalMeta = $this->metaFactory->create($resource->getOriginal());
-			$image = $this->imageFactory->createFromFile($this->directory . $this->getResourceLocation($originalMeta));
-		} else {
-			throw new ImageStorageException('Resource must be instance of ITransferResource or IFileResource.');
-		}
-
-		$meta->modify($image);
-		$location = $this->generateUniqueLocation($meta);
-
-		$this->makeDir($this->directory . $location);
-		$image->save($this->directory . $location);
-
-		// clean
-		imagedestroy($image->getImageResource());
 	}
 
 	private function generateUniqueLocation(IResourceMeta $meta): string {
