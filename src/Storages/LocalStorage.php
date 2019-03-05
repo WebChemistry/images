@@ -24,28 +24,28 @@ use WebChemistry\Images\Storage;
 class LocalStorage extends Storage {
 
 	/** @var string */
-	private $directory;
+	protected $directory;
 
 	/** @var string|null */
-	private $defaultImage;
+	protected $defaultImage;
 
 	/** @var string */
-	private $basePath;
+	protected $basePath;
 
 	/** @var string */
-	private $baseUrl;
+	protected $baseUrl;
 
 	/** @var IResourceMetaFactory */
-	private $metaFactory;
+	protected $metaFactory;
 
 	/** @var IImageFactory */
-	private $imageFactory;
+	protected $imageFactory;
 
 	/** @var ILogger|null */
-	private $logger;
+	protected $logger;
 
 	/** @var bool */
-	private $safeLink;
+	protected $safeLink;
 
 	public function __construct(string $wwwDir, string $assetsDir, ?ILogger $logger, IResourceMetaFactory $metaFactory, IRequest $request,
 								IImageFactory $imageFactory, bool $safeLink = false, ?string $defaultImage = null) {
@@ -63,7 +63,7 @@ class LocalStorage extends Storage {
 		$this->safeLink = $safeLink;
 	}
 
-	private function getDefaultImage(?IFileResource $resource): ?string {
+	protected function getDefaultImage(?IFileResource $resource): ?string {
 		$defaultImage = $this->defaultImage;
 		if ($resource) {
 			// "fill method" getDefaultImage()
@@ -242,7 +242,7 @@ class LocalStorage extends Storage {
 
 	/////////////////////////////////////////////////////////////////
 
-	private function folder(?string $name): string {
+	protected function folder(?string $name): string {
 		return ($name ? $name . '/' : '');
 	}
 
@@ -252,7 +252,7 @@ class LocalStorage extends Storage {
 	 * @param IResourceMeta $resource
 	 * @return string
 	 */
-	private function getResourceLocation(IResourceMeta $resource): string {
+	protected function getResourceLocation(IResourceMeta $resource): string {
 		$namespace = $resource->getNamespaceFolder();
 		$hash = $resource->getResource() instanceof ITransferResource ? $resource->getOriginalHashFolder() : $resource->getHashFolder();
 
@@ -265,18 +265,18 @@ class LocalStorage extends Storage {
 	 * @param IResourceMeta $resource
 	 * @return string
 	 */
-	private function getResourcePath(IResourceMeta $resource): string {
+	protected function getResourcePath(IResourceMeta $resource): string {
 		return $this->directory . '/' . $this->getResourceLocation($resource);
 	}
 
-	private function makeDir(string $dir): void {
+	protected function makeDir(string $dir): void {
 		$dir = dirname($dir);
 		if (!is_dir($dir)) {
 			mkdir($dir, 0777, true);
 		}
 	}
 
-	private function generateUniqueLocation(IResourceMeta $meta): string {
+	protected function generateUniqueLocation(IResourceMeta $meta): string {
 		$resource = $meta->getResource();
 		$location = $this->getResourceLocation($meta);
 
