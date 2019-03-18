@@ -152,6 +152,56 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 		return $this->imageStorage;
 	}
 
+	public function getPreviewPart(?string $placeholder = null): ?Html {
+		if (($this->delete || $this->preview || $placeholder) && $this->getImageStorage()) {
+			$preview = Html::el('div', [
+				'class' => 'wch-upload-preview-container',
+			]);
+			if ($this->preview && $this->defaultValue) {
+				if ($this->previewAlias) {
+					$this->defaultValue->setAlias($this->previewAlias);
+				}
+				$link = $this->getImageStorage()->link($this->defaultValue);
+				$preview->create('img', [
+					'src' => $link,
+					'class' => 'wch-upload-preview',
+					'data-placeholder' => $placeholder,
+				]);
+			} else if ($placeholder) {
+				$preview->create('img', [
+					'src' => $placeholder,
+					'class' => 'wch-upload-preview',
+					'data-placeholder' => $placeholder,
+				]);
+			}
+
+			return $preview;
+		}
+
+		return null;
+	}
+
+	public function getCheckboxPart(): ?Html {
+		if ($this->delete && !$this->required && $this->defaultValue) {
+			$wrapper = Html::el('');
+			$label = $wrapper->create('label');
+			$label->create('input', [
+				'type' => 'checkbox',
+				'id' => $this->getHtmlId() . '_check',
+				'name' => $this->getName() . '_check',
+			]);
+			$label->create('')->setText($this->delete);
+
+			return $wrapper;
+		}
+
+		return null;
+	}
+
+	public function getControlPart(): ?Html {
+		return parent::getControl();
+	}
+
 	public function getControl() {
 		if ($this->required && !$this->defaultValue) {
 			parent::setRequired($this->required);
@@ -161,39 +211,13 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 			'class' => 'wch-upload-container',
 		]);
 
-		// preview
-		if (($this->delete || $this->preview) && $this->getImageStorage()) {
-			$preview = $container->create('div', [
-				'class' => 'wch-upload-preview-container',
-			]);
-
-			if ($this->preview && $this->defaultValue) {
-				if ($this->previewAlias) {
-					$this->defaultValue->setAlias($this->previewAlias);
-				}
-				$link = $this->getImageStorage()->link($this->defaultValue);
-				$preview->create('img', [
-					'src' => $link,
-					'class' => 'wch-upload-preview',
-				]);
-			}
-
-			if ($this->delete && !$this->required && $this->defaultValue) {
-				$wrapper = Html::el('');
-				$label = $wrapper->create('label');
-				$label->create('input', [
-					'type' => 'checkbox',
-					'id' => $this->getHtmlId() . '_check',
-					'name' => $this->getName() . '_check',
-				]);
-				$label->create('')->setText($this->delete);
-
-				$container->insert(null, $wrapper);
-			}
+		if ($preview = $this->getPreviewPart()) {
+			$container->insert(null, $preview);
 		}
-
-		// control
-		$container->insert(null, parent::getControl());
+		if ($checkbox = $this->getCheckboxPart()) {
+			$container->insert(null, $checkbox);
+		}
+		$container->insert(null, $this->getControlPart());
 
 		return $container;
 	}
