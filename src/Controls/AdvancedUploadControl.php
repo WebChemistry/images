@@ -190,7 +190,7 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 				'id' => $this->getHtmlId() . '_check',
 				'name' => $this->getName() . '_check',
 			]);
-			$label->create('')->setText($this->delete);
+			$label->create('')->setText((string) $this->delete);
 
 			return $wrapper;
 		}
@@ -199,7 +199,9 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 	}
 
 	public function getControlPart(): ?Html {
-		return parent::getControl();
+		$control = parent::getControl();
+
+		return $control instanceof Html ? $control : Html::el()->setHtml($control);
 	}
 
 	public function getControl() {
