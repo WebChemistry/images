@@ -2,6 +2,7 @@
 
 namespace WebChemistry\Images\DI;
 
+use Nette\DI\Definitions\Definition;
 use Nette\DI\Definitions\FactoryDefinition;
 use Nette\DI\ServiceDefinition;
 use Nette\DI\Statement;
@@ -14,8 +15,8 @@ class DIHelper {
 	use StaticClass;
 
 	/**
-	 * @param FactoryDefinition|ServiceDefinition $definition
-	 * @return ServiceDefinition
+	 * @param FactoryDefinition|ServiceDefinition|Definition $definition
+	 * @return Definition
 	 */
 	public static function fixFactoryDefinition($definition) {
 		if ($definition instanceof FactoryDefinition) {

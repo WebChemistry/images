@@ -2,10 +2,10 @@
 
 namespace WebChemistry\Images\Bridges\Hydration\Adapters;
 
-use WebChemistry\DoctrineHydration\Adapters\IFieldAdapter;
-use WebChemistry\DoctrineHydration\IPropertyAccessor;
-use WebChemistry\DoctrineHydration\Metadata;
-use WebChemistry\DoctrineHydration\SkipValueException;
+use Nettrine\Hydrator\Adapters\IFieldAdapter;
+use Nettrine\Hydrator\Arguments\FieldArgs;
+use Nettrine\Hydrator\IPropertyAccessor;
+use Nettrine\Hydrator\Metadata;
 use WebChemistry\Images\IImageStorage;
 use WebChemistry\Images\Resources\IFileResource;
 use WebChemistry\Images\Resources\StateResource;
@@ -23,33 +23,28 @@ class ImageFieldAdapter implements IFieldAdapter {
 		$this->propertyAccessor = $propertyAccessor;
 	}
 
-	public function isWorkable($object, string $field, Metadata $metadata, array $settings): bool {
+	public function isWorkable(FieldArgs $args): bool {
+		$metadata = $args->getMetadata();
+		$field = $args->getField();
 		return !$metadata->isAssociation($field) && $metadata->getFieldMapping($field)['type'] === 'image';
 	}
 
-	/**
-	 * @param object|null $object
-	 * @param string $field
-	 * @param IFileResource|StateResource|null $value
-	 * @param Metadata $metadata
-	 * @param array $settings
-	 * @return \WebChemistry\Images\Resources\IFileResource|null
-	 * @throws SkipValueException
-	 */
-	public function work($object, string $field, $value, Metadata $metadata, array $settings) {
+	public function work(FieldArgs $args): void {
+		/** @var IFileResource|StateResource|null  $value */
+		$value = $args->getValue();
+		/** @var object|null $object */
+		$object = $args->object;
+		$field = $args->getField();
+
 		if (!$value) {
-			if ($object) {
-				throw new SkipValueException();
-			} else {
-				return null;
-			}
+			return;
 		}
 		if ($value instanceof StateResource) {
 			if ($value->getDelete()) {
 				$this->imageStorage->delete($value->getDelete());
 			}
 			if (!$value->getUpload()) {
-				return $value->getDefaultValue();
+				$value = $value->getDefaultValue();
 			}
 
 			$value = $value->getUpload();
@@ -72,7 +67,7 @@ class ImageFieldAdapter implements IFieldAdapter {
 			$value->setSuffix($settings['suffix']);
 		}
 
-		return $this->imageStorage->save($value);
+		$this->imageStorage->save($value);
 
 	}
 

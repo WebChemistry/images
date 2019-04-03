@@ -2,9 +2,8 @@
 
 namespace WebChemistry\Images\DI;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
-use Kdyby\Doctrine\Connection;
-use Kdyby\Doctrine\DI\OrmExtension;
 use Nette;
 use WebChemistry\Images\Controls\AdvancedUploadControl;
 use WebChemistry\Images\Controls\UploadControl;
@@ -118,22 +117,24 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 		$builder = $this->getContainerBuilder();
 
 		$def = $builder->getDefinition('nette.latteFactory');
+		/** @var Nette\DI\ServiceDefinition $def */
 		$def = DIHelper::fixFactoryDefinition($def);
 
 		$def->addSetup(Macros::class . '::install(?->getCompiler())', ['@self'])
 			->addSetup('addProvider', ['imageStorageFacade', $builder->getDefinition($this->prefix('template.facade'))]);
 
-		// kdyby registration
+		// doctrine registration
 		if (class_exists(Connection::class)) {
-			foreach ($builder->findByTag(OrmExtension::TAG_CONNECTION) as $name => $_) {
-				$builder->getDefinition($name)
-					->addSetup('?->getDatabasePlatform()->registerDoctrineTypeMapping(?, ?)', ['@self', 'db_' . ImageType::TYPE, ImageType::TYPE]);
+			foreach ($builder->findByType(Connection::class) as $name => $_) {
+				/** @var Nette\DI\Definitions\ServiceDefinition $conn */
+				$conn = $builder->getDefinition($name);
+				$conn->addSetup('?->getDatabasePlatform()->registerDoctrineTypeMapping(?, ?)', ['@self', 'db_' . ImageType::TYPE, ImageType::TYPE]);
 			}
 		}
 	}
 
 	public function afterCompile(Nette\PhpGenerator\ClassType $class) {
-		$config = $this->getConfig();
+		$config = (array) $this->getConfig();
 		$init = $class->getMethods()['initialize'];
 
 		if ($config['registerControl']) {
