@@ -49,7 +49,7 @@ class ImageFieldAdapter implements IFieldAdapter {
 			}
 
 			$value = $value->getUpload();
-		} else if ($args->object && ($image = $this->propertyAccessor->get($args->object, $field))) {
+		} else if ($args->object && ($image = $this->propertyAccessor->get($args->object, $args->field))) {
 			$this->imageStorage->delete($image);
 		}
 
