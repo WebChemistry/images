@@ -24,35 +24,36 @@ class ImageFieldAdapter implements IFieldAdapter {
 	}
 
 	public function isWorkable(FieldArgs $args): bool {
-		$metadata = $args->getMetadata();
-		$field = $args->getField();
-		return !$metadata->isAssociation($field) && $metadata->getFieldMapping($field)['type'] === 'image';
+		return !$args->metadata->isAssociation($args->field) && $args->metadata->getFieldMapping($args->field)['type'] === 'image';
 	}
 
 	public function work(FieldArgs $args): void {
-		/** @var IFileResource|StateResource|null  $value */
-		$value = $args->getValue();
-		/** @var object|null $object */
-		$object = $args->object;
-		$field = $args->getField();
+		$value = $args->value;
 
 		if (!$value) {
+			if (!$args->object) {
+				$args->value = null;
+			}
+
 			return;
 		}
+
 		if ($value instanceof StateResource) {
 			if ($value->getDelete()) {
 				$this->imageStorage->delete($value->getDelete());
 			}
 			if (!$value->getUpload()) {
-				$value = $value->getDefaultValue();
+				$args->value = $value->getDefaultValue();
+
+				return;
 			}
 
 			$value = $value->getUpload();
-		} else if ($object && ($image = $this->propertyAccessor->get($object, $field))) {
+		} else if ($args->object && ($image = $this->propertyAccessor->get($args->object, $field))) {
 			$this->imageStorage->delete($image);
 		}
 
-		$settings = $settings['images'][$field] ?? [];
+		$settings = $args->settings['images'][$args->field] ?? [];
 
 		if (isset($settings['alias'])) {
 			$value->setAlias($settings['alias']);
@@ -67,8 +68,7 @@ class ImageFieldAdapter implements IFieldAdapter {
 			$value->setSuffix($settings['suffix']);
 		}
 
-		$this->imageStorage->save($value);
-
+		$args->value = $this->imageStorage->save($value);
 	}
 
 }
