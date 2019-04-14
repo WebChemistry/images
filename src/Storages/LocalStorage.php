@@ -3,6 +3,7 @@
 namespace WebChemistry\Images\Storages;
 
 use Nette\Http\IRequest;
+use Nette\Utils\FileSystem;
 use Nette\Utils\Finder;
 use Nette\Utils\ImageException;
 use Nette\Utils\UnknownImageFileException;
@@ -271,9 +272,8 @@ class LocalStorage extends Storage {
 
 	protected function makeDir(string $dir): void {
 		$dir = dirname($dir);
-		if (!is_dir($dir)) {
-			mkdir($dir, 0777, true);
-		}
+
+		FileSystem::createDir($dir);
 	}
 
 	protected function generateUniqueLocation(IResourceMeta $meta): string {
