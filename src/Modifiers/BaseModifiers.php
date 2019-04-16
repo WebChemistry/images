@@ -114,7 +114,7 @@ class BaseModifiers implements ILoader {
 	public function quality(ModifierParam $param, $quality): void {
 		$image = $param->getImage();
 
-		$image->setQuality($quality);
+		$image->setQuality((int)$quality);
 	}
 
 	/**
