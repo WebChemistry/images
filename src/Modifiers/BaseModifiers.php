@@ -6,7 +6,6 @@ use Nette\Utils\Image;
 use WebChemistry\Images\ImageStorageException;
 use WebChemistry\Images\Modifiers\Params\ModifierParam;
 use WebChemistry\Images\Modifiers\Params\ResourceModifierParam;
-use WebChemistry\Images\Resources\Transfer\ITransferResource;
 
 class BaseModifiers implements ILoader {
 
@@ -37,17 +36,18 @@ class BaseModifiers implements ILoader {
 			$image->sharpen();
 		});
 		$modifiers->addModifier('fixOrientation', function (ModifierParam $param) {
-			$resource = $param->getResource();
 			$image = $param->getImage();
-			if (!$resource instanceof ITransferResource || !$resource->getLocation()) {
+			$path = $param->getLocation();
+
+			if (!$path) {
 				return;
 			}
-			$detectedFormat = @getimagesize($resource->getLocation())[2];
+			$detectedFormat = @getimagesize($path)[2];
 			if ($detectedFormat !== IMAGETYPE_JPEG) {
 				return;
 			}
 
-			$exif = @exif_read_data($resource->getLocation());
+			$exif = @exif_read_data($path);
 			if ($exif === false) {
 				return;
 			}

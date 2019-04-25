@@ -41,6 +41,8 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		$modifierContainer->addAlias('resize', ModifierParser::parse('resize:5,5,exact'));
 		$modifierContainer->addAlias('resize2', ModifierParser::parse('resize:5,5'));
 		$modifierContainer->addAlias('resizeVar', ModifierParser::parse('resize:$1,$2,$3'));
+
+		$modifierContainer->addAlias('fixOrientation', ModifierParser::parse('fixOrientation'));
 	}
 
 	private function createUploadResource() {
@@ -65,16 +67,16 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		return new StringResource(file_get_contents(UPLOAD_GIF), 'string.gif');
 	}
 
-	private function sameOriginal($path) {
-		return md5_file(IMAGE_GIF) === md5_file($path);
+	private function sameOriginal(string $path, string $original = 'image.gif') {
+		return md5_file(IMAGE_DIR . '/' . $original) === md5_file($path);
 	}
 
 	private function getUploadPath($name = 'upload.gif', $namespace = 'original') {
 		return __DIR__ . '/output/' . $namespace . '/' . $name;
 	}
 
-	private function createImageResource($id = 'upload.gif') {
-		$resource = $this->storage->createLocalResource(IMAGE_GIF);
+	private function createImageResource(string $id = 'upload.gif', string $imageName = 'image.gif') {
+		$resource = $this->storage->createLocalResource(IMAGE_DIR . '/' . $imageName);
 		$resource->setId($id);
 
 		return $resource;
@@ -294,6 +296,17 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 
 		$this->assertEquals('/output/original/upload.gif', $this->storage->link($promise2));
 		$this->assertFileExists(__DIR__ . '/output/original/upload.gif');
+	}
+
+	public function testFixOrientation() {
+		$resource = $this->createImageResource('image.jpg', 'image.jpg');
+		$resource->setAlias('fixOrientation');
+
+		$this->storage->save($resource);
+
+		$this->assertFileExists($path = $this->getUploadPath('image.jpg'));
+		$this->sameOriginal($path, 'image.jpg');
+		$this->assertTrue(!isset(exif_read_data($path)['Orientation']));
 	}
 
 }

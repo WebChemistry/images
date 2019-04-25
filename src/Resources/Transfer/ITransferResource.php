@@ -27,7 +27,6 @@ interface ITransferResource extends IResource {
 	public function setSaved();
 
 	/**
-	 * @deprecated use getProvider() instead
 	 * @return string|null
 	 */
 	public function getLocation();

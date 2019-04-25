@@ -102,8 +102,8 @@ class ResourceMeta implements IResourceMeta {
 		}
 	}
 
-	public function modify(Image $image) {
-		$param = new ModifierParam($image, $this);
+	public function modify(Image $image, ?string $path = null) {
+		$param = new ModifierParam($image, $path, $this);
 		foreach ($this->getModifiers() as [$callback, $values]) {
 			array_unshift($values, $param);
 			$callback(...$values);
