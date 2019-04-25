@@ -132,6 +132,7 @@ class LocalStorage extends Storage {
 	 */
 	protected function getLink(IResource $resource): ?string {
 		$meta = $this->metaFactory->create($resource);
+		$originalPath = null;
 
 		if ($resource instanceof ITransferResource) {
 			$resource->setSaved();
@@ -173,7 +174,7 @@ class LocalStorage extends Storage {
 			throw new ImageStorageException('Resource must be instance of ITransferResource or IFileResource.');
 		}
 
-		$meta->modify($image, $this->getResourceLocation($meta));
+		$meta->modify($image, $originalPath);
 		$this->makeDir($path);
 		$image->save($path);
 
