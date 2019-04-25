@@ -15,7 +15,7 @@ interface IResourceMeta {
 
 	public function getResource(): IResource;
 
-	public function modify(Image $image);
+	public function modify(Image $image, ?string $path = null);
 
 	public function toModify(): bool;
 

@@ -6,6 +6,7 @@ use Nette\SmartObject;
 use Nette\Utils\Image;
 use WebChemistry\Images\Resources\IResource;
 use WebChemistry\Images\Resources\Meta\IResourceMeta;
+use WebChemistry\Images\Resources\Transfer\ITransferResource;
 
 final class ModifierParam {
 
@@ -17,9 +18,26 @@ final class ModifierParam {
 	/** @var IResourceMeta */
 	private $meta;
 
-	public function __construct(Image $image, IResourceMeta $meta) {
+	/** @var string|null */
+	private $location;
+
+	public function __construct(Image $image, ?string $location, IResourceMeta $meta) {
 		$this->image = $image;
 		$this->meta = $meta;
+		$this->location = $location;
+
+		$resource = $this->getResource();
+		if (!$this->location && $resource instanceof ITransferResource) {
+			$this->location = $resource->getLocation();
+		}
+
+		if (!file_exists($this->location)) {
+			$this->location = null;
+		}
+	}
+
+	public function getLocation(): ?string {
+		return $this->location;
 	}
 
 	public function getImage(): Image {

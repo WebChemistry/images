@@ -173,7 +173,7 @@ class LocalStorage extends Storage {
 			throw new ImageStorageException('Resource must be instance of ITransferResource or IFileResource.');
 		}
 
-		$meta->modify($image);
+		$meta->modify($image, $this->getResourceLocation($meta));
 		$this->makeDir($path);
 		$image->save($path);
 
