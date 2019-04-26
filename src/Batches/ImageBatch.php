@@ -24,6 +24,9 @@ class ImageBatch implements IBatch {
 	/** @var PromiseFileResource[] */
 	private $deleteBatch = [];
 
+	/** @var IBatch[] */
+	private $batches = [];
+
 	public function __construct(IImageStorage $storage) {
 		$this->storage = $storage;
 	}
@@ -41,8 +44,11 @@ class ImageBatch implements IBatch {
 		foreach ($this->deleteBatch as $resource) {
 			$this->storage->delete($resource);
 		}
+		foreach ($this->batches as $batch) {
+			$batch->flush();
+		}
 
-		$this->saveBatch = $this->copyBatch = $this->moveBatch = $this->deleteBatch = [];
+		$this->saveBatch = $this->copyBatch = $this->moveBatch = $this->deleteBatch = $this->batches = [];
 	}
 
 	public function save(IResource $resource): IFileResource {
@@ -59,6 +65,12 @@ class ImageBatch implements IBatch {
 
 	public function delete(IFileResource $resource): IFileResource {
 		return $this->deleteBatch[] = new PromiseFileResource($resource);
+	}
+
+	public function addBatch(IBatch $batch): IBatch {
+		$this->batches[] = $batch;
+
+		return $this;
 	}
 
 }
