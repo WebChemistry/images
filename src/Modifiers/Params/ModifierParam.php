@@ -31,7 +31,7 @@ final class ModifierParam {
 			$this->location = $resource->getLocation();
 		}
 
-		if (!file_exists($this->location)) {
+		if (!$this->location || !file_exists($this->location)) {
 			$this->location = null;
 		}
 	}
