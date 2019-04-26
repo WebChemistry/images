@@ -42,5 +42,8 @@
 	},
 	"scripts": {
 		"phpstan": "vendor/bin/phpstan analyse src --level=6 -c phpstan.neon --ansi --no-progress"
+	},
+	"extra": {
+		"branch-alias": "4.1-dev"
 	}
 }
