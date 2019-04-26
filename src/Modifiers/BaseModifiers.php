@@ -53,18 +53,18 @@ class BaseModifiers implements ILoader {
 			}
 
 			if (isset($exif['Orientation']) && $exif['Orientation']) {
-				switch ($exif['Orientation']) {
-					case 3:
-						$image->rotate(180, 0);
-						break;
+				if (in_array($exif['Orientation'], [3, 4])) {
+					$image->rotate(180, 0);
 
-					case 6:
-						$image->rotate(-90, 0);
-						break;
+				} else if (in_array($exif['Orientation'], [5, 6])) {
+					$image->rotate(-90, 0);
 
-					case 8:
-						$image->rotate(90, 0);
-						break;
+				} else if (in_array($exif['Orientation'], [7, 8])) {
+					$image->rotate(90, 0);
+				}
+
+				if (in_array($exif['Orientation'], [2, 4, 5, 7])) {
+					$image->flip(IMG_FLIP_HORIZONTAL);
 				}
 			}
 		}, false);
