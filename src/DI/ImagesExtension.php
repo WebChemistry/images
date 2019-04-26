@@ -26,43 +26,28 @@ use WebChemistry\Images\Template\Macros;
 
 class ImagesExtension extends Nette\DI\CompilerExtension {
 
-	/** @var array */
-	public $defaults = [
-		'local' => [ // deprecated
-		],
-		'enable' => true,
-		'defaultImage' => null,
-		'wwwDir' => null,
-		'assetsDir' => 'assets',
-		'modifiers' => [],
-		'aliases' => [],
-		'hashResolver' => HashResolver::class,
-		'namespaceResolver' => NamespaceResolver::class,
-		'default' => null, // deprecated
-		'registerControl' => true,
-		'registerType' => true,
-		'safeLink' => null,
-		'storageClass' => LocalStorage::class,
-	];
+	public function getConfigSchema(): Nette\Schema\Schema {
+		$parameters = $this->getContainerBuilder()->parameters;
 
-	private function parseConfig(): array {
-		$config = $this->validateConfig($this->defaults);
-		if ($config['local']) {
-			throw new Nette\DeprecatedException('ImageStorage: "local" section is deprecated.');
-		}
-		if ($config['wwwDir'] === null) {
-			$config['wwwDir'] = $this->getContainerBuilder()->parameters['wwwDir'];
-		}
-		if ($config['safeLink'] === null) {
-			$config['safeLink'] = !$this->getContainerBuilder()->parameters['debugMode'];
-		}
-
-		return $config;
+		return Nette\Schema\Expect::structure([
+			'enable' => Nette\Schema\Expect::bool(true),
+			'defaultImage' => Nette\Schema\Expect::string(null),
+			'wwwDir' => Nette\Schema\Expect::string($parameters['wwwDir']),
+			'assetsDir' => Nette\Schema\Expect::string('assets'),
+			'modifiers' => Nette\Schema\Expect::array(),
+			'aliases' => Nette\Schema\Expect::array(),
+			'hashResolver' => Nette\Schema\Expect::string(HashResolver::class),
+			'namespaceResolver' => Nette\Schema\Expect::string(NamespaceResolver::class),
+			'registerControl' => Nette\Schema\Expect::bool(true),
+			'registerType' => Nette\Schema\Expect::bool(class_exists(Connection::class)),
+			'safeLink' => Nette\Schema\Expect::bool(!$parameters['debugMode']),
+			'storageClass' => Nette\Schema\Expect::string(LocalStorage::class),
+		]);
 	}
 
 	public function loadConfiguration() {
 		$builder = $this->getContainerBuilder();
-		$config = $this->parseConfig();
+		$config = $this->getConfig();
 
 		// global
 		$builder->addDefinition($this->prefix('imageFactory'))
@@ -71,17 +56,17 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 		$builder->addDefinition($this->prefix('hashResolver'))
 			->setType(IHashResolver::class)
-			->setFactory($config['hashResolver']);
+			->setFactory($config->hashResolver);
 
 		$builder->addDefinition($this->prefix('namespaceResolver'))
 			->setType(INamespaceResolver::class)
-			->setFactory($config['namespaceResolver']);
+			->setFactory($config->namespaceResolver);
 
 		$builder->addDefinition($this->prefix('template.facade'))
 			->setFactory(ImageFacade::class);
 
 		// local
-		if (!$config['enable']) {
+		if (!$config->enable) {
 			return;
 		}
 
@@ -95,26 +80,27 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			->setFactory(ResourceMetaFactory::class, [$modifiers])
 			->setAutowired(false);
 
-		$config['modifiers'][] = BaseModifiers::class;
+		$config->modifiers[] = BaseModifiers::class;
 
-		DIHelper::addModifiersFromArray($modifiers, $config['modifiers']);
-		DIHelper::addAliasesFromArray($modifiers, $config['aliases']);
+		DIHelper::addModifiersFromArray($modifiers, $config->modifiers);
+		DIHelper::addAliasesFromArray($modifiers, $config->aliases);
 
 		$builder->addDefinition($this->prefix('storage'))
 			->setType(IImageStorage::class)
-			->setFactory($config['storageClass'],
+			->setFactory($config->storageClass,
 				[
-					'wwwDir' => $config['wwwDir'],
-					'assetsDir' => $config['assetsDir'],
+					'wwwDir' => $config->wwwDir,
+					'assetsDir' => $config->assetsDir,
 					'metaFactory' => $resourceMetaFactory,
-					'defaultImage' => $config['defaultImage'],
-					'safeLink' => $config['safeLink'],
+					'defaultImage' => $config->defaultImage,
+					'safeLink' => $config->safeLink,
 				]
 			);
 	}
 
 	public function beforeCompile() {
 		$builder = $this->getContainerBuilder();
+		$config = $this->getConfig();
 
 		$def = $builder->getDefinition('nette.latteFactory');
 		/** @var Nette\DI\ServiceDefinition $def */
@@ -124,25 +110,25 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 			->addSetup('addProvider', ['imageStorageFacade', $builder->getDefinition($this->prefix('template.facade'))]);
 
 		// doctrine registration
-		if (class_exists(Connection::class)) {
+		if ($config->registerType) {
 			foreach ($builder->findByType(Connection::class) as $name => $_) {
 				/** @var Nette\DI\Definitions\ServiceDefinition $conn */
 				$conn = $builder->getDefinition($name);
+				$conn->addSetup('if (!' . Type::class . '::hasType(?)) { ' . Type::class . '::addType(?, ?); }', [
+					ImageType::TYPE, ImageType::TYPE, ImageType::class,
+				]);
 				$conn->addSetup('?->getDatabasePlatform()->registerDoctrineTypeMapping(?, ?)', ['@self', 'db_' . ImageType::TYPE, ImageType::TYPE]);
 			}
 		}
 	}
 
 	public function afterCompile(Nette\PhpGenerator\ClassType $class) {
-		$config = (array) $this->getConfig();
+		$config = $this->getConfig();
 		$init = $class->getMethods()['initialize'];
 
-		if ($config['registerControl']) {
+		if ($config->registerControl) {
 			$init->addBody(UploadControl::class . '::register();');
 			$init->addBody(AdvancedUploadControl::class . '::register();');
-		}
-		if ($config['registerType'] && class_exists(Type::class)) {
-			$init->addBody(Type::class . '::addType(?, ?);', [ImageType::TYPE, ImageType::class]);
 		}
 	}
 
