@@ -47,6 +47,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 	public function loadConfiguration() {
 		$builder = $this->getContainerBuilder();
+		/** @var \stdClass $config */
 		$config = $this->getConfig();
 
 		// global
@@ -100,6 +101,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 
 	public function beforeCompile() {
 		$builder = $this->getContainerBuilder();
+		/** @var \stdClass $config */
 		$config = $this->getConfig();
 
 		$def = $builder->getDefinition('nette.latteFactory');
@@ -123,6 +125,7 @@ class ImagesExtension extends Nette\DI\CompilerExtension {
 	}
 
 	public function afterCompile(Nette\PhpGenerator\ClassType $class) {
+		/** @var \stdClass $config */
 		$config = $this->getConfig();
 		$init = $class->getMethods()['initialize'];
 
