@@ -35,11 +35,10 @@ class StringResource extends TransferResource {
 	}
 
 	/**
-	 * @deprecated use getProvider() instead
-	 * @return string
+	 * @return null
 	 */
-	public function getLocation(): string {
-		throw new DeprecatedException('Use getProvider() instead.');
+	public function getLocation(): ?string {
+		return null;
 	}
 
 }

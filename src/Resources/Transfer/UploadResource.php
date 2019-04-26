@@ -48,7 +48,6 @@ class UploadResource extends TransferResource {
 	}
 
 	/**
-	 * @deprecated use getProvider() instead
 	 * @return string
 	 */
 	public function getLocation(): string {

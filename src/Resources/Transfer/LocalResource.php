@@ -33,7 +33,6 @@ class LocalResource extends TransferResource {
 	}
 
 	/**
-	 * @deprecated use getProvider() instead
 	 * @return string
 	 */
 	public function getLocation(): string {
