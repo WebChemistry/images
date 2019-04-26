@@ -42,6 +42,7 @@
 		}
 	},
 	"scripts": {
+		"tests": "vendor/bin/codecept run",
 		"phpstan": "vendor/bin/phpstan analyse src --level=6 -c phpstan.neon --ansi --no-progress"
 	},
 	"extra": {

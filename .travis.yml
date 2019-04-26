@@ -1,21 +1,33 @@
 language: php
 
-os:
-  - linux
-
 php:
   - 7.2
   - 7.3
+  - 7.4snapshot
 
-matrix:
+before_install:
+  # Turn off XDebug
+  - phpenv config-rm xdebug.ini || return 0
+
+script:
+  - composer run-script tests
+
+jobs:
   include:
-  - php: 7.2
-    env: PHPSTAN=1
+    - stage: Phpstan
+      php: 7.2
+      script:
+        - composer run-script phpstan
+
+  allow_failures:
+    - php: 7.4snapshot
 
 install:
     - composer self-update
     - composer install
 
-script:
-  - vendor/bin/codecept run
-  - if [ "$PHPSTAN" = "1" ]; then composer run-script phpstan; fi
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
