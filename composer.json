@@ -17,16 +17,15 @@
 		"nette/finder": "^2.5"
 	},
 	"require-dev": {
-		"nette/di": "^3.0-RC3",
+		"nette/di": "^3.0",
 		"latte/latte": "^2.5",
 		"codeception/codeception": "^2.4",
-		"phpunit/phpunit": "~5.0 || ~6.0 || ~7.1.0",
 		"nette/forms": "^3.0",
-		"nette/application": "^3.0-RC2",
-		"webchemistry/testing-helpers": "dev-master",
+		"nette/application": "^3.0",
+		"webchemistry/testing-helpers": "~2.0",
 		"doctrine/orm": "^2.6",
 		"phpstan/phpstan": "^0.11",
-		"webchemistry/doctrine-hydration": "dev-master"
+		"nettrine/hydrator": "dev-master"
 	},
 	"suggest": {
 		"webchemistry/images-s3": "To save an image on Amazon"
