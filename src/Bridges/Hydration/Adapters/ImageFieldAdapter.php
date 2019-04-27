@@ -5,9 +5,7 @@ namespace WebChemistry\Images\Bridges\Hydration\Adapters;
 use Nettrine\Hydrator\Adapters\IFieldAdapter;
 use Nettrine\Hydrator\Arguments\FieldArgs;
 use Nettrine\Hydrator\IPropertyAccessor;
-use Nettrine\Hydrator\Metadata;
 use WebChemistry\Images\IImageStorage;
-use WebChemistry\Images\Resources\IFileResource;
 use WebChemistry\Images\Resources\StateResource;
 
 class ImageFieldAdapter implements IFieldAdapter {
