@@ -41,6 +41,7 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 	public function __construct(?string $label = null, ?string $namespace = null) {
 		parent::__construct($label, false);
 
+		$this->setOption('type', 'imageUpload');
 		$this->namespace = $namespace;
 	}
 
