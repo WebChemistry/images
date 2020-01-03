@@ -37,29 +37,50 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 	/** @var string|null */
 	private $previewAlias;
 
+	/** @var int|null */
+	protected $maxSize;
+
+	/** @var string|null */
+	protected $maxSizeMessage;
+
 	public function __construct(?string $label = null, ?string $namespace = null) {
 		parent::__construct($label, false);
 
 		$this->setOption('type', 'imageUpload');
 		$this->namespace = $namespace;
+
+		$this->getRules()->removeRule(Form::MAX_FILE_SIZE);
+
+		$this->maxSize = Forms\Helpers::iniGetSize('upload_max_filesize');
+	}
+
+	public function validate(): void {
+		$this->addRule(function (Forms\IControl $control): bool {
+			return $this->validateMaxSize($control, $this->maxSize);
+		}, $this->maxSizeMessage ?? Forms\Validator::$messages[Forms\Form::MAX_FILE_SIZE]);
+
+		parent::validate();
+	}
+
+	protected function validateMaxSize(Forms\IControl $control, int $size): bool {
+		/** @var UploadResource|null $value */
+		$value = $control->getValue();
+
+		if ($value === null) {
+			return true;
+		}
+
+		$file = $value->getUpload();
+		if (!$file->isOk() || $file->getSize() > $size || $file->getError() === UPLOAD_ERR_INI_SIZE) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public function setMaxFileSize(int $size, string $message = null) {
-		$this->addRule(function ($control, $limit) {
-			/** @var UploadResource|null $value */
-			$value = $control->getValue()->getUpload();
-
-			if ($value === null) {
-				return true;
-			}
-
-			$file = $value->getUpload();
-			if (!$file->isOk() || $file->getSize() > $limit || $file->getError() === UPLOAD_ERR_INI_SIZE) {
-				return false;
-			}
-
-			return true;
-		}, $message ?: Forms\Validator::$messages[Forms\Form::MAX_FILE_SIZE], $size);
+		$this->maxSize = $size;
+		$this->maxSizeMessage = $message;
 
 		return $this;
 	}
@@ -227,7 +248,7 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 	 */
 	public function setNamespace(?string $namespace) {
 		$this->namespace = $namespace;
-		
+
 		return $this;
 	}
 
