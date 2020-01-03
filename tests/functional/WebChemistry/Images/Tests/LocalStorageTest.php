@@ -2,14 +2,12 @@
 namespace WebChemistry\Images\Tests;
 
 use Nette\Http\FileUpload;
+use Nette\Utils\Image;
 use Test\CustomHashResolver;
 use Test\ObjectHelper;
-use WebChemistry\Images\ImageStorageException;
-use WebChemistry\Images\Modifiers\BaseModifiers;
-use WebChemistry\Images\Modifiers\ModifierContainer;
-use WebChemistry\Images\Parsers\ModifierParser;
+use WebChemistry\Images\Filters\FilterArgs;
 use WebChemistry\Images\Resources\IFileResource;
-use WebChemistry\Images\Resources\PromiseFileResource;
+use WebChemistry\Images\Resources\Promise\PromiseResource;
 use WebChemistry\Images\Resources\ResourceException;
 use WebChemistry\Images\Resources\Transfer\StringResource;
 use WebChemistry\Images\Storages\LocalStorage;
@@ -27,30 +25,32 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 
 	protected function _before() {
 		@mkdir(__DIR__ . '/output');
-		$modifiers = ObjectHelper::createModifiers();
-		$modifiers->addLoader(new BaseModifiers());
-		$this->fillAliases($modifiers);
+		$filterRegistry = ObjectHelper::createFilterRegistry();
+		$filterRegistry->addFilter('resize', function (FilterArgs $args): void {
+			$image = $args->getImage();
+			$image->resize(5, 5, Image::EXACT);
+		});
+		$filterRegistry->addFilter('resize2', function (FilterArgs $args): void {
+			$image = $args->getImage();
+			$image->resize(5, 5);
+		});
+		$filterRegistry->addFilter('resizeVar', function (FilterArgs $args, $width, $height, $flags = 0): void {
+			$image = $args->getImage();
 
-		$this->hashResolver = ObjectHelper::createHashResolver();
-		$serveFactory = ObjectHelper::createServeFactory($modifiers, $this->hashResolver);
+			$image->resize($width, $height, $flags);
+		});
 
-		$this->storage = ObjectHelper::createLocalStorage(__DIR__, 'output', $serveFactory, 'default/upload.gif');
+		$this->storage = $storage = ObjectHelper::createStorage(__DIR__, 'output', $filterRegistry, [
+			'*' => 'default/upload.gif',
+		], $this->hashResolver = new CustomHashResolver());
 	}
 
-	private function fillAliases(ModifierContainer $modifierContainer) {
-		$modifierContainer->addAlias('resize', ModifierParser::parse('resize:5,5,exact'));
-		$modifierContainer->addAlias('resize2', ModifierParser::parse('resize:5,5'));
-		$modifierContainer->addAlias('resizeVar', ModifierParser::parse('resize:$1,$2,$3'));
-
-		$modifierContainer->addAlias('fixOrientation', ModifierParser::parse('fixOrientation'));
-	}
-
-	private function createUploadResource() {
+	private function createUploadResource(string $name = 'upload.gif') {
 		if (!file_exists(UPLOAD_GIF)) {
 			copy(IMAGE_GIF, UPLOAD_GIF);
 		}
 		$upload = new FileUpload([
-			'name' => 'upload.gif',
+			'name' => $name,
 			'tmp_name' => UPLOAD_GIF,
 			'type' => 'image/gif',
 			'error' => 0,
@@ -131,9 +131,9 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 
 	public function testModifiers() {
 		$resource = $this->createUploadResource();
-		$resource->setAlias('resize');
+		$resource->setFilter('resize');
 		$resource = $this->storage->save($resource);
-		$resource->setAlias('resize');
+		$resource->setFilter('resize');
 		$this->storage->save($resource);
 
 		$this->assertFileExists($this->getUploadPath('upload.gif', 'resize'));
@@ -145,7 +145,7 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 
 	public function testResize() {
 		$result = $this->storage->save($this->createUploadResource());
-		$result->setAlias('resize2');
+		$result->setFilter('resize2');
 		$this->storage->save($result);
 
 		$this->assertFileExists(__DIR__ . '/output/resize2/upload.gif');
@@ -156,7 +156,7 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 
 	public function testDelete() {
 		$result = $this->storage->save($this->createUploadResource());
-		$result->setAlias('resize2');
+		$result->setFilter('resize2');
 		$result = $this->storage->save($result);
 
 		$this->assertFileExists(__DIR__ . '/output/resize2/upload.gif');
@@ -170,7 +170,7 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		$result = $this->storage->save($this->createUploadResource());
 
 		$need = $this->storage->createResource('copy.gif');
-		$need->setAlias('resize');
+		$need->setFilter('resize');
 
 		$this->storage->copy($result, $need);
 		$this->assertFileExists($this->getUploadPath('copy.gif'));
@@ -181,19 +181,17 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 	}
 
 	public function testCopySameDest() {
-		$this->assertThrownException(function () {
-			$src = $this->storage->createResource('namespace/upload.gif');
-			$dest = $this->storage->createResource('namespace/upload.gif');
+		$src = $this->storage->createResource('namespace/upload.gif');
+		$dest = $this->storage->createResource('namespace/upload.gif');
 
-			$this->storage->copy($src, $dest);
-		}, ImageStorageException::class);
+		$this->storage->copy($src, $dest);
 	}
 
 	public function testMove() {
 		$result = $this->storage->save($this->createUploadResource());
 
 		$need = $this->storage->createResource('copy.gif');
-		$need->setAlias('resize');
+		$need->setFilter('resize');
 
 		$this->storage->move($result, $need);
 		$this->assertFileNotExists($this->getUploadPath('upload.gif'));
@@ -221,21 +219,13 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		$this->assertSame('/output/default/original/upload.gif', $this->storage->link($resource));
 	}
 
-	public function testImageSize() {
-		$result = $this->storage->save($this->createUploadResource());
-		$size = $this->storage->getImageSize($result);
-
-		$this->assertSame(14, $size->getWidth());
-		$this->assertSame(14, $size->getHeight());
-	}
-
 	public function testResizeWithVariables() {
 		$result = $this->storage->save($this->createUploadResource());
-		$result->setAlias('resizeVar', [20, 20, 'exact']);
+		$result->setFilter('resizeVar', [20, 20, Image::EXACT]);
 		$this->storage->save($result);
 
-		$this->assertFileExists(__DIR__ . '/output/resizeVar_20_20_exact/upload.gif');
-		$size = getimagesize($this->getUploadPath('upload.gif', 'resizeVar_20_20_exact'));
+		$this->assertFileExists(__DIR__ . '/output/resizeVar_20_20_8/upload.gif');
+		$size = getimagesize($this->getUploadPath('upload.gif', 'resizeVar_20_20_8'));
 		$this->assertSame(20, $size[0]);
 		$this->assertSame(20, $size[1]);
 	}
@@ -257,7 +247,7 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 
 	public function testUploadModify() {
 		$upload = $this->createUploadResource();
-		$upload->setAlias('resize');
+		$upload->setFilter('resize');
 		$this->storage->save($upload);
 
 		$this->assertFileNotExists(__DIR__ . '/output/resize/upload.gif');
@@ -272,41 +262,14 @@ class LocalStorageTest extends \Codeception\Test\Unit {
 		$this->assertSame(getimagesize(IMAGE_GIF), getimagesize(__DIR__ . '/output/original/string.gif'));
 	}
 
-	public function testBatch() {
-		$batch = $this->storage->createBatch();
-
-		$promise = $batch->save($this->createStringResource());
-		$promise2 = $batch->save($this->createUploadResource());
-
-		$called = false;
-		$promise->then(function () use (&$called) {
-			$called = true;
-		});
-
-		$this->assertTrue($promise->isEmpty());
-		$this->assertInstanceOf(PromiseFileResource::class, $promise);
-
-		$batch->flush();
-
-		$this->assertTrue($called);
-		$this->assertFalse($promise->isEmpty());
-
-		$this->assertEquals('/output/original/string.gif', $this->storage->link($promise));
-		$this->assertFileExists(__DIR__ . '/output/original/string.gif');
-
-		$this->assertEquals('/output/original/upload.gif', $this->storage->link($promise2));
+	public function testFixImageSuffix() {
+		$upload = $this->createUploadResource('upload.tiff');
+		$this->storage->save($upload);
 		$this->assertFileExists(__DIR__ . '/output/original/upload.gif');
-	}
 
-	public function testFixOrientation() {
-		$resource = $this->createImageResource('image.jpg', 'image.jpg');
-		$resource->setAlias('fixOrientation');
-
-		$this->storage->save($resource);
-
-		$this->assertFileExists($path = $this->getUploadPath('image.jpg'));
-		$this->sameOriginal($path, 'image.jpg');
-		$this->assertTrue(!isset(exif_read_data($path)['Orientation']));
+		$upload = $this->createUploadResource('upload.jpg');
+		$this->storage->save($upload);
+		$this->assertFileExists(__DIR__ . '/output/original/upload.jpg');
 	}
 
 }

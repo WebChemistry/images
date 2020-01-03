@@ -5,6 +5,7 @@ namespace WebChemistry\Images\Controls;
 use Nette\Application\UI\Form;
 use Nette\ComponentModel\Container;
 use Nette\Forms;
+use WebChemistry\Images\Resources\ResourceException;
 use WebChemistry\Images\Resources\Transfer\UploadResource;
 
 class UploadControl extends Forms\Controls\UploadControl {
@@ -47,8 +48,7 @@ class UploadControl extends Forms\Controls\UploadControl {
 	}
 
 	/**
-	 * @return null|UploadResource
-	 * @throws \WebChemistry\Images\Resources\ResourceException
+	 * @throws ResourceException
 	 */
 	public function getValue(): ?UploadResource {
 		if (!$this->value) {
@@ -66,18 +66,17 @@ class UploadControl extends Forms\Controls\UploadControl {
 		return $value;
 	}
 
-	/**
-	 * @param string|null $namespace
-	 */
 	public function setNamespace(?string $namespace) {
 		$this->namespace = $namespace;
+
+		return $this;
 	}
 
 	public static function register(string $controlName = 'addImageUpload') {
 		Forms\Container::extensionMethod(Container::class . '::' . $controlName, static::class . '::addInput');
 	}
 
-	public static function addInput(Forms\Form $form, string $name, ?string $label = null, ?string $namespace = null) {
+	public static function addInput(Forms\Container $form, string $name, ?string $label = null, ?string $namespace = null) {
 		return $form[$name] = new static($label, $namespace);
 	}
 

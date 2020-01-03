@@ -4,7 +4,7 @@ namespace WebChemistry\Images\Tests;
 
 use Test\StateTester;
 use WebChemistry\Images\Resources\FileResource;
-use WebChemistry\Images\Resources\StateResource;
+use WebChemistry\Images\Controls\AdvancedUploadControlValue;
 use WebChemistry\Images\Resources\Transfer\LocalResource;
 
 class StateResourceTest extends \Codeception\Test\Unit {
@@ -49,7 +49,7 @@ class StateResourceTest extends \Codeception\Test\Unit {
 
 
 		$state->call(function (array $params, array $expect) {
-			$state = new StateResource(...$params);
+			$state = new AdvancedUploadControlValue(...$params);
 
 			[$upload, $delete, $default] = $expect;
 

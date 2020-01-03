@@ -2,10 +2,10 @@
 
 namespace WebChemistry\Images\Resolvers;
 
-use WebChemistry\Images\Resources\Meta\IResourceMeta;
+use WebChemistry\Images\Resources\IResource;
 
 interface INamespaceResolver {
 
-	public function resolve(IResourceMeta $resource): ?string;
+	public function resolve(IResource $resource): ?string;
 
 }

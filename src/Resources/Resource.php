@@ -3,14 +3,9 @@
 namespace WebChemistry\Images\Resources;
 
 use Nette\Utils\Random;
-use WebChemistry\Images\Resources\Meta\TResourceMetaCache;
+use WebChemistry\Images\Resources\Filters\ResourceFilter;
 
 abstract class Resource implements IResource {
-
-	use TResourceMetaCache;
-
-	/** @var array */
-	public $additional = [];
 
 	/** @var string */
 	protected $name;
@@ -21,23 +16,17 @@ abstract class Resource implements IResource {
 	/** @var string */
 	protected $namespace;
 
-	/** @var array */
-	protected $aliases = [];
-
-	/** @var bool */
-	protected $baseUrl = false;
-
-	/** @var string|null */
-	protected $defaultImage;
+	/** @var ResourceFilter[] */
+	protected $filters = [];
 
 	// immutables -- clones object
 
 	/**
 	 * @return static
 	 */
-	public function withAliases(array $aliases) {
+	public function withFilters(array $filters) {
 		$static = clone $this;
-		$static->setAliases($aliases);
+		$static->setFilters($filters);
 
 		return $static;
 	}
@@ -45,9 +34,9 @@ abstract class Resource implements IResource {
 	/**
 	 * @return static
 	 */
-	public function withAlias(string $alias) {
+	public function withFilter(string $filter, array $arguments = []) {
 		$static = clone $this;
-		$static->setAlias($alias);
+		$static->setFilter($filter, $arguments);
 
 		return $static;
 	}
@@ -62,37 +51,15 @@ abstract class Resource implements IResource {
 		return $static;
 	}
 
-	/**
-	 * @return static
-	 */
-	public function withDefaultImage(?string $defaultImage) {
-		$static = clone $this;
-		$static->setDefaultImage($defaultImage);
-
-		return $static;
-	}
-
-	/**
-	 * @return static
-	 */
-	public function withBaseUrl(bool $baseUrl) {
-		$static = clone $this;
-		$static->setBaseUrl($baseUrl);
-
-		return $static;
-	}
-
 	/************************* Properties **************************/
 
-	/**
-	 * @param string|null $defaultImage
-	 */
-	public function setDefaultImage(?string $defaultImage) {
-		$this->defaultImage = $defaultImage;
-	}
+	public function getSuffix(): ?string {
+		$pos = strrpos($this->name, '.');
+		if ($pos === false) {
+			return null;
+		}
 
-	public function setBaseUrl(bool $baseUrl = true) {
-		$this->baseUrl = $baseUrl;
+		return substr($this->name, $pos + 1);
 	}
 
 	public function setSuffix(string $suffix): void {
@@ -127,28 +94,37 @@ abstract class Resource implements IResource {
 
 	/////////////////////////////////////////////////////////////////
 
+	public function hasFilters(): bool {
+		return (bool) $this->filters;
+	}
+
 	/**
-	 * @deprecated use hasAliases() instead
-	 * @return bool
+	 * @return ResourceFilter[]
 	 */
-	public function toModify(): bool {
-		return $this->hasAliases();
+	public function getFilters(): array {
+		return $this->filters;
 	}
 
-	public function hasAliases(): bool {
-		return (bool) $this->aliases;
+	public function setFilter(string $filter, array $arguments = []) {
+		$this->filters[$filter] = new ResourceFilter($filter, $arguments);
+
+		return $this;
 	}
 
-	public function getAliases(): array {
-		return $this->aliases;
+	public function setFilterObject(ResourceFilter $filterCase) {
+		$this->filters[$filterCase->getName()] = $filterCase;
+
+		return $this;
 	}
 
-	public function setAlias(string $alias, array $args = []): void {
-		$this->aliases[$alias] = $args;
-	}
-
-	public function setAliases(array $aliases): void {
-		$this->aliases = $aliases;
+	/**
+	 * @param ResourceFilter[] $filters
+	 */
+	public function setFilters(array $filters) {
+		$this->filters = [];
+		foreach ($filters as $filter) {
+			$this->setFilterObject($filter);
+		}
 	}
 
 	/**
@@ -178,14 +154,6 @@ abstract class Resource implements IResource {
 	 */
 	public function getId(): string {
 		return ($this->namespace ? $this->namespace . '/' : '') . $this->getName();
-	}
-
-	public function getDefaultImage(): ?string {
-		return $this->defaultImage;
-	}
-
-	public function isBaseUrl(): bool {
-		return $this->baseUrl;
 	}
 
 	public function getName(): string {

@@ -2,13 +2,11 @@
 
 namespace WebChemistry\Images\Bridges\Hydration\Adapters;
 
-use WebChemistry\DoctrineHydration\Adapters\IFieldAdapter;
-use WebChemistry\DoctrineHydration\IPropertyAccessor;
-use WebChemistry\DoctrineHydration\Metadata;
-use WebChemistry\DoctrineHydration\SkipValueException;
+use Nettrine\Hydrator\Adapters\IFieldAdapter;
+use Nettrine\Hydrator\Arguments\FieldArgs;
+use Nettrine\Hydrator\IPropertyAccessor;
+use WebChemistry\Images\Controls\AdvancedUploadControlValue;
 use WebChemistry\Images\IImageStorage;
-use WebChemistry\Images\Resources\IFileResource;
-use WebChemistry\Images\Resources\StateResource;
 
 class ImageFieldAdapter implements IFieldAdapter {
 
@@ -23,41 +21,37 @@ class ImageFieldAdapter implements IFieldAdapter {
 		$this->propertyAccessor = $propertyAccessor;
 	}
 
-	public function isWorkable($object, string $field, Metadata $metadata, array $settings): bool {
-		return !$metadata->isAssociation($field) && $metadata->getFieldMapping($field)['type'] === 'image';
+	public function isWorkable(FieldArgs $args): bool {
+		return !$args->metadata->isAssociation($args->field) && $args->metadata->getFieldMapping($args->field)['type'] === 'image';
 	}
 
-	/**
-	 * @param object|null $object
-	 * @param string $field
-	 * @param IFileResource|StateResource|null $value
-	 * @param Metadata $metadata
-	 * @param array $settings
-	 * @return \WebChemistry\Images\Resources\IFileResource|null
-	 * @throws SkipValueException
-	 */
-	public function work($object, string $field, $value, Metadata $metadata, array $settings) {
+	public function work(FieldArgs $args): void {
+		$value = $args->value;
+
 		if (!$value) {
-			if ($object) {
-				throw new SkipValueException();
-			} else {
-				return null;
+			if (!$args->object) {
+				$args->value = null;
 			}
+
+			return;
 		}
-		if ($value instanceof StateResource) {
+
+		if ($value instanceof AdvancedUploadControlValue) {
 			if ($value->getDelete()) {
 				$this->imageStorage->delete($value->getDelete());
 			}
 			if (!$value->getUpload()) {
-				return $value->getDefaultValue();
+				$args->value = $value->getDefaultValue();
+
+				return;
 			}
 
 			$value = $value->getUpload();
-		} else if ($object && ($image = $this->propertyAccessor->get($object, $field))) {
+		} else if ($args->object && ($image = $this->propertyAccessor->get($args->object, $args->field))) {
 			$this->imageStorage->delete($image);
 		}
 
-		$settings = $settings['images'][$field] ?? [];
+		$settings = $args->settings['images'][$args->field] ?? [];
 
 		if (isset($settings['alias'])) {
 			$value->setAlias($settings['alias']);
@@ -72,8 +66,7 @@ class ImageFieldAdapter implements IFieldAdapter {
 			$value->setSuffix($settings['suffix']);
 		}
 
-		return $this->imageStorage->save($value);
-
+		$args->value = $this->imageStorage->save($value);
 	}
 
 }

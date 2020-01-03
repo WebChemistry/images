@@ -5,9 +5,12 @@ namespace WebChemistry\Images\Tests;
 use Nette\Http\FileUpload;
 use Test\ObjectHelper;
 use Test\TemplateMock;
-use WebChemistry\Images\Modifiers\BaseModifiers;
+use WebChemistry\Images\Filters\BaseModifiers;
+use WebChemistry\Images\Filters\FilterArgs;
 use WebChemistry\Images\Parsers\ModifierParser;
 use WebChemistry\Images\Storage;
+use WebChemistry\Images\Storages\LocalStorage;
+use WebChemistry\Images\Storages\LocalStorageFilterLoader;
 use WebChemistry\Testing\TUnitTest;
 
 class TemplateTest extends \Codeception\Test\Unit {
@@ -23,13 +26,15 @@ class TemplateTest extends \Codeception\Test\Unit {
 	protected function _before() {
 		@mkdir(__DIR__ . '/output');
 
-		$modifiers = ObjectHelper::createModifiers();
-		$modifiers->addLoader(new BaseModifiers());
-		$modifiers->addAlias('resize', ModifierParser::parse('resize:5,5'));
-		$serveFactory = ObjectHelper::createServeFactory($modifiers);
-		$this->storage = $storage = ObjectHelper::createLocalStorage(
-			__DIR__, 'output', $serveFactory, 'default/upload.gif'
+		$filterRegistry = ObjectHelper::createFilterRegistry();
+		$filterRegistry->addFilter('resize', function (FilterArgs $args, int $width = 15, int $height = 15): void {});
+		$filterRegistry->addFilter('args',
+			function (FilterArgs $args, bool $b, bool $b1, string $s, string $s1, string $s2, int $i, float $f): void {}
 		);
+
+		$this->storage = $storage = ObjectHelper::createStorage(__DIR__, 'output', $filterRegistry, [
+			'*' => 'default/upload.gif',
+		]);
 
 		$this->latte = ObjectHelper::createLatte($storage);
 	}
@@ -103,6 +108,14 @@ class TemplateTest extends \Codeception\Test\Unit {
 		$string = $this->latte->renderToString($this->getFile('null-resize'));
 
 		$this->assertSame('<img src="/output/default/resize/upload.gif">', trim($string));
+	}
+
+	public function testImageResizeWithArgs() {
+		$this->storage->save($this->createUploadResource());
+
+		$string = $this->latte->renderToString($this->getFile('args'));
+
+		$this->assertSame('/output/args_1_0_string_18.1_15_15_15.1/upload.gif', trim($string));
 	}
 
 	private function getFile($name) {

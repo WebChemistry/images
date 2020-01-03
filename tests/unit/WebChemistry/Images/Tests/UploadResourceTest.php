@@ -1,8 +1,10 @@
 <?php
 namespace WebChemistry\Images\Tests;
 
+use InvalidArgumentException;
 use Nette\Http\FileUpload;
 use Nette\Utils\Image;
+use WebChemistry\Images\Image\Providers\IImageProvider;
 use WebChemistry\Images\Resources\ResourceException;
 use WebChemistry\Images\Resources\Transfer\UploadResource;
 use WebChemistry\Testing\TUnitTest;
@@ -30,7 +32,7 @@ class UploadResourceTest extends \Codeception\Test\Unit {
 
 		$this->assertNull($resource->getNamespace());
 		$this->assertSame('image.gif', $resource->getName());
-		$this->assertInstanceOf(Image::class, $resource->toImage());
+		$this->assertInstanceOf(IImageProvider::class, $resource->getProvider());
 	}
 
 	public function testInvalidUpload() {
@@ -43,7 +45,7 @@ class UploadResourceTest extends \Codeception\Test\Unit {
 				'error' => 4,
 			]);
 			new UploadResource($upload);
-		}, ResourceException::class);
+		}, InvalidArgumentException::class);
 		$this->assertThrownException(function () {
 			$upload = new FileUpload([
 				'name' => 'text',
@@ -53,7 +55,7 @@ class UploadResourceTest extends \Codeception\Test\Unit {
 				'error' => 4,
 			]);
 			new UploadResource($upload);
-		}, ResourceException::class);
+		}, InvalidArgumentException::class);
 	}
 
 }

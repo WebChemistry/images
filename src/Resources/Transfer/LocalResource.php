@@ -2,42 +2,47 @@
 
 namespace WebChemistry\Images\Resources\Transfer;
 
-use Nette\Utils\Image;
-use WebChemistry\Images\Image\IImageFactory;
-use WebChemistry\Images\Resources\Providers\IImageProvider;
-use WebChemistry\Images\Resources\Providers\ImageProvider;
+use InvalidArgumentException;
+use WebChemistry\Images\MimeType\MimeType;
+use WebChemistry\Images\Image\Providers\IImageProvider;
+use WebChemistry\Images\Image\Providers\ImageProvider;
 
 class LocalResource extends TransferResource {
 
 	/** @var string */
 	private $file;
 
+	/** @var MimeType */
+	private $mimeType;
+
 	public function __construct(string $file, string $id) {
-		$this->file = $file;
-
-		$this->setId($id);
-	}
-
-	/**
-	 * @deprecated use getProvider() instead
-	 * @param IImageFactory|null $factory
-	 * @return Image
-	 * @throws \Nette\Utils\UnknownImageFileException
-	 */
-	public function toImage(?IImageFactory $factory = null) {
-		if ($factory) {
-			return $factory->createFromFile($this->file);
+		if (!file_exists($file)) {
+			throw new InvalidArgumentException(sprintf('File %s not exists', $file));
 		}
 
-		return Image::fromFile($this->file);
+		$this->file = $file;
+		$this->setId($id);
+
+		$this->mimeType = MimeType::fromFile($file);
+		if (!$this->mimeType->isImage()) {
+			throw new InvalidArgumentException(sprintf('File %s is not an image', $file));
+		}
 	}
 
-	/**
-	 * @deprecated use getProvider() instead
-	 * @return string
-	 */
-	public function getLocation(): string {
+	public function isFile(): bool {
+		return true;
+	}
+
+	public function getFile(): string {
 		return $this->file;
+	}
+
+	public function getContents(): string {
+		return file_get_contents($this->file);
+	}
+
+	public function getMimeType(): MimeType {
+		return $this->mimeType;
 	}
 
 	public function getProvider(): IImageProvider {

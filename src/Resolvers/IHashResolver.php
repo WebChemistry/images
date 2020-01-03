@@ -2,12 +2,13 @@
 
 namespace WebChemistry\Images\Resolvers;
 
+use WebChemistry\Images\Resources\IResource;
 use WebChemistry\Images\Resources\Meta\IResourceMeta;
 
 interface IHashResolver {
 
-	public function getOriginal(IResourceMeta $meta): ?string;
+	public function getOriginal(IResource $resource): ?string;
 
-	public function resolve(IResourceMeta $meta): ?string;
+	public function resolve(IResource $resource): ?string;
 
 }

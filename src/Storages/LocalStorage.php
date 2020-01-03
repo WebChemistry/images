@@ -3,31 +3,27 @@
 namespace WebChemistry\Images\Storages;
 
 use Nette\Http\IRequest;
-use Nette\Utils\Finder;
+use Nette\Utils\FileSystem;
 use Nette\Utils\ImageException;
 use Nette\Utils\UnknownImageFileException;
 use Tracy\ILogger;
-use WebChemistry\Images\Helpers;
+use WebChemistry\Images\Facades\LocationFacade;
+use WebChemistry\Images\Facades\StorageFacade;
 use WebChemistry\Images\Image\IImageFactory;
-use WebChemistry\Images\Image\ImageSize;
-use WebChemistry\Images\ImageStorageException;
+use WebChemistry\Images\Exceptions\ImageStorageException;
+use WebChemistry\Images\Resolvers\IImageSuffixResolver;
 use WebChemistry\Images\Resources\EmptyResource;
 use WebChemistry\Images\Resources\IFileResource;
 use WebChemistry\Images\Resources\IResource;
 use WebChemistry\Images\Resources\Transfer\LocalResource;
 use WebChemistry\Images\Resources\Transfer\ITransferResource;
 use WebChemistry\Images\Resources\Transfer\UploadResource;
-use WebChemistry\Images\Resources\Meta\IResourceMeta;
-use WebChemistry\Images\Resources\Meta\IResourceMetaFactory;
 use WebChemistry\Images\Storage;
+use WebChemistry\Images\Utils\FixOrientation;
+use WebChemistry\Images\Utils\ISafeLink;
+use WebChemistry\Images\Utils\ISafeLinkFactory;
 
 class LocalStorage extends Storage {
-
-	/** @var string */
-	protected $directory;
-
-	/** @var string|null */
-	protected $defaultImage;
 
 	/** @var string */
 	protected $basePath;
@@ -35,81 +31,57 @@ class LocalStorage extends Storage {
 	/** @var string */
 	protected $baseUrl;
 
-	/** @var IResourceMetaFactory */
-	protected $metaFactory;
-
-	/** @var IImageFactory */
-	protected $imageFactory;
-
 	/** @var ILogger|null */
 	protected $logger;
 
-	/** @var bool */
-	protected $safeLink;
+	/** @var StorageFacade */
+	private $storageFacade;
 
-	public function __construct(string $wwwDir, string $assetsDir, ?ILogger $logger, IResourceMetaFactory $metaFactory, IRequest $request,
-								IImageFactory $imageFactory, bool $safeLink = false, ?string $defaultImage = null) {
-		$this->metaFactory = $metaFactory;
-		$this->defaultImage = $defaultImage;
+	/** @var IImageSuffixResolver */
+	private $imageSuffixResolver;
 
-		// paths
-		$assetsDir = Helpers::normalizePath($assetsDir);
+	/** @var IImageFactory */
+	private $imageFactory;
 
-		$this->directory = $wwwDir . '/' . $assetsDir;
-		$this->basePath = $request->getUrl()->getBasePath() . $assetsDir;
-		$this->baseUrl = $request->getUrl()->getBaseUrl() . $assetsDir;
-		$this->imageFactory = $imageFactory;
+	/** @var LocationFacade */
+	private $locationFacade;
+
+	/** @var ISafeLink */
+	private $safeLink;
+
+	/** @var FixOrientation */
+	private $fixOrientation;
+
+	public function __construct(?ILogger $logger, IRequest $request, StorageFacade $storageFacade, LocationFacade $locationFacade,
+								IImageFactory $imageFactory, IImageSuffixResolver $imageSuffixResolver, ISafeLinkFactory $safeLinkFactory,
+								FixOrientation $fixOrientation) {
 		$this->logger = $logger;
-		$this->safeLink = $safeLink;
+		$this->storageFacade = $storageFacade;
+		$this->imageSuffixResolver = $imageSuffixResolver;
+		$this->imageFactory = $imageFactory;
+		$this->locationFacade = $locationFacade;
+		$this->safeLink = $safeLinkFactory->create(function (IFileResource $resource): ?string {
+			return $this->getLink($resource);
+		});
+
+		$assetsDir = $locationFacade->getAssetsDir() ? '/' . $locationFacade->getAssetsDir() : '';
+		$this->basePath = rtrim($request->getUrl()->getBasePath(), '/') . $assetsDir;
+		$this->baseUrl = rtrim($request->getUrl()->getBaseUrl(), '/') . $assetsDir;
+		$this->fixOrientation = $fixOrientation;
 	}
 
-	protected function getDefaultImage(?IFileResource $resource): ?string {
-		$defaultImage = $this->defaultImage;
-		if ($resource) {
-			// "fill method" getDefaultImage()
-			$this->metaFactory->create($resource);
+	/**
+	 * @param mixed[] $options
+	 */
+	public function link(?IFileResource $resource, array $options = []): ?string {
+		$baseUrl = $options['baseUrl'] ?? false;
 
-			if ($resource->getDefaultImage()) {
-				$defaultImage = $resource->getDefaultImage();
-			}
-		}
-
-		if (!$defaultImage) {
+		$location = $this->safeLink->call($resource, $options);
+		if (!$location) {
 			return null;
 		}
 
-		$default = $this->createResource($defaultImage);
-		$default->setAliases($resource->getAliases());
-
-		return $this->getLink($default);
-	}
-
-	public function link(?IFileResource $resource): ?string {
-		try {
-			$location = null;
-			if ($resource && !$resource->isEmpty()) {
-				$location = $this->getLink($resource);
-			}
-
-			if ($location === null) {
-				$location = $this->getDefaultImage($resource);
-			}
-		} catch (ImageException $e) {
-			if (!$this->safeLink) {
-				throw $e;
-			}
-
-			$this->logger->log($e);
-
-			// try default image
-			try {
-				$location = $this->getDefaultImage($resource);
-			} catch (\Throwable $e) {
-				$location = null;
-			}
-		}
-
-		return $location === null ? null : ($resource->isBaseUrl() ? $this->baseUrl : $this->basePath). $location;
+		return ($baseUrl ? $this->baseUrl : $this->basePath) . '/' . $location;
 	}
 
 	/**
@@ -127,40 +99,43 @@ class LocalStorage extends Storage {
 	}
 
 	/**
-	 * @param IResource $resource
 	 * @throws ImageStorageException
+	 * @throws ImageException
 	 */
 	protected function getLink(IResource $resource): ?string {
-		$meta = $this->metaFactory->create($resource);
 		$originalPath = null;
 
 		if ($resource instanceof ITransferResource) {
 			$resource->setSaved();
 
-			$location = $this->generateUniqueLocation($meta);
-			$this->makeDir($this->directory . $location);
+			// fix suffix
+			$this->imageSuffixResolver->resolve($resource);
 
-			// gif animation
-			if ($resource instanceof UploadResource && !$meta->toModify()) {
-				$resource->getUpload()->move($this->directory . $location);
+			$relativePath = $this->locationFacade->generateUniqueLocation($resource);
+			$this->makeDir($absolutePath = $this->locationFacade->absolutizeRelativeLocation($relativePath));
 
-				return $location;
+			// gif animation fix
+			if ($resource instanceof UploadResource && !$resource->getFilters()) {
+				$resource->getUpload()->move($absolutePath);
+
+				return $relativePath;
 			}
 
-			$image = $resource->getProvider()->toImage($this->imageFactory);
-			$path = $this->directory . $location;
+			$image = $this->storageFacade->transferResourceToImage($resource);
+			$this->fixOrientation->fix($resource, $image);
+
 		} else if ($resource instanceof IFileResource) {
-			$location = $this->getResourceLocation($meta);
-			$path = $this->directory . $location;
-			if (is_file($path)) {
-				return $location;
+			$relativePath = $this->locationFacade->getResourceLocation($resource);
+			$absolutePath = $this->locationFacade->absolutizeRelativeLocation($relativePath);
+			if (is_file($absolutePath)) {
+				return $relativePath;
 			}
-			if (!$meta->toModify()) {
+			if (!$resource->getFilters()) {
 				return null;
 			}
 
 			// resize image
-			$originalPath = $this->getResourcePath($this->metaFactory->create($resource->getOriginal()));
+			$originalPath = $this->locationFacade->getAbsoluteLocation($resource->getOriginal());
 			if (!is_file($originalPath)) {
 				return null;
 			}
@@ -170,18 +145,21 @@ class LocalStorage extends Storage {
 			} catch (UnknownImageFileException $e) {
 				return null;
 			}
+
 		} else {
 			throw new ImageStorageException('Resource must be instance of ITransferResource or IFileResource.');
+
 		}
 
-		$meta->modify($image, $originalPath);
-		$this->makeDir($path);
-		$image->save($path);
+		$this->storageFacade->filter($resource, $image);
+
+		$this->makeDir($absolutePath);
+		$image->save($absolutePath);
 
 		// clean
 		imagedestroy($image->getImageResource());
 
-		return $location;
+		return $relativePath;
 	}
 
 	/**
@@ -192,13 +170,14 @@ class LocalStorage extends Storage {
 	 */
 	public function copy(IFileResource $src, IFileResource $dest): IFileResource {
 		if ($src->getId() === $dest->getId()) {
-			throw new ImageStorageException('Cannot copy to same destination.');
+			return $dest;
 		}
-		$resource = new LocalResource(
-			$this->directory . $this->getResourceLocation($this->metaFactory->create($src->getOriginal())), $dest->getId()
-		);
 
-		$resource->setAliases($dest->getAliases());
+		$resource = new LocalResource(
+			$this->locationFacade->getAbsoluteLocation($src->getOriginal()), $dest->getId()
+		);
+		$resource->setFilters($dest->getFilters());
+
 		$this->save($resource);
 
 		return $dest;
@@ -218,75 +197,26 @@ class LocalStorage extends Storage {
 	}
 
 	public function delete(IFileResource $resource): IFileResource {
-		$basePath = $resource->getNamespace();
+		$basePath = (string) $resource->getNamespace();
 		if ($basePath) {
 			$basePath .= '/';
 		}
-		$location = $this->directory . $basePath;
-		foreach (Finder::findFiles($resource->getName())->from($location)->limitDepth(1) as $file) {
-			unlink((string) $file);
+		$location = $this->locationFacade->absolutizeRelativeLocation($basePath);
+		if (!is_dir($location)) {
+			return new EmptyResource();
 		}
-		foreach (Finder::findDirectories('*')->in($location) as $dir) {
-			@rmdir((string) $dir);
-		}
+
+		$this->storageFacade->cleanResourceDirectory($resource, $location);
 
 		return new EmptyResource();
 	}
 
-	public function getImageSize(IFileResource $resource): ImageSize {
-		$meta = $this->metaFactory->create($resource);
-
-		[$width, $height] = getimagesize($this->directory . $this->getResourceLocation($meta));
-
-		return new ImageSize($width, $height);
-	}
-
 	/////////////////////////////////////////////////////////////////
-
-	protected function folder(?string $name): string {
-		return ($name ? $name . '/' : '');
-	}
-
-	/**
-	 * Location of resource
-	 *
-	 * @param IResourceMeta $resource
-	 * @return string
-	 */
-	protected function getResourceLocation(IResourceMeta $resource): string {
-		$namespace = $resource->getNamespaceFolder();
-		$hash = $resource->getResource() instanceof ITransferResource ? $resource->getOriginalHashFolder() : $resource->getHashFolder();
-
-		return $this->folder($namespace) . $this->folder($hash) . $resource->getResource()->getName();
-	}
-
-	/**
-	 * Absolute path of resource
-	 *
-	 * @param IResourceMeta $resource
-	 * @return string
-	 */
-	protected function getResourcePath(IResourceMeta $resource): string {
-		return $this->directory . '/' . $this->getResourceLocation($resource);
-	}
 
 	protected function makeDir(string $dir): void {
 		$dir = dirname($dir);
-		if (!is_dir($dir)) {
-			mkdir($dir, 0777, true);
-		}
-	}
 
-	protected function generateUniqueLocation(IResourceMeta $meta): string {
-		$resource = $meta->getResource();
-		$location = $this->getResourceLocation($meta);
-
-		while (file_exists($this->directory . $location)) {
-			$resource->generatePrefix();
-			$location = $this->getResourceLocation($meta);
-		}
-
-		return $location;
+		FileSystem::createDir($dir, 0777);
 	}
 
 }

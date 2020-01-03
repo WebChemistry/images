@@ -2,10 +2,7 @@
 
 namespace WebChemistry\Images\Tests;
 
-use WebChemistry\Images\Resources\FileResource;
 use WebChemistry\Images\Resources\Resource;
-use WebChemistry\Images\Resources\ResourceException;
-use WebChemistry\Images\TypeException;
 use WebChemistry\Testing\TUnitTest;
 
 class ResourcesTest extends \Codeception\Test\Unit {

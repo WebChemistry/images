@@ -2,24 +2,14 @@
 
 namespace WebChemistry\Images\Resources;
 
+use WebChemistry\Images\Resources\Filters\ResourceFilter;
+
 interface IResource {
 
-	const PREFIX_SEP = '_._';
-	// deprecated
-	const ORIGINAL = 'original';
-
-	/**
-	 * @deprecated use hasAliases() instead
-	 * @return bool
-	 */
-	public function toModify(): bool;
-
-	public function hasAliases(): bool;
+	public const PREFIX_SEP = '_._';
 
 	/**
 	 * Name with prefix and namespace
-	 *
-	 * @return string
 	 */
 	public function getId(): string;
 
@@ -27,60 +17,49 @@ interface IResource {
 
 	public function getName(): string;
 
-	public function getDefaultImage(): ?string;
-
-	public function isBaseUrl(): bool;
-
 	public function isEmpty(): bool;
 
 	/**
 	 * Name without prefix
-	 *
-	 * @return string
 	 */
 	public function getRawName(): string;
 
 	public function getNamespace(): ?string;
 
+	public function getSuffix(): ?string;
+
 	public function generatePrefix(int $length = 10): void;
 
-	public function getAliases(): array;
+	/**
+	 * @return ResourceFilter[]
+	 */
+	public function getFilters(): array;
 
-	public function setAliases(array $aliases);
+	/**
+	 * @param ResourceFilter[] $filters
+	 */
+	public function setFilters(array $filters);
 
-	public function setAlias(string $alias);
+	public function setFilter(string $filter, array $arguments = []);
 
 	public function setSuffix(string $suffix);
-
-	public function setDefaultImage(?string $defaultImage);
-
-	public function setBaseUrl(bool $baseUrl = true);
 
 	// immutables -- clones object
 
 	/**
+	 * @param ResourceFilter[] $filters
 	 * @return static
 	 */
-	public function withAliases(array $aliases);
+	public function withFilters(array $filters);
 
 	/**
 	 * @return static
 	 */
-	public function withAlias(string $alias);
+	public function withFilter(string $filter, array $arguments = []);
 
 	/**
 	 * @return static
 	 */
 	public function withSuffix(string $suffix);
-
-	/**
-	 * @return static
-	 */
-	public function withDefaultImage(?string $defaultImage);
-
-	/**
-	 * @return static
-	 */
-	public function withBaseUrl(bool $baseUrl);
 
 }

@@ -2,7 +2,7 @@
 
 namespace WebChemistry\Images\Resources;
 
-class EmptyResource extends Resource implements IFileResource {
+final class EmptyResource extends Resource implements IFileResource {
 
 	public function getOriginal(): IFileResource {
 		return new self();

@@ -13,6 +13,10 @@ extensions:
     images: WebChemistry\Images\DI\ImagesExtension
 ```
 
+\------/\---------/\---------/\------/\-------/
+ wwwDir  assetsDir  namespace   hash    image
+
+
 ### Konfigurace
 
 ```yaml

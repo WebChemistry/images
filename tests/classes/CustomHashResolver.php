@@ -3,30 +3,30 @@
 namespace Test;
 
 use WebChemistry\Images\Resolvers\HashResolver;
-use WebChemistry\Images\Resources\Meta\IResourceMeta;
+use WebChemistry\Images\Resources\IResource;
 
 class CustomHashResolver extends HashResolver {
 
 	/** @var bool */
 	public $useCustom = false;
 
-	public function getOriginal(IResourceMeta $meta): ?string {
+	public function getOriginal(IResource $resource): ?string {
 		if ($this->useCustom) {
 			return null;
 		}
 
-		return parent::getOriginal($meta);
+		return parent::getOriginal($resource);
 	}
 
-	public function resolve(IResourceMeta $meta): ?string {
+	public function resolve(IResource $resource): ?string {
 		if ($this->useCustom) {
-			$aliases = $meta->getSignature();
-			if (!$aliases) {
+			$filters = $resource->getFilters();
+			if (!$filters) {
 				return null;
 			}
 		}
 
-		return parent::resolve($meta);
+		return parent::resolve($resource);
 	}
 
 }

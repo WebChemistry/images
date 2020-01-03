@@ -3,6 +3,8 @@
 namespace WebChemistry\Images\Template;
 
 use Latte;
+use Latte\CompileException;
+use Latte\MacroTokens;
 
 class Macros extends Latte\Macros\MacroSet {
 
@@ -15,78 +17,96 @@ class Macros extends Latte\Macros\MacroSet {
 		$me->addMacro('img', [$me, 'beginImg'], null, [$me, 'attrImg']);
 	}
 
-	protected function skipWhitespaces(Latte\MacroTokens $tokenizer) {
-		while (($tokens = $tokenizer->currentToken()) && $tokens[2] === $tokenizer::T_WHITESPACE) {
-			$tokenizer->nextToken();
-		}
-	}
-
-	/**
-	 * @param Latte\MacroTokens $tokenizer
-	 * @return array
-	 */
-	protected function parseArguments(Latte\MacroTokens $tokenizer) {
-		$args = [];
-		$tokenizer->nextToken();
-
-		while (($tokens = $tokenizer->currentToken()) && $tokens[0] !== ')') {
-			$this->skipWhitespaces($tokenizer);
-			list($value,,$type) = $tokenizer->currentToken();
-			if ($value === ',') {
-				throw new \LogicException("Expected value, given '$value'.");
-			}
-
-			$args[] = trim($value, "'\"");
-			$tokenizer->nextToken();
-			$this->skipWhitespaces($tokenizer);
-			list($value,,$type) = $tokenizer->currentToken();
-			if ($value === ',') {
-				$tokenizer->nextToken();
-			}
-		}
-
-		return $args;
-	}
-
-	/**
-	 * @param Latte\MacroTokens $tokenizer
-	 * @return array
-	 */
-	protected function parseAliases(Latte\MacroTokens $tokenizer) {
-		$aliases = [];
-
-		while ($token = $tokenizer->nextToken()) {
-			$this->skipWhitespaces($tokenizer);
-
-			list($key,,$type) = $tokenizer->currentToken();
-
-			$aliases[$key] = [];
-			if ($type !== $tokenizer::T_SYMBOL) {
-				throw new \LogicException("Alias must starts with identifier, given '$key'");
-			}
-
-			$this->skipWhitespaces($tokenizer);
-
-			if (!$tokenizer->isNext()) {
+	protected function parseId(Latte\MacroTokens $tokens): string {
+		$id = '';
+		$counter = 0;
+		while ($tokens->nextToken()) {
+			if ($tokens->isCurrent(',') && $counter === 0) {
 				break;
 			}
-			$this->skipWhitespaces($tokenizer);
-			list($value,,$type) = $tokenizer->nextToken();
-			if ($value === '(') {
-				$aliases[$key] = $this->parseArguments($tokenizer);
-				if (!$tokenizer->isNext()) {
-					break;
-				}
-				list($value,,$type) = $tokenizer->nextToken();
+			if ($tokens->isCurrent('(')) {
+				$counter++;
+			} else if ($tokens->isCurrent(')')) {
+				$counter--;
 			}
-			if ($value !== ',') {
-				throw new \LogicException("Next alias must continue with dash, given '$value'.");
-			}
+
+			$id .= $tokens->currentValue();
 		}
 
-		return $aliases;
+		return $id;
 	}
 
+	protected function parseFilter(Latte\MacroTokens $tokens, Latte\PhpWriter $writer) {
+		$string = '[';
+		$stack = [];
+		while ($tokens->nextToken()) {
+			if ($tokens->isCurrent($tokens::T_WHITESPACE)) {
+				continue;
+			}
+
+			if ($tokens->isCurrent(',') || $tokens->isCurrent('(')) {
+				$name = $writer->formatArgs(new Latte\MacroTokens($stack));
+				if ($tokens->isCurrent('(')) {
+					$args = '[' . $writer->formatArgs(new Latte\MacroTokens($tokens->joinUntil(')'))) . ']';
+					$tokens->nextToken();
+				} else {
+					$args = '[]';
+				}
+
+				$string .= $name . ' => ' . $args . ', ';
+				$stack = [];
+			} else {
+				$stack[] = $tokens->currentToken();
+			}
+		}
+		if ($stack) {
+			$string .= $writer->formatArgs(new Latte\MacroTokens($stack)) . ' => []';
+		}
+
+		return $string . ']';
+	}
+
+	protected function parseModifier(Latte\MacroTokens $tokens, Latte\PhpWriter $writer) {
+		$inside = false;
+		$string = '[';
+		$args = [];
+
+		while ($tokens->nextToken()) {
+			if ($tokens->isCurrent($tokens::T_WHITESPACE)) {
+				continue;
+
+			} elseif ($inside) {
+				if ($tokens->isCurrent(':')) {
+					continue;
+				} else if ($tokens->isCurrent(',')) {
+					$args[] = $tokens->currentToken();
+					$tokens->nextAll($tokens::T_WHITESPACE);
+
+				} elseif ($tokens->isCurrent('|')) {
+					$string .= $writer->quotingPass(new MacroTokens($args))->joinAll() . '],';
+					$inside = false;
+
+				} else {
+					$args[] = $tokens->currentToken();
+				}
+			} else {
+				if ($tokens->isCurrent($tokens::T_SYMBOL)) {
+					$name = strtolower($tokens->currentValue());
+					$string .= "'$name' => [";
+					$args = [];
+
+					$inside = true;
+				} else {
+					throw new CompileException("Modifier name must be alphanumeric string, '{$tokens->currentValue()}' given.");
+				}
+			}
+		}
+		if ($inside) {
+			$string .= $writer->quotingPass(new MacroTokens($args))->joinAll() . ']';
+		}
+
+		return $string . ']';
+	}
 
 	/**
 	 * @param Latte\MacroNode $node
@@ -95,14 +115,22 @@ class Macros extends Latte\Macros\MacroSet {
 	 */
 	public function beginImg(Latte\MacroNode $node, Latte\PhpWriter $writer) {
 		$tokenizer = $node->tokenizer;
-		$imageName = $tokenizer->fetchWord();
-		$aliases = $this->parseAliases($tokenizer);
+		$tokens = new Latte\MacroTokens($tokenizer->nextUntil('|'));
+		$id = $this->parseId($tokens);
+		$filters = $this->parseFilter($tokens, $writer);
 
-		return $writer->write('
-			$_res = $this->global->imageStorageFacade->create(%word, %var);' .
-			'echo $this->global->imageStorageFacade->link($_res);',
-		$imageName,
-		$aliases
+		if ($tokenizer->isNext('|')) {
+			$tokenizer->nextToken();
+		}
+
+		$modifiers = $this->parseModifier(new MacroTokens($tokenizer->nextUntil()), $writer);
+
+		return $writer->write(
+			'echo ' .
+			'$this->global->imageStorageFacade->link(' .
+			'$this->global->imageStorageFacade->create(%raw, %raw)' .
+			', %raw);',
+			$id, $filters, $modifiers
 		);
 	}
 

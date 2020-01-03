@@ -3,12 +3,10 @@
 namespace WebChemistry\Images;
 
 use Nette\Http\FileUpload;
-use WebChemistry\Images\Batches\IBatch;
-use WebChemistry\Images\Batches\ImageBatch;
-use WebChemistry\Images\Image\ImageSize;
+use WebChemistry\Images\Transactions\ITransaction;
+use WebChemistry\Images\Transactions\Transaction;
 use WebChemistry\Images\Resources\FileResource;
 use WebChemistry\Images\Resources\IFileResource;
-use WebChemistry\Images\Resources\IResource;
 use WebChemistry\Images\Resources\Transfer\ITransferResource;
 use WebChemistry\Images\Resources\Transfer\LocalResource;
 use WebChemistry\Images\Resources\Transfer\UploadResource;
@@ -41,46 +39,8 @@ abstract class Storage implements IImageStorage {
 		return new FileResource($id);
 	}
 
-	public function createBatch(): IBatch {
-		return new ImageBatch($this);
+	public function createTransaction(): ITransaction {
+		return new Transaction($this);
 	}
-
-	// abstracts
-
-	/**
-	 * @param IFileResource $resource
-	 * @return ImageSize
-	 */
-	abstract function getImageSize(IFileResource $resource): ImageSize;
-
-	/**
-	 * {@inheritdoc}
-	 */
-	abstract public function link(?IFileResource $resource): ?string;
-
-	/**
-	 * {@inheritdoc}
-	 */
-	abstract public function save(IResource $resource): IFileResource;
-
-	/**
-	 * @param IFileResource $src
-	 * @param IFileResource $dest
-	 * @return IFileResource
-	 */
-	abstract public function copy(IFileResource $src, IFileResource $dest): IFileResource;
-
-	/**
-	 * @param IFileResource $src
-	 * @param IFileResource $dest
-	 * @return IFileResource
-	 */
-	abstract public function move(IFileResource $src, IFileResource $dest): IFileResource;
-
-	/**
-	 * @param IFileResource $resource
-	 * @return IFileResource
-	 */
-	abstract public function delete(IFileResource $resource): IFileResource;
 
 }

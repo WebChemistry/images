@@ -2,15 +2,18 @@
 
 namespace WebChemistry\Images\Doctrine;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use WebChemistry\Images\ImageStorageException;
+use LogicException;
+use WebChemistry\Images\Exceptions\ImageStorageException;
 use WebChemistry\Images\Resources\FileResource;
 use WebChemistry\Images\Resources\IFileResource;
 
 class ImageType extends Type {
 
-	const TYPE = 'image';
+	public const TYPE = 'image';
+	public const DB_TYPE = 'db_image';
 
 	public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform) {
 		return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
@@ -50,11 +53,29 @@ class ImageType extends Type {
 		return self::TYPE;
 	}
 
-
 	public function requiresSQLCommentHint(AbstractPlatform $platform) {
 		$platform->markDoctrineTypeCommented(self::TYPE);
 
 		return parent::requiresSQLCommentHint($platform);
+	}
+
+	public static function register(Connection $connection): void {
+		if (!$connection->getDatabasePlatform()->hasDoctrineTypeMappingFor(self::DB_TYPE)) {
+			self::registerType();
+
+			$connection->getDatabasePlatform()->registerDoctrineTypeMapping(self::DB_TYPE, self::TYPE);
+		}
+	}
+
+	public static function registerType(): void {
+		if (Type::hasType(self::TYPE)) {
+			$class = Type::getTypesMap()[self::TYPE];
+			if ($class !== static::class) {
+				throw new LogicException(sprintf('Doctrine type %s is already registered for class %s', self::TYPE, $class));
+			}
+		} else {
+			Type::addType(self::TYPE, static::class);
+		}
 	}
 
 }

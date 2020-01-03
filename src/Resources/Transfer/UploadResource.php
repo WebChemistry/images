@@ -2,57 +2,43 @@
 
 namespace WebChemistry\Images\Resources\Transfer;
 
+use InvalidArgumentException;
 use Nette\Http\FileUpload;
-use Nette\Utils\Image;
-use WebChemistry\Images\Image\IImageFactory;
-use WebChemistry\Images\Resources\Providers\IImageProvider;
-use WebChemistry\Images\Resources\Providers\ImageProvider;
-use WebChemistry\Images\Resources\ResourceException;
+use WebChemistry\Images\MimeType\MimeType;
+use WebChemistry\Images\Image\Providers\IImageProvider;
+use WebChemistry\Images\Image\Providers\ImageProvider;
 
 class UploadResource extends TransferResource {
 
 	/** @var FileUpload */
 	private $upload;
 
-	/**
-	 * @param FileUpload $upload
-	 * @throws ResourceException
-	 */
 	public function __construct(FileUpload $upload) {
 		if (!$upload->isOk() || !$upload->isImage()) {
-			throw new ResourceException('Uploaded image is not ok.');
+			throw new InvalidArgumentException('Uploaded image is an image');
 		}
 		$this->upload = $upload;
 		$this->setName($upload->getSanitizedName());
 	}
 
-	/**
-	 * @return FileUpload
-	 */
+	public function isFile(): bool {
+		return true;
+	}
+
+	public function getFile(): string {
+		return $this->upload->getTemporaryFile();
+	}
+
+	public function getContents(): string {
+		return $this->upload->getContents();
+	}
+
+	public function getMimeType(): MimeType {
+		return new MimeType((string) $this->upload->getContentType());
+	}
+
 	public function getUpload(): FileUpload {
 		return $this->upload;
-	}
-
-	/**
-	 * @deprecated use getProvider() instead
-	 * @param IImageFactory $factory
-	 * @return Image
-	 * @throws \Nette\Utils\ImageException
-	 */
-	public function toImage(?IImageFactory $factory = null) {
-		if ($factory) {
-			return $factory->createFromFile($this->upload->getTemporaryFile());
-		}
-
-		return $this->upload->toImage();
-	}
-
-	/**
-	 * @deprecated use getProvider() instead
-	 * @return string
-	 */
-	public function getLocation(): string {
-		return $this->upload->getTemporaryFile();
 	}
 
 	public function getProvider(): IImageProvider {

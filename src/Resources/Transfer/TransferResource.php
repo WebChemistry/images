@@ -14,9 +14,6 @@ abstract class TransferResource extends Resource implements ITransferResource {
 	 * Combination of name and namespace
 	 *
 	 * @example namespace/image.png
-	 * @param string $id
-	 * @return self
-	 * @throws ResourceException
 	 */
 	public function setId(string $id) {
 		$this->parseId($id);
@@ -30,6 +27,14 @@ abstract class TransferResource extends Resource implements ITransferResource {
 
 	public function setName(string $name): void {
 		parent::setName($name);
+	}
+
+	public function isFile(): bool {
+		return false;
+	}
+
+	public function getFile(): string {
+		throw new ResourceException('Resource not have a file');
 	}
 
 	/**

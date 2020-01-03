@@ -9,7 +9,6 @@ use Nette\Forms;
 use Nette\Utils\Html;
 use WebChemistry\Images\IImageStorage;
 use WebChemistry\Images\Resources\IFileResource;
-use WebChemistry\Images\Resources\StateResource;
 use WebChemistry\Images\Resources\Transfer\UploadResource;
 
 class AdvancedUploadControl extends Forms\Controls\UploadControl {
@@ -127,14 +126,14 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 		return $this->value && $this->value->isOk() && $this->value->isImage();
 	}
 
-	public function getValue(): StateResource {
+	public function getValue(): AdvancedUploadControlValue {
 		$upload = null;
 		if ($this->isValueOk()) {
 			$upload = new UploadResource($this->value);
 			$upload->setNamespace($this->namespace);
 		}
 
-		return new StateResource($this->defaultValue, $upload, $this->toDelete);
+		return new AdvancedUploadControlValue($this->defaultValue, $upload, $this->toDelete);
 	}
 
 	private function getImageStorage(): ?IImageStorage {
@@ -160,7 +159,7 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 			]);
 			if ($this->preview && $this->defaultValue) {
 				if ($this->previewAlias) {
-					$this->defaultValue->setAlias($this->previewAlias);
+					$this->defaultValue->setFilter($this->previewAlias);
 				}
 				$link = $this->getImageStorage()->link($this->defaultValue);
 				$preview->create('img', [
@@ -228,13 +227,15 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 	 */
 	public function setNamespace(?string $namespace) {
 		$this->namespace = $namespace;
+		
+		return $this;
 	}
 
 	public static function register(string $controlName = 'addImagePreviewUpload') {
 		Forms\Container::extensionMethod(Container::class . '::' . $controlName, static::class . '::addInput');
 	}
 
-	public static function addInput(Forms\Form $form, string $name, ?string $label = null, ?string $namespace = null) {
+	public static function addInput(Forms\Container $form, string $name, ?string $label = null, ?string $namespace = null) {
 		return $form[$name] = new static($label, $namespace);
 	}
 

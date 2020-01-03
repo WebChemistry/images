@@ -2,12 +2,12 @@
 
 namespace WebChemistry\Images\Resolvers;
 
-use WebChemistry\Images\Resources\Meta\IResourceMeta;
+use WebChemistry\Images\Resources\IResource;
 
 class NamespaceResolver implements INamespaceResolver {
 
-	public function resolve(IResourceMeta $resource): ?string {
-		return $resource->getResource()->getNamespace();
+	public function resolve(IResource $resource): ?string {
+		return $resource->getNamespace();
 	}
 
 }
