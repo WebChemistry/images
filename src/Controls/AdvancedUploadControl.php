@@ -37,11 +37,8 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 	/** @var string|null */
 	private $previewAlias;
 
-	/** @var int|null */
-	protected $maxSize;
-
-	/** @var string|null */
-	protected $maxSizeMessage;
+	/** @var bool */
+	protected $hasMaxFileSize = false;
 
 	public function __construct(?string $label = null, ?string $namespace = null) {
 		parent::__construct($label, false);
@@ -51,26 +48,27 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 
 		$this->getRules()->removeRule(Form::MAX_FILE_SIZE);
 
-		$this->maxSize = Forms\Helpers::iniGetSize('upload_max_filesize');
+		$this->monitor(Form::class, function (): void {
+			if (!$this->hasMaxFileSize) {
+				$this->setMaxFileSize(Forms\Helpers::iniGetSize('upload_max_filesize'));
+			}
+		});
 	}
 
-	public function validate(): void {
-		$this->addRule(function (Forms\IControl $control): bool {
-			return $this->validateMaxSize($control, $this->maxSize);
-		}, $this->maxSizeMessage ?? Forms\Validator::$messages[Forms\Form::MAX_FILE_SIZE]);
-
-		parent::validate();
-	}
-
-	protected function validateMaxSize(Forms\IControl $control, int $size): bool {
-		/** @var UploadResource|null $value */
+	public static function validateMaxSize(Forms\IControl $control, int $size): bool {
+		/** @var AdvancedUploadControlValue|null $value */
 		$value = $control->getValue();
 
 		if ($value === null) {
 			return true;
 		}
 
-		$file = $value->getUpload();
+		/** @var UploadResource|null $resource */
+		$resource = $value->getUpload();
+		if (!$resource) {
+			return true;
+		}
+		$file = $resource->getUpload();
 		if (!$file->isOk() || $file->getSize() > $size || $file->getError() === UPLOAD_ERR_INI_SIZE) {
 			return false;
 		}
@@ -79,8 +77,10 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 	}
 
 	public function setMaxFileSize(int $size, string $message = null) {
-		$this->maxSize = $size;
-		$this->maxSizeMessage = $message;
+		$this->hasMaxFileSize = true;
+		$this->getRules()->removeRule([self::class, 'validateMaxSize']);
+
+		$this->addRule([self::class, 'validateMaxSize'], $message ?? Forms\Validator::$messages[Forms\Form::MAX_FILE_SIZE], $size);
 
 		return $this;
 	}
