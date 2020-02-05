@@ -16,6 +16,9 @@ class UploadControl extends Forms\Controls\UploadControl {
 		parent::__construct($label, false);
 
 		$this->namespace = $namespace;
+		
+		$this->getRules()->removeRule(Form::MAX_FILE_SIZE);
+		$this->setMaxFileSize(Forms\Helpers::iniGetSize('upload_max_filesize'));
 	}
 
 	public function setMaxFileSize(int $size, string $message = null) {
