@@ -238,7 +238,7 @@ class AdvancedUploadControl extends Forms\Controls\UploadControl {
 		Forms\Container::extensionMethod(Container::class . '::' . $controlName, static::class . '::addInput');
 	}
 
-	public static function addInput(Forms\Form $form, string $name, ?string $label = null, ?string $namespace = null) {
+	public static function addInput(Forms\Container $form, string $name, ?string $label = null, ?string $namespace = null) {
 		return $form[$name] = new static($label, $namespace);
 	}
 

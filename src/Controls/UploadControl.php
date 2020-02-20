@@ -16,7 +16,7 @@ class UploadControl extends Forms\Controls\UploadControl {
 		parent::__construct($label, false);
 
 		$this->namespace = $namespace;
-		
+
 		$this->getRules()->removeRule(Form::MAX_FILE_SIZE);
 		$this->setMaxFileSize(Forms\Helpers::iniGetSize('upload_max_filesize'));
 	}
@@ -80,7 +80,7 @@ class UploadControl extends Forms\Controls\UploadControl {
 		Forms\Container::extensionMethod(Container::class . '::' . $controlName, static::class . '::addInput');
 	}
 
-	public static function addInput(Forms\Form $form, string $name, ?string $label = null, ?string $namespace = null) {
+	public static function addInput(Forms\Container $form, string $name, ?string $label = null, ?string $namespace = null) {
 		return $form[$name] = new static($label, $namespace);
 	}
 
