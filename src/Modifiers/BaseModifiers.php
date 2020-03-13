@@ -108,6 +108,11 @@ class BaseModifiers implements ILoader {
 		if ($flag) {
 			$flag = $this->converseFlags(array_slice(func_get_args(), 3));
 		}
+		
+		// if is variable string, but '%' sign is missing, then cast it to int
+		$width = is_string($width) && substr($width, -1) !== '%' ? (int)$width : $width;
+		$height = is_string($height) && substr($height, -1) !== '%' ? (int)$height : $height;
+		
 		$image->resize($width, $height, $flag);
 	}
 
