@@ -26,6 +26,10 @@ class BaseModifiers implements ILoader {
 		$modifiers->addModifier('crop', function (ModifierParam $param, $left, $top, $width, $height) {
 			$image = $param->getImage();
 
+			// if is variable string, but '%' sign is missing, then cast it to int
+			$width = is_string($width) && substr($width, -1) !== '%' ? (int)$width : $width;
+			$height = is_string($height) && substr($height, -1) !== '%' ? (int)$height : $height;
+			
 			$image->crop($left, $top, $width, $height);
 		});
 		$modifiers->addModifier('resize', [$this, 'resize']);
