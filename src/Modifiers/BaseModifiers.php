@@ -97,8 +97,8 @@ class BaseModifiers implements ILoader {
 
 	/**
 	 * @param ModifierParam $param
-	 * @param int $width
-	 * @param int $height
+	 * @param int|string $width
+	 * @param int|string $height
 	 * @param int $flag
 	 * @throws ImageStorageException
 	 */
