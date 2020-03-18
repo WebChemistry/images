@@ -170,6 +170,8 @@ class LocalStorage extends Storage {
 				$image = $this->imageFactory->createFromFile($originalPath);
 			} catch (UnknownImageFileException $e) {
 				return null;
+			} catch (ImageException $e){
+				return null;
 			}
 		} else {
 			throw new ImageStorageException('Resource must be instance of ITransferResource or IFileResource.');
