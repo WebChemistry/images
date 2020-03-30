@@ -27,8 +27,8 @@ class BaseModifiers implements ILoader {
 			$image = $param->getImage();
 
 			// if is variable string, but '%' sign is missing, then cast it to int
-			$width = is_string($width) && substr($width, -1) !== '%' ? (int)$width : $width;
-			$height = is_string($height) && substr($height, -1) !== '%' ? (int)$height : $height;
+			$width = is_string($width) && substr($width, -1) !== '%' ? (int) $width : $width;
+			$height = is_string($height) && substr($height, -1) !== '%' ? (int) $height : $height;
 			
 			$image->crop($left, $top, $width, $height);
 		});
@@ -110,8 +110,8 @@ class BaseModifiers implements ILoader {
 		}
 		
 		// if is variable string, but '%' sign is missing, then cast it to int
-		$width = is_string($width) && substr($width, -1) !== '%' ? (int)$width : $width;
-		$height = is_string($height) && substr($height, -1) !== '%' ? (int)$height : $height;
+		$width = is_string($width) && substr($width, -1) !== '%' ? (int) $width : $width;
+		$height = is_string($height) && substr($height, -1) !== '%' ? (int) $height : $height;
 		
 		$image->resize($width, $height, $flag);
 	}
