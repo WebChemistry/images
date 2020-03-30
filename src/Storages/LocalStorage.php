@@ -170,7 +170,7 @@ class LocalStorage extends Storage {
 				$image = $this->imageFactory->createFromFile($originalPath);
 			} catch (UnknownImageFileException $e) {
 				return null;
-			} catch (ImageException $e){
+			} catch (ImageException $e) {
 				return null;
 			}
 		} else {

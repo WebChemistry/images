@@ -26,6 +26,10 @@ class BaseModifiers implements ILoader {
 		$modifiers->addModifier('crop', function (ModifierParam $param, $left, $top, $width, $height) {
 			$image = $param->getImage();
 
+			// if is variable string, but '%' sign is missing, then cast it to int
+			$width = is_string($width) && substr($width, -1) !== '%' ? (int) $width : $width;
+			$height = is_string($height) && substr($height, -1) !== '%' ? (int) $height : $height;
+			
 			$image->crop($left, $top, $width, $height);
 		});
 		$modifiers->addModifier('resize', [$this, 'resize']);
@@ -93,8 +97,8 @@ class BaseModifiers implements ILoader {
 
 	/**
 	 * @param ModifierParam $param
-	 * @param int $width
-	 * @param int $height
+	 * @param int|string $width
+	 * @param int|string $height
 	 * @param int $flag
 	 * @throws ImageStorageException
 	 */
@@ -104,6 +108,11 @@ class BaseModifiers implements ILoader {
 		if ($flag) {
 			$flag = $this->converseFlags(array_slice(func_get_args(), 3));
 		}
+		
+		// if is variable string, but '%' sign is missing, then cast it to int
+		$width = is_string($width) && substr($width, -1) !== '%' ? (int) $width : $width;
+		$height = is_string($height) && substr($height, -1) !== '%' ? (int) $height : $height;
+		
 		$image->resize($width, $height, $flag);
 	}
 
