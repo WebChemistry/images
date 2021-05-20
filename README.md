@@ -1,5 +1,9 @@
 [![Build Status](https://travis-ci.org/WebChemistry/images.svg?branch=master)](https://travis-ci.org/WebChemistry/images)
 
+## Deprecated
+
+Tento balíček se už dále vyvíjet nebude, budou maximálně opravy chyb. Použijte proto velmi podobný balíček https://github.com/contributte/imagist, který je bohatější.
+
 ## Instalace
 
 Composer:
