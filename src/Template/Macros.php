@@ -114,7 +114,7 @@ class Macros extends Latte\Macros\MacroSet {
 	public function attrImg(Latte\MacroNode $node, Latte\PhpWriter $writer) {
 		return $writer->write(
 			'echo " " . %word . "\""; %raw echo "\"";',
-			$node->htmlNode->name === 'a' ? 'href=' : 'src=',
+            $node->htmlNode->name === 'a' ? '"href="' : '"src="',
 			$this->beginImg($node, $writer)
 		);
 	}
